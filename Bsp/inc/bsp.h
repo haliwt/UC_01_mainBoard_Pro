@@ -29,7 +29,6 @@
 
 
 
-
 #include "bsp_key.h"
 
 
@@ -42,7 +41,7 @@
 #include "bsp_xdp.h"
 
 
-#include "bsp_sensor.h"
+#include "bsp_gxht40.h"
 #include "bsp_threadx.h"
 #include "bsp_ntc.h"
 
