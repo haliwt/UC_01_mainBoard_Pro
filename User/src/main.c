@@ -13,10 +13,16 @@
 /* USER CODE END header */
 #include "ys32t031.h"
 #include "main.h"
+#include "gpio.h"
+#include "tim.h"
+#include "dma.h"
+#include "uart.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN includes */
 #include "tx_api.h"
+#include "bsp.h"
 /* USER CODE END includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -74,6 +80,8 @@ void RCC_Configuration(void)
   LL_Init1msTick(64000000);
 }
 
+
+#if 0
 // GPIO 初始化配置
 void GPIO_Configuration(void)
 {
@@ -268,7 +276,8 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(I2C_SDA_GPIO_Port, &GPIO_InitStruct);
 }
-
+#endif 
+#if 0
 void UART1_Int_Call(void)
 {
   if(LL_UART_IsActiveFlag_RXNE(UART1)&& LL_UART_IsEnabledIT_RXNE(UART1))
@@ -289,6 +298,8 @@ void UART1_Int_Call(void)
 
   UART1->ICR = 0xFF;
 }
+
+#endif 
 
 /* USER CODE BEGIN fputc */
 #if defined ( __CC_ARM )
@@ -311,6 +322,8 @@ int _write(int file, char *ptr, int len)
 #endif
 /* USER CODE END fputc */
 
+
+#if 0
 // UART1 初始化配置
 void UART1_Configuration(void)
 {
@@ -375,6 +388,10 @@ void UART2_Configuration(void)
 
   LL_UART_Enable(UART2);
 }
+
+#endif 
+
+#if 0
 
 // TIM1 初始化配置
 void TIM1_Configuration(void)
@@ -452,6 +469,8 @@ void TIM17_Configuration(void)
   LL_TIM_EnableCounter(TIM17);
 }
 
+#endif 
+#if 0
 // COMP1 初始化配置
 void COMP1_Configuration(void)
 {
@@ -468,7 +487,8 @@ void COMP1_Configuration(void)
   LL_COMP_EnableCOMP(COMP1);
   LL_COMP_EnableLock(COMP1);
 }
-
+#endif 
+#if 0
 // IWDG 初始化配置
 void IWDG_Configuration(void)
 {
@@ -484,6 +504,7 @@ void IWDG_Configuration(void)
   LL_IWDG_Enable(IWDG);
 }
 
+#endif 
 // I2C2 初始化配置
 void I2C2_Configuration(void)
 {
@@ -500,7 +521,7 @@ void I2C2_Configuration(void)
   I2C_InitStruct.Timing = 4062315777;
   LL_I2C_Init(I2C2, &I2C_InitStruct);
 }
-
+#if 0
 // ADC 初始化配置
 void ADC_Configuration(void)
 {
@@ -550,7 +571,9 @@ void ADC_Configuration(void)
   LL_ADC_ClearFlag_EOC();
   LL_ADC_Enable();
 }
+#endif 
 
+#if 0
 // DMA 初始化配置
 void DMA_Configuration()
 {
@@ -624,7 +647,7 @@ void LL_DMA_Configuration_Channel2(uint32_t MemoryOrDstAddr, uint32_t PeriphOrSr
   LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_2);
 }
 
-
+#endif 
 // NVIC 初始化配置
 void NVIC_Configuration(void)
 {
@@ -651,7 +674,6 @@ int main(void)
   TIM1_Configuration();
   TIM3_Configuration();
   TIM17_Configuration();
-  COMP1_Configuration();
   IWDG_Configuration();
   I2C2_Configuration();
   ADC_Configuration();
@@ -659,7 +681,7 @@ int main(void)
   NVIC_Configuration();
 
   /* USER CODE BEGIN 1 */
-  // tx_kernel_enter(); 
+   tx_kernel_enter(); 
   /* USER CODE END 1 */
 
   while(1)

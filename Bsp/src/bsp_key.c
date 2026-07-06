@@ -70,7 +70,7 @@ void Process_Long_Key(uint16_t key) {
 				    wifi_connected_success_f =0;
 					wifi_first_connectoed_cloud_f =0;
                     key_net_config_time = 0;
-					Trigger_Simple_Beep(2) ;//Beep(BEEP_ONCE);
+					BEEP_ON() ;//Beep(BEEP_ONCE);
                 }
             }
             break;
@@ -78,11 +78,11 @@ void Process_Long_Key(uint16_t key) {
         case _MODE_KEY_DOWN://LONG KEY MODE ID 
             if (key_time >= KEY_TICKS_LONG_M) {
                 //key_long_f = 1;
-                if (discharge_f && !no_fan_load_f) {
+                if (discharge_f && !fan_warning_f) {
                     Is_time_setting_f = 1;
                    
                     time_set_hours_counter =0;
-                    Trigger_Simple_Beep(2) ; //Beep(BEEP_ONCE);
+                    BEEP_ON() ; //Beep(BEEP_ONCE);
                 }
             }
             break;
@@ -100,7 +100,7 @@ void Process_Long_Key(uint16_t key) {
                          LED_TAPE_ON();
                     }
                     
-                  Trigger_Simple_Beep(2) ;  //Beep(BEEP_ONCE);
+                  BEEP_ON() ;  //Beep(BEEP_ONCE);
                 }
             }
             break;
@@ -117,7 +117,7 @@ void Process_Short_Key(uint16_t key)
     }
 
     // 仅在开机且无负载故障时允许操作
-    if (!discharge_f || no_fan_load_f) return;
+    if (!discharge_f || fan_warning_f) return;
 
     switch (key) {
         case _MODE_KEY_DOWN:
@@ -132,18 +132,18 @@ void Process_Short_Key(uint16_t key)
 				
 				time_set_hours_counter =0;
 			}
-             Trigger_Simple_Beep(2) ;//Beep(BEEP_ONCE);
+             BEEP_ON() ;//Beep(BEEP_ONCE);
             break;
 
         case _UP_KEY_DOWN:
 		
             Handle_Value_Adjustment(1);
-            Trigger_Simple_Beep(2); //Beep(BEEP_ONCE);
+            BEEP_ON(); //Beep(BEEP_ONCE);
             break;
 
         case _DOWN_KEY_DOWN:
             Handle_Value_Adjustment(0);
-            Trigger_Simple_Beep(2);//Beep(BEEP_ONCE);
+            BEEP_ON();//Beep(BEEP_ONCE);
             break;
     }
 }
@@ -168,8 +168,8 @@ void Handle_Value_Adjustment(uint8_t is_up)
         }
         
         // 逻辑关联：如果定时不为0，开启定时标志
-        // AI_timing_open_f = (setting_timing_hour > 0) ? 1 : 0;
-        AI_timing_open_f=0;
+        // AI_led_open_f = (setting_timing_hour > 0) ? 1 : 0;
+        
         // 只要动了时间，秒和分计数值都要清零重新开始
         timing_min_cnt = 0;
       
@@ -192,7 +192,18 @@ void Handle_Value_Adjustment(uint8_t is_up)
 	    time_set_hours_counter =0;
 		key_be_pressed_f =0;
 		key_input_temp_f= 1;
-      
+		heat_open_close_f= 1;//WT.EDIT 2026.05-15
+		key_pressed_set_temp_f =1;
+		if(AI_led_open_f == 0){//if(g_pro.set_timing_or_timer_time_flag ==TIMER_TIME){
+			         
+		     LED_AI_OFF(); 
+		 }
+		  else{
+		     LED_AI_ON(); 
+
+		}
+       TM1639_Display_Temperature(setting_temperature);
+	   direct_compare_set_temp_value();
     }
 }
 
@@ -205,6 +216,10 @@ void System_Status_PowerOn(void)
 {
     // 1. 开启核心工作标志位
     discharge_f = 1; 
+	fan_start_power_on();
+	fan_full_fun(); //WT.EDIT 2026-06-20
+	
+
     if(wifi_app_timer_power_on_f==0){ //手机定时开机
 	    discharge_f = 1;            // 总输出使能
 	    PTC_heat_open_f = 1;        // 默认开启加热
@@ -215,9 +230,11 @@ void System_Status_PowerOn(void)
 	
     fan_open_f = 1;             // 默认开启风扇
     led_strip_open_f = 1;       // 默认开启灯带
-    AI_timing_open_f = 1;       // 默认AI 开启
+    AI_led_open_f = 1;       // 默认AI 开启
     fan_speed_level =100;       // 默认风扇最大风速 
     set_temperature_value_f =0; 
+	ptc_high_temperature_f =0;  //高温报警标志位,清零
+	read_ntc_temperature_value =0;
 	//wifi
 	wifi_run_step=0;
 	wifi_off_step=0;
@@ -242,13 +259,15 @@ void System_Status_PowerOn(void)
 	key_net_config_f =0;
     
     // 5. 清除异常标志
-    no_fan_load_f = 0;          // 清除负载异常
+    fan_warning_f = 0;          // 清除负载异常
 
     
     // 6. 执行开机提示音
    
-    Trigger_Simple_Beep(2) ;//Beep(BEEP_ONCE);
+    BEEP_ON() ;//Beep(BEEP_ONCE);
+    power_on_led_open_handler();
 	LED_FUN_ON();
+	
 
 }
 /**
@@ -261,7 +280,7 @@ void System_Status_PowerOff(void)
     
     discharge_f = 0;
 	wifi_app_timer_power_on_f =0; //smart app power on by timer timing clear .
-    PTC_heat_open_f = 0;
+   
 	first_temp_compare_f=0;
     Ultra_Sound_open_f = 0;
     led_strip_open_f = 0;
@@ -269,13 +288,13 @@ void System_Status_PowerOff(void)
     fan_open_f = 0;
 	key_net_config_f =0;
 
-	 discharge_f = 0;            // 总输出使能
-	 PTC_heat_open_f = 0;        // 默认开启加热
-	 Ultra_Sound_open_f = 0;     // 默认开启超声波
-	 plasma_open_f = 0;          // 默认开启等离子
+
+	 PTC_heat_open_f = 0;        // 默认--from smart phone define.
+	 Ultra_Sound_open_f = 0;     // 默
+	 plasma_open_f = 0;          // 默
      set_temperature_value_f =0; 
     // 2. 重置所有功能模式标志
-    AI_timing_open_f = 0;
+    AI_led_open_f = 0;
     Is_time_setting_f = 0;
  
     Is_countdown_timer_f = 0;
@@ -286,6 +305,7 @@ void System_Status_PowerOff(void)
 	//wifi
 	wifi_run_step=0;
 	wifi_off_step =0;
+	ptc_high_temperature_f =0;
     
     // 3. 重置所有时间/计数器
     timing_min_cnt = 0;
@@ -296,12 +316,12 @@ void System_Status_PowerOff(void)
     
     
     // 4. 特殊逻辑处理
-    no_fan_load_f = 0;
+    fan_warning_f = 0;
 	power_off_peripheral_handler();
 
     
     // 5. 提示音
-    Trigger_Simple_Beep(2) ;//Beep(BEEP_ONCE);
+    BEEP_ON() ;//Beep(BEEP_ONCE);
 	all_led_off();
     TM1639_Display_ON_OFF(0);
 }
@@ -335,7 +355,7 @@ void key_power_long_handler(void)
 		wifi_first_connectoed_cloud_f =0;
         key_net_config_time = 0;
        
-		Trigger_Simple_Beep(2) ;//Beep(BEEP_ONCE);
+		BEEP_ON() ;//Beep(BEEP_ONCE);
     }
 }
 /**
@@ -357,7 +377,7 @@ void key_mode_short_handler(void)
 		
 		time_set_hours_counter =0;
 	}
-    Trigger_Simple_Beep(2) ;//Beep(BEEP_ONCE);
+    BEEP_ON() ;//Beep(BEEP_ONCE);
 
 }
 
@@ -370,11 +390,11 @@ void key_mode_short_handler(void)
 void key_mode_long_handler(void)
 {
 	//key_long_f = 1;
-    if (discharge_f && !no_fan_load_f) {
+    if (discharge_f && !fan_warning_f) {
         Is_time_setting_f = 1;
        
         time_set_hours_counter =0;
-        Trigger_Simple_Beep(2) ; //Beep(BEEP_ONCE);
+        BEEP_ON() ; //Beep(BEEP_ONCE);
     }
 
 }
@@ -387,8 +407,9 @@ void key_mode_long_handler(void)
 */
 void key_up_short_handler(void)
 {
+     BEEP_ON(); 
 	 Handle_Value_Adjustment(1);
-     Trigger_Simple_Beep(2); //Beep(BEEP_ONCE);  
+    //Beep(BEEP_ONCE);  
 
 }
 
@@ -400,8 +421,9 @@ void key_up_short_handler(void)
 */
 void key_down_short_handler(void)
 {
+  BEEP_ON(); //Beep(BEEP_ONCE);
   Handle_Value_Adjustment(0);
-  Trigger_Simple_Beep(2); //Beep(BEEP_ONCE);
+  
 
 }
 
@@ -424,7 +446,7 @@ void key_down_long_handler(void)
 	 	LED_TAPE_ON();
 	}
 
-	Trigger_Simple_Beep(2) ;	//Beep(BEEP_ONCE);
+	BEEP_ON() ;	//Beep(BEEP_ONCE);
 	
 
 

@@ -1,7 +1,7 @@
 #include "bsp.h"
 
 
-/*================= 内部静态函数声明 =================*/
+/*================= ???????? =================*/
 
 static void DHT11_GPIO_Output(void);
 static void DHT11_GPIO_Input(void);
@@ -9,12 +9,12 @@ static void DHT11_WritePin(uint8_t val);
 static uint8_t DHT11_ReadPin(void);
 
 static void TIM17_Init_1MHz(void);
-static void Delay_US_dht11(uint16_t us);
+//static void Delay_US_dht11(uint16_t us);
 
-static uint8_t DHT11_ReadBit(void);
+
 static uint8_t DHT11_ReadByte(void);
 
-/*================= 对外接口实现 =================*/
+/*================= ?????? =================*/
 
 void delay_ms_dht11(uint16_t ms)
 {
@@ -25,107 +25,83 @@ void delay_ms_dht11(uint16_t ms)
 
 void DHT11_Init(void)
 {
-    /* GPIO 默认配置为输出高电平 */
+    /* GPIO ?????????? */
     RCC_AHB2PeriphClockCmd(DHT11_GPIO_CLK, ENABLE);
 
     DHT11_GPIO_Output();
     DHT11_WritePin(1);
 
-    /* 初始化 TIM14 为 1MHz 计数 */
+    /* ??? TIM14 ? 1MHz ?? */
     TIM17_Init_1MHz();
 }
 
 /**
- * @brief  读取 DHT11 温湿度
- * @param  humi: 湿度输出指针
- * @param  temp: 温度输出指针
- * @retval 0: 成功，其他: 失败
+ * @brief  ?? DHT11 ???
+ * @param  humi: ??????
+ * @param  temp: ??????
+ * @retval 0: ??,??: ??
  */
 uint8_t DHT11_ReadData(uint8_t *humi, uint8_t *temp)
 {
     uint8_t data[5] = {0};
     uint32_t timeout;
-    UINT old_post;
 
-    //if (humi == 0 || temp ==0)
-        ///return 1;
 
-    /* 1. 禁止 ThreadX 调度 + 全局中断（关键时序区） */
-	
-    old_post = tx_interrupt_control(TX_INT_DISABLE);
-
-    __disable_irq();
-
-    /* 2. 主机拉低 18ms */
+    /* 2. ???? 18ms */
     DHT11_GPIO_Output();
     DHT11_WritePin(0);
     Delay_US_dht11(18000);
 
-    /* 3. 拉高 20~40us */
+    /* 3. ?? 20~40us */
     DHT11_WritePin(1);
     Delay_US_dht11(30);
 
-    /* 4. 切换输入，等待 DHT11 响应 */
+    /* 4. ????,?? DHT11 ?? */
     DHT11_GPIO_Input();
     Delay_US_dht11(5);
 
-    /* 等待 DHT11 拉低（80us） */
+    /* ?? DHT11 ??(80us) */
     timeout = 0;
     while (DHT11_ReadPin())
     {
-        if (++timeout > 300) goto error;
+        if (++timeout > 1000) return 3; // ????????
         Delay_US_dht11(1);
     }
 
-    /* 等待 DHT11 拉高（80us） */
+    /* ?? DHT11 ??(80us) */
     timeout = 0;
     while (!DHT11_ReadPin())
     {
-        if (++timeout > 300) goto error;
+        if (++timeout > 1000) return 3; // ????????
         Delay_US_dht11(1);
     }
 
-    /* 等待 DHT11 再次拉低，开始传输数据 */
+    /* ?? DHT11 ????,?????? */
     timeout = 0;
     while (DHT11_ReadPin())
     {
-        if (++timeout > 300) goto error;
+        if (++timeout > 1000) return 3; // ????????
         Delay_US_dht11(1);
     }
 
-    /* 5. 读取 5 字节（40bit） */
+    /* 5. ?? 5 ??(40bit) */
     for (uint8_t i = 0; i < 5; i++)
     {
         data[i] = DHT11_ReadByte();
-        if (data[i] == 0xFF) goto error;
+        if (data[i] == 0xFF) return 3;
     }
 
-    /* 6. 恢复中断 & 调度 */
-    __enable_irq();
-    tx_interrupt_control(old_post);
-
-
-    /* 7. 校验 */
+    /* 7. ?? */
     if ((uint8_t)(data[0] + data[1] + data[2] + data[3]) != data[4])
         return 2;
-
-	
 
     *humi = data[0];
     *temp = data[2];
 
-	
-
-
     return 0;
-
-error:
-    __enable_irq();
-    tx_interrupt_control(old_post);
-    return 3;
 }
 
-/*================= 内部函数实现 =================*/
+/*================= ?????? =================*/
 
 static void DHT11_GPIO_Output(void)
 {
@@ -166,7 +142,7 @@ static uint8_t DHT11_ReadPin(void)
     return  (DHT11_GPIO_PORT->IDR & DHT11_GPIO_PIN) ? 1 : 0;
 }
 
-/*---------------- TIM14 1MHz 延时 ----------------*/
+/*---------------- TIM14 1MHz ?? ----------------*/
 
 static void TIM17_Init_1MHz(void)
 {
@@ -184,7 +160,7 @@ static void TIM17_Init_1MHz(void)
     TIM_Cmd(TIM17, ENABLE);
 }
 
-static void Delay_US_dht11(uint16_t us)
+void Delay_US_dht11(uint16_t us)
 {
    #if 1
 
@@ -197,9 +173,9 @@ static void Delay_US_dht11(uint16_t us)
 	#else 
 	  while (us--)
     {
-        // 48MHz 下，1us 约为 48 个周期
-        // 除去 while 循环自身的减法、比较、跳转（约 6~9 个周期）
-        // 剩余约 40 个周期左右用 NOP 填充
+        // 48MHz ?,1us ?? 48 ???
+        // ?? while ?????????????(? 6~9 ???)
+        // ??? 40 ?????? NOP ??
         __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
         __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
         __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
@@ -210,76 +186,13 @@ static void Delay_US_dht11(uint16_t us)
 	#endif 
 }
 
-/*---------------- DHT11 bit/byte 读取 ----------------*/
-
-static uint8_t DHT11_ReadBit(void)
-{
-    #if 0
-	uint32_t timeout = 0;
-
-    /* 等待低电平结束 */
-    while (!DHT11_ReadPin())
-    {
-        if (++timeout > 200) return 0xFF;
-        Delay_US_dht11(1);
-    }
-
-    /* 等待 40us 判断 0/1 */
-    Delay_US_dht11(40);
-
-    return DHT11_ReadPin() ? 1 : 0;
-
-	#else
-
-	uint8_t i,dat=0;
-
-
-	   	
-    for(i=0;i<8;i++) 
-	  {
-		    while(GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT,DHT11_DATA_PIN)==0);
-        
-				
-									
-			  
-				Delay_US_dht11(40);
-			
-			  if(GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT,DHT11_DATA_PIN)==1)
-				{
-				    while(GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT,DHT11_DATA_PIN)==1);
-				 
-					
-				    dat|=(uint8_t)(0x01 << (7 - i)); // ����1
-				}
-				else
-				{
-				    dat&=(uint8_t)~(0x01 << (7 - i)); // ����0
-				}
-    	}
-	  return dat;
-
-	#endif 
-}
-
+/*---------------- DHT11 bit/byte ?? ----------------*/
+#if 0
 static uint8_t DHT11_ReadByte(void)
 {
 
     #if 0
-	uint8_t i, val = 0;
-
-    for (i = 0; i < 8; i++)
-    {
-        uint8_t bit = DHT11_ReadBit();
-        if (bit == 0xFF) return 0xFF;
-
-        val <<= 1;
-        val |= bit;
-    }
-    return val;
-
-	#else
-	
-	uint8_t i,dat=0;
+     uint8_t i,dat=0;
 	 for(i=0;i<8;i++) 
 		  {
 				while(GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT,DHT11_DATA_PIN)==0);
@@ -291,17 +204,68 @@ static uint8_t DHT11_ReadByte(void)
 						while(GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT,DHT11_DATA_PIN)==1);
 					 
 						
-						dat|=(uint8_t)(0x01 << (7 - i)); // ����1
+						dat|=(uint8_t)(0x01 << (7 - i)); // ?�?
 					}
 					else
 					{
-						dat&=(uint8_t)~(0x01 << (7 - i)); // ����0
+						dat&=(uint8_t)~(0x01 << (7 - i)); // ?�?
 					}
 			}
 		  return dat;
+    #else 
 
 
 	#endif 
+}
+#endif 
+static uint8_t DHT11_ReadByte(void)
+{
+    uint8_t i, dat = 0;
+    volatile uint32_t timeout; // 使用 volatile 防止被编译器优化
+
+    for (i = 0; i < 8; i++) 
+    {
+        // ------------------ 预防卡死点 1 ------------------
+        // 等待引脚变为高电平（跳过起始的低电平阶段）
+        timeout = 0;
+        while (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 0)
+        {
+            timeout++;
+            if (timeout > 10000) // 门槛值，防止硬件损坏时死循环
+            {
+                return 0xFF; // 返回错误标志
+            }
+        }
+        
+        // 延时 40微秒 区分信号是 0 还是 1
+        Delay_US_dht11(40);
+        
+        // 如果 40us 后依然是高电平，说明这一位是数据 "1"
+        if (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 1)
+        {
+            // ------------------ 预防卡死点 2 ------------------
+            // 数据是 1，需要等待引脚变回低电平，才能开始下一位的接收
+            timeout = 0;
+            while (GPIO_ReadInputDataBit(DHT11_DATA_GPIO_PORT, DHT11_DATA_PIN) == 1)
+            {
+                timeout++;
+                if (timeout > 10000) 
+                {
+                    return 0xFF; // 返回错误标志
+                }
+            }
+            
+            dat |= (uint8_t)(0x01 << (7 - i)); // 写入 1
+        }
+        else
+        {
+            // 40us 后变回了低电平，说明这一位是数据 "0"
+            //（此时引脚已经是低电平了，无需等待，直接清零对应位即可）
+            dat &= (uint8_t)~(0x01 << (7 - i)); // 写入 0
+        }
+    }
+    
+    return dat;
 }
 
 
@@ -311,9 +275,12 @@ uint8_t dht11_read_temp_humidity_value(void)
     uint8_t dht11_read_flag;
 	
 	dht11_read_flag = DHT11_ReadData(&humidity,&temperature);
-
-	return dht11_read_flag;
-
+    if(dht11_read_flag==0) 
+		return dht11_read_flag;
+    else 
+        return 0xff;
+	
+}
   #if 0
 	if(dht11_read_flag==0){
       
@@ -339,5 +306,5 @@ uint8_t dht11_read_temp_humidity_value(void)
 	}
 
   #endif 
-}
+
 

@@ -21,31 +21,33 @@ void Fan_Ctrl_Process(void)
 		if((fan_open_f)){
 			if(fan_speed_level < 34)
 			{
-			fan_on(287);
+			fan_on(10);
 			}
 			else if(fan_speed_level > 33 && fan_speed_level < 67)
 			{
-			fan_on(303);
+			fan_on(20);
 			}
-			else if(fan_speed_level==100 && fan_speed_level > 66)
+			else if(fan_speed_level==100 || fan_speed_level > 66)
 			{
-			fan_on(319);
+			fan_on(40);
 			}
 
-			__NOP();__NOP();__NOP();__NOP();__NOP();
+			//__NOP();__NOP();__NOP();__NOP();__NOP();
 
-			FAN_RUN_ON();
+			//FAN_RUN_ON();
 		}
     }
 	else if(works_interval_f == 1){
        
 		if(fan_one_minute_cuonter < 61  && fan_stop_f ==0){
-		      FAN_RUN_ON(); 
+		   fan_on(40);  // FAN_RUN_ON(); 
 	     
 		}
 		else{
 		  fan_stop_f =2;
-		  FAN_RUN_OFF(); 
+		  //FAN_RUN_OFF(); 
+		  //fan_on(40);
+		  fan_on(0); //fan_off();
 		#if DEBUG_ENABLE 
 
 		printf("fan_stop !!! \n\r");
@@ -60,20 +62,67 @@ void Fan_Ctrl_Process(void)
     }
  }
 
+void wifiFan_Ctrl_Process(void)
+{
+   
+	if(discharge_f){
+	   if(works_interval_f == 0 && fan_rx_stop_flag ==0){
+	      	
+	     
+		if((fan_open_f)){
+			if(fan_speed_level < 34)
+			{
+			fan_on(10);
+			}
+			else if(fan_speed_level > 33 && fan_speed_level < 67)
+			{
+			fan_on(20);
+			}
+			else if(fan_speed_level==100 || fan_speed_level > 66)
+			{
+			fan_on(40);
+			}
+
+			///__NOP();__NOP();__NOP();__NOP();__NOP();
+
+			//FAN_RUN_ON();
+		}
+    }
+	}
+}
+
 
 void fan_full_fun(void)
 {
 
-	fan_on(319);
-	FAN_RUN_ON();
+	
+	//FAN_RUN_ON();
+	fan_on(40);
 
 }
+
+void fan_start_power_on(void)
+{
+	//FAN_RUN_OFF();
+	//fan_on(0);
+
+	//FAN_RUN_ON();
+	fan_on(40);
+	
+}
+
+
+
 
 void fan_stop(void)
 {
-	FAN_RUN_OFF();
-
+    //FAN_RUN_OFF();
+	//fan_on(40);//
+    fan_on(0);//fan_off();
 }
+
+
+
 
 #if 0
         else
@@ -258,7 +307,7 @@ void Ultra_Sound_Ctrl(void)
     {
 		    if(Ultra_Sound_open_f)
 				{
-				    ultra_sound_on(159); 
+				    ultra_sound_on(20); //
 					LED_MOUSE_ON();
 				}
 				else
@@ -269,8 +318,96 @@ void Ultra_Sound_Ctrl(void)
 		}
    
 }
+/**
+*
+*@brief 
+*@notice
+*@param
+*
+**/
+
+void BEEP_ERROR_ON(void)
+{
+        TIM_SetCompare1(TIM14, 374);
+        TIM_Cmd(TIM14, ENABLE);
+        TIM_CtrlPWMOutputs(TIM14, ENABLE);
+		tx_thread_sleep(50);//open_beep_sound();
+        TIM_SetCompare1(TIM14,0);
+
+        TIM_Cmd(TIM14, DISABLE);
+}
+
+void BEEP_ON(void)
+{
+	      TIM_SetCompare1(TIM14, 374);
+		  TIM_Cmd(TIM14, ENABLE);
+		  TIM_CtrlPWMOutputs(TIM14, ENABLE);
+		  tx_thread_sleep(2);//open_beep_sound();
+		  TIM_SetCompare1(TIM14,0);
+	
+		  TIM_Cmd(TIM14, DISABLE);
 
 
+}
+
+void fan_err_beep_on(void)
+{
+    
+        TIM_SetCompare1(TIM14, 374);
+        TIM_Cmd(TIM14, ENABLE);
+        TIM_CtrlPWMOutputs(TIM14, ENABLE);
+		tx_thread_sleep(4);//open_beep_sound();
+        TIM_SetCompare1(TIM14,0);
+
+        TIM_Cmd(TIM14, DISABLE);
+   }
+
+
+
+
+
+//��������
+void BEEP_OFF(void)
+{
+    TIM_SetCompare1(TIM14,0);
+	
+	TIM_Cmd(TIM14, DISABLE);
+    //TIM_CtrlPWMOutputs(TIM14, ENABLE);
+}
+
+void beep_high_temperature_sound(void)
+{
+	fan_err_beep_on();
+	tx_thread_sleep(20);
+	fan_err_beep_on();
+	tx_thread_sleep(20);
+	fan_err_beep_on();
+	tx_thread_sleep(20);
+	fan_err_beep_on();
+	tx_thread_sleep(20);
+	fan_err_beep_on();
+	tx_thread_sleep(20);
+	fan_err_beep_on();
+	tx_thread_sleep(20);
+
+}
+
+void beep_fan_default_sound(void)
+{
+	fan_err_beep_on();
+	tx_thread_sleep(30);
+	fan_err_beep_on();
+	tx_thread_sleep(30);
+	fan_err_beep_on();
+	tx_thread_sleep(30);
+	fan_err_beep_on();
+	tx_thread_sleep(30);
+	fan_err_beep_on();
+	tx_thread_sleep(30);
+	fan_err_beep_on();
+	tx_thread_sleep(30);
+
+}
 
 /**
 *
@@ -283,7 +420,7 @@ void Relay_Ctrl(void)
 {
    
 	if(discharge_f){
-		    if((PTC_heat_open_f)&& ptc_prohibit_off_f == 0)
+		    if((PTC_heat_open_f==1)&& ptc_prohibit_off_f == 0 && works_interval_f ==0)
 				{
                     LED_PTC_ON();
 					RELAY_ON();
@@ -313,7 +450,7 @@ void workd_interval_time_peripheral_handle(void)
 {
 	if(discharge_f){
 
-		if((PTC_heat_open_f)&& ptc_prohibit_off_f == 0)
+		if((PTC_heat_open_f==1)&& ptc_prohibit_off_f == 0)
 		{
 			LED_PTC_ON();
         }
@@ -334,6 +471,7 @@ void workd_interval_time_peripheral_handle(void)
 
 			LED_MOUSE_OFF();
 		}
+		
 		if(plasma_open_f)
 		{
 
@@ -366,19 +504,39 @@ void workd_interval_turn_off_handle(void)
 *@retrval 
 *
 **/
-void set_temp_compare(void)
-{
-   if(discharge_f == 1 && (set_temperature_value_f ==1 && time_1s_counter > 1 &&  key_input_temp_f != 4)|| ( key_input_temp_f == 4 && time_1s_counter  > 2)){//1
-	    set_temperature_value_f ++;
 
-    if(temperature >= setting_temperature){
+/************************************************************************
+*
+* Function Name: LED_Power_Breathing(void)
+* ĺč˝:
+* ĺć°:ć 
+* čżĺĺź:ć 
+*
+************************************************************************/
+void compare_set_temp_value(void)
+{
+	//static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
+    
+//    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
+//   if (tx_time_get() < wait_timeout) {
+//       return; 
+//   }
+
+	#if 0
+
+	if(temperature >= setting_temperature){
 	     ptc_prohibit_off_f = 0;
 	     PTC_heat_open_f = 0;   // 立即关闭
 	     RELAY_OFF();
 		 LED_PTC_OFF();
-		 if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
-		 //delay_ms(20);//HAL_Delay(5);
-		 if(wifi_connected_success_f ==1)MqttData_Publish_SetPtc(0);
+		 if(disp_second_f == 1){
+		 	SendWifiData_To_Cmd(0x02,0);
+		    wait_timeout = tx_time_get()+10; //delay_ms(20);//HAL_Delay(5);
+		 	}
+		 if(wifi_connected_success_f ==1){
+		 	MqttData_Publish_SetPtc(0);
+			wait_timeout = tx_time_get()+20;
+		 }
 
     }
 	else{
@@ -388,20 +546,59 @@ void set_temp_compare(void)
 		if(works_interval_f == 0)RELAY_ON();
 		 
 	
-		if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
-		//delay_ms(20);//HAL_Delay(5);
-		if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(1);
+		if(disp_second_f == 1){
+			SendWifiData_To_Cmd(0x02,0x01);
+		    wait_timeout = tx_time_get()+10;//delay_ms(20);//HAL_Delay(5);
+		}
+		if(wifi_connected_success_f == 1){
+			MqttData_Publish_SetPtc(1);
+
+		   wait_timeout = tx_time_get()+20;
+		}
         
 
 	}
-	if(wifi_connected_success_f == 1 && key_input_temp_f == 1)MqttData_Publis_SetTemp(setting_temperature);
-    if(key_input_temp_f == 4) key_input_temp_f =2;
+	#endif 
+	if(wifi_connected_success_f == 1 ){
+		MqttData_Publis_SetTemp(setting_temperature);
+		//wait_timeout = tx_time_get()+20;
+	}
+
+	if(PTC_heat_open_f == 1 && wifi_connected_success_f==1){
+     	MqttData_Publish_SetPtc(1);
+
+	}
+	else if(wifi_connected_success_f==1){
+
+	  MqttData_Publish_SetPtc(0);
 
 	}
 
 }
 
+void direct_compare_set_temp_value(void)
+{
 
+    
+    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
+   
+	if(temperature >= setting_temperature){
+	     ptc_prohibit_off_f = 0;
+	     PTC_heat_open_f = 0;   // 立即关闭
+	     RELAY_OFF();
+		 LED_PTC_OFF();
+		
+
+    }
+	else{
+	    ptc_prohibit_off_f = 0;
+		PTC_heat_open_f = 1;   // 立即open
+		LED_PTC_ON();
+		if(works_interval_f == 0)RELAY_ON();
+		 
+	}
+
+}
 
 /**
 *
@@ -417,10 +614,10 @@ void Fan_Current_Det(void)
 	{
 		if(fan_current<_NO_FAN_LOAD_CURRENT){
 			fan_current_det_time++;
-			if(fan_current_det_time>=300){
+			if(fan_current_det_time>=2){
 				fan_current_det_time = 0;
 
-				if(!no_fan_load_f)
+				if(!fan_warning_f)
 				{
 					//Beep(BEEP_THREE);
 					beep_interval_time = 0;
@@ -428,11 +625,11 @@ void Fan_Current_Det(void)
 					fan_open_f = 0;
 				}
 
-				no_fan_load_f = 1;
+				fan_warning_f = 1;
 			}
 		}
 		else{
-		fan_current_det_time = 0;
+		   fan_current_det_time = 0;
 		}
 	}
 	else
@@ -463,7 +660,7 @@ void peripheral_fun_handler(void)
 
 	 if(disp_set_hours_time_f == 1 || Is_time_setting_f ==1) return ;
 	  
-      if(AI_timing_open_f==1){
+      if(AI_led_open_f==1){
 	  	LED_AI_ON();
 	  }
 	  else{
@@ -478,7 +675,7 @@ void peripheral_fun_handler(void)
 	   workd_interval_turn_off_handle();
 	   
 	   if(disp_set_hours_time_f == 1 || Is_time_setting_f ==1) return ;
-	   if(AI_timing_open_f==1){
+	   if(AI_led_open_f==1){
 	  	LED_AI_ON();
 	   }
 	   else{
@@ -523,7 +720,7 @@ void power_on_peripheral_handler(void)
 {
 
 	RELAY_ON();
-	 ultra_sound_on(159); 
+	 ultra_sound_on(20);//(159); 
 	PLASMA_ON();
 
 

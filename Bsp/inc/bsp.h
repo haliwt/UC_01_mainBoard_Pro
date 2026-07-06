@@ -13,26 +13,25 @@
 
 #include "ys32t031.h"
 #include "main.h"
-#include "delay.h"
-#include "system_init.h"
+
+#if 0
+
 #include "uart.h"  
 #include "tim.h"
 #include "iwdg.h"
 #include "key.h"
 #include "adc.h"
 
+#endif 
 
-#include "ys32t031_tsc.h"
-#include "ys32t031_tsc_lib.h"
-#include "ys32t031_tsc_config.h"
 
 #include "tx_api.h"
 
 
 
-#include "tm1639.h"
-#include "key.h"
-#include "system_init.h"
+
+#include "bsp_key.h"
+
 
 //
 #include "bsp_power.h"
@@ -41,10 +40,11 @@
 #include "bsp_key.h"
 #include "bsp_cmd_link.h"
 #include "bsp_xdp.h"
-#include "bsp_tm1639.h"
-#include "bsp_smg.h"
+
+
 #include "bsp_sensor.h"
 #include "bsp_threadx.h"
+#include "bsp_ntc.h"
 
 //wifi
 #include "bsp_usart_wifi.h"
@@ -54,7 +54,9 @@
 
 #define Enable_EventRecorder  0
 
-#define DEBUG_ENABLE    1
+#define DEBUG_ENABLE    0
+
+
 
 
 
@@ -69,8 +71,8 @@ typedef struct _main_ref{
  volatile uint8_t time_10ms_f;
  volatile uint8_t time_20ms_f;
  volatile uint8_t time_50ms_f;
- volatile uint8_t time_100ms_f;
- volatile uint8_t time_200ms_f;
+
+ //volatile uint8_t time_200ms_f;
  volatile uint8_t time_100ms_fast_led_f;
 
  volatile uint8_t time_400ms_f;

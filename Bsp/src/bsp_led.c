@@ -16,24 +16,72 @@ void all_led_off(void)
 
 }
 
+void power_on_led_open_handler(void)
+{
+	if(wifi_app_timer_power_on_f==0){
+
+	     LED_AI_ON();
+		 LED_PTC_ON();
+		 LED_PLASMA_ON();
+		 LED_MOUSE_ON();
+		 LED_WIFI_ON();
+		 LED_POWER_ON();
+		 LED_TAPE_ON();
+		 LED_TEMP_ON();
+		 LED_HUMI_ON(); 
 
 
+	  }
+	  else{
+		  LED_AI_ON();
+		  LED_WIFI_ON();
+		 LED_POWER_ON();
+		 LED_TAPE_ON();
+		 LED_TEMP_ON();
+		 LED_HUMI_ON(); 
+
+
+	  }
+
+}
 //300ms
 void wifi_fast_led_state(void)
 {
-
-   if(discharge_f ==1 && key_net_config_f){
+   static uint8_t slowly_led_counter = 0;//100ms
+   if((discharge_f ==1) && (key_net_config_f ==1) && (wifi_connected_success_f == 0)){
 	    LED_WIFI_TOGGLE();
 		
    }
+   else if((discharge_f ==1) && (key_net_config_f ==0) && (wifi_connected_success_f == 0)){
+
+      
+		if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s 
+
+		    slowly_led_counter =0;
+		     LED_WIFI_TOGGLE();
+		}
+   }
+   else if(discharge_f ==0){
+	     
+	   if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s
+	     slowly_led_counter=0;
+        LED_POWER_TOGGLE();
+
+      }
+   }
+   else if(wifi_connected_success_f==1 && discharge_f ==1){
+			
+	       LED_WIFI_ON();
+
+   	}
 }
 
 
-void  wifi_normal_led_state(void)
+void wifi_led_state_handler(void)
 {
 	
      if(key_net_config_f==1) return ;
-		if(wifi_connected_success_f)
+	 if(wifi_connected_success_f==1)
 		{
 			LED_WIFI_ON();
 //			  #if DEBUG_ENABLE
@@ -42,23 +90,9 @@ void  wifi_normal_led_state(void)
 
 //			  #endif 
 		}
-		else{
-			if(gpro_t.time_200ms_f > 7){//if(led_scan_time>1)
-			   gpro_t.time_200ms_f =0; 
-			 // led_scan_time =0;
-	          LED_WIFI_TOGGLE();
 
-//			  #if DEBUG_ENABLE
+	}
 
-//			   printf("wifi_flag = %d\n\r",wifi_connected_success_f);
 
-//			  #endif 
-			}
-
-			
-		}
-	
-
- }
 
 

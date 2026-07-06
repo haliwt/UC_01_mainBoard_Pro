@@ -196,22 +196,26 @@ void Parse_Tencent_Data(void)
 		    {
 		        Ultra_Sound_open_f =1;
 				wifi_app_timer_power_on_f= 1;
+				wifi_connected_success_f =1;
 		    }
 			else if(strstr((const char *)wifi_t.rx_data_array, "\"sonic\":0")){
 
 			     Ultra_Sound_open_f= 0;
 				 wifi_app_timer_power_on_f= 1;
+			     wifi_connected_success_f =1;
 
 			}
 		    // 寻找 "Anion": 之后的值
 		    if(strstr((const char *)wifi_t.rx_data_array, "\"Anion\":1")){
                    plasma_open_f =1;
 				   wifi_app_timer_power_on_f= 1;
+			       wifi_connected_success_f =1;
 
 			}
 	        else if(strstr((const char *)wifi_t.rx_data_array, "\"Anion\":0")){
 		          plasma_open_f =0;
 				   wifi_app_timer_power_on_f= 1;
+			       wifi_connected_success_f =1;
 	        }
 
 		  #if 0
@@ -241,11 +245,13 @@ void Parse_Tencent_Data(void)
 				PTC_heat_open_f =0; 
 				ptc_prohibit_off_f = 1;
 		        wifi_app_timer_power_on_f= 1;
+				wifi_connected_success_f =1;
 			}
 			else if(strstr((const char *)wifi_t.rx_data_array, "\"ptc\":1")){
 				PTC_heat_open_f =1; 
 				ptc_prohibit_off_f = 0;
 			    wifi_app_timer_power_on_f= 1;
+				wifi_connected_success_f =1;
 
 			}
 			#endif 
@@ -353,7 +359,7 @@ void Parse_Tencent_Data(void)
     }
 	else if(strstr((const char *)wifi_t.rx_data_array,"\"state\":1") && discharge_f == 1){
           
-            AI_timing_open_f = 1;//esp_t.gModel=1;
+            AI_led_open_f = 1;//esp_t.gModel=1;
             
 			wifi_t.rx_data_array[0]='\0';
 	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
@@ -367,7 +373,7 @@ void Parse_Tencent_Data(void)
     }
     else if(strstr((const char *)wifi_t.rx_data_array,"\"state\":2") && discharge_f == 1){
         
-            AI_timing_open_f = 0; //esp_t.gModel=2;
+            AI_led_open_f = 0; //esp_t.gModel=2;
             
 			wifi_t.rx_data_array[0]='\0';
 	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
@@ -379,11 +385,11 @@ void Parse_Tencent_Data(void)
     }
 
 	
-	 if((p=strstr((const char *)wifi_t.rx_data_array,"\"find\":"))!=NULL && discharge_f == 1){ //&& discharge_f == 1){
+	 if((p=strstr((const char *)wifi_t.rx_data_array,"\"find\":"))!=NULL && discharge_f == 1){ //fan){
 
 
 		   fan_speed_level =  atoi(p + 7);
-		  wifi_t.rx_data_array[0]='\0';
+		   wifi_t.rx_data_array[0]='\0';
 	        memset(wifi_t.rx_data_array, 0, wifi_t.rx_recoder_counter);
 		   wifi_t.wifi_rx_signal_f= FAN_ITEM;
 
@@ -478,7 +484,7 @@ static void evt_open_off(void)
         }
 
         MqttData_Publish_PowerOff_Ref();
-		tx_thread_sleep(10);
+		tx_thread_sleep(20);
        
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -488,7 +494,7 @@ static void evt_ptc_on(void)
 {
     if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
+        BEEP_ON();
         PTC_heat_open_f = 1;
         ptc_prohibit_off_f = 0;
 
@@ -503,7 +509,7 @@ static void evt_ptc_on(void)
         }
 
         MqttData_Publish_SetPtc(1);
-		tx_thread_sleep(20);
+	
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -513,7 +519,7 @@ static void evt_ptc_off(void)
 {
     if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
+        BEEP_ON();
         PTC_heat_open_f = 0;
         ptc_prohibit_off_f = 1;
 
@@ -528,7 +534,7 @@ static void evt_ptc_off(void)
         }
 
         MqttData_Publish_SetPtc(0);
-		tx_thread_sleep(20);
+	
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -538,16 +544,19 @@ static void evt_anion_on(void)
 {
     if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
+        BEEP_ON();
         plasma_open_f = 1;
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x03, 0x01);
 			tx_thread_sleep(10);
         }
+	   Plasma_Ctrl();
+      //Ultra_Sound_Ctrl();
 
         MqttData_Publish_SetPlasma(1);
-		tx_thread_sleep(20);
+		
+	
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -557,7 +566,7 @@ static void evt_anion_off(void)
 {
     if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
+        BEEP_ON();
         plasma_open_f = 0;
 
         if (disp_second_f == 1){
@@ -565,9 +574,10 @@ static void evt_anion_off(void)
 
 		   tx_thread_sleep(10);
        }
-
+       Plasma_Ctrl();
+      //Ultra_Sound_Ctrl();
         MqttData_Publish_SetPlasma(0);
-		tx_thread_sleep(20);
+	
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -577,16 +587,17 @@ static void evt_sonic_on(void)
 {
     if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
+        BEEP_ON();
         Ultra_Sound_open_f = 1;
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x04, 0x01);
 			tx_thread_sleep(10);
         }
-
+            // Plasma_Ctrl();
+        Ultra_Sound_Ctrl();
         MqttData_Publish_SetUltrasonic(1);
-		tx_thread_sleep(20);
+		
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -596,7 +607,7 @@ static void evt_sonic_off(void)
 {
     if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
+        BEEP_ON();
         Ultra_Sound_open_f = 0;
 
         if (disp_second_f == 1){
@@ -605,7 +616,8 @@ static void evt_sonic_off(void)
 		tx_thread_sleep(10);
 
         	}
-
+         //    Plasma_Ctrl();
+        Ultra_Sound_Ctrl();
         MqttData_Publish_SetUltrasonic(0);
 
         wifi_t.wifi_rx_signal_f = 0xfe;
@@ -616,8 +628,8 @@ static void evt_timer_mode(void)
 {
     if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
-        AI_timing_open_f = 0;
+        BEEP_ON();
+        AI_led_open_f = 0;
 
         LED_AI_OFF();
         disp_set_hours_time_f = 1;
@@ -630,7 +642,7 @@ static void evt_timer_mode(void)
         }
 
         MqttData_Publish_AitState(2);
-		tx_thread_sleep(20);
+	
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -638,22 +650,20 @@ static void evt_timer_mode(void)
 
 static void evt_ai_mode(void)
 {
-    if (discharge_f == 1)
+ 
+	if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
-        AI_timing_open_f = 1;
-
-        LED_AI_ON();
-        disp_set_hours_time_f = 1;
-        time_set_hours_counter = 0;
+     
+        key_mode_short_handler();
+       
 
         if (disp_second_f == 1){
             SendWifiData_To_Cmd(0x27, 0x01);
-			tx_thread_sleep(10);
+			tx_thread_sleep(10);//wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);
         }
 
         MqttData_Publish_AitState(1);
-		tx_thread_sleep(20);
+		
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -661,9 +671,10 @@ static void evt_ai_mode(void)
 
 static void evt_temperature(void)
 {
-    if (discharge_f == 1)
+  
+	if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
+        BEEP_ON();
 
         ptc_prohibit_off_f = 0;
         set_temperature_value_f = 1;
@@ -674,9 +685,18 @@ static void evt_temperature(void)
             SendWifiData_To_Data(0x2A, setting_temperature);
 			tx_thread_sleep(10);
         }
+        TM1639_Display_Temperature(setting_temperature);
+		direct_compare_set_temp_value();
 
         MqttData_Publis_SetTemp(setting_temperature);
-		tx_thread_sleep(20);
+		
+		if(PTC_heat_open_f==1){//WT.EDIT 2026-07-03
+			MqttData_Publish_SetPtc(1);
+		}
+		else{
+		    MqttData_Publish_SetPtc(0);
+
+		}
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -684,11 +704,19 @@ static void evt_temperature(void)
 
 static void evt_fan(void)
 {
-    if (discharge_f == 1)
+
+	if (discharge_f == 1)
     {
-        Trigger_Simple_Beep(2);
+        BEEP_ON();
+		wifiFan_Ctrl_Process();
         MqttData_Publis_SetFan(fan_speed_level);
-		tx_thread_sleep(20);
+		
+
+		#if 1
+
+		 printf("fan_speed_level = %d \r\n",fan_speed_level);
+
+		#endif 
 
         wifi_t.wifi_rx_signal_f = 0xfe;
     }
@@ -821,19 +849,6 @@ void Wifi_Rx_InputInfo_Handler(void)
  
          
 }
-/*******************************************************************************
-    **
-    *Function Name:void Tencent_Cloud_Rx_Handler(void)
-    *Function: 
-    *Input Ref: +TCMQTTCONN:OK
-    *Return Ref:NO
-    *
-********************************************************************************/
-
-
-
-
-
 /**
  * @brief  UART2_SendByte
  * @param  Data: 数据
@@ -863,15 +878,20 @@ void send_usart2_data(const uint8_t* pdata,uint8_t length)
 ********************************************************************************/
 void Reconnection_Wifi_Order(void)
 {
-    
+    static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
+
+    // 如果当前正处于“等待响应”的时间段内，直接跳出，让 UI 任务跑别的 Slot
+    if (tx_time_get() < wait_timeout) {
+        return; 
+    }
     wifi_check_net_f = 1;
 	rx_wifi_data_counter =0;
 	send_usart2_data((const uint8_t*)"AT+TCMQTTSTATE?\r\n", strlen("AT+TCMQTTSTATE?\r\n"));
-    tx_thread_sleep(20);//10ms*20 = 200ms
+    wait_timeout = tx_time_get() + 20; //10ms*20 = 200ms
   
 }
 
-void wifi_check_id_handler(void)
+void wifi_check_ifnot_link_net_handler(void)
 {
  
    if(wifi_check_net_f ==2){
@@ -905,11 +925,11 @@ void wifi_check_id_handler(void)
 		 wifi_app_timer_power_on_f = 0;
 		
     }
-    #if DEBUG_ENABLE
+//    #if DEBUG_ENABLE
 
-		printf("mqtt_status = %d\n\r",mqtt_status);
+//		printf("mqtt_status = %d\n\r",mqtt_status);
 
-	#endif 
+//	#endif 
 
     }
 

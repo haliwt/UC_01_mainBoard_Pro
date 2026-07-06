@@ -3,6 +3,15 @@
 #include "main.h"
 
 
+
+#define FAN_PWM_PIN             GPIO_Pin_6            
+#define FAN_PWM_GPIO_PORT       GPIOA
+
+#define FAN_PWM_GPIO_ON()            do{FAN_PWM_GPIO_PORT->BSRR = FAN_PWM_PIN;}while(0)//{GPIO_SetBits(FAN_RUN_GPIO_PORT, FAN_RUN_PIN);}
+#define FAN_PWM_GPIO_OFF()           do{FAN_PWM_GPIO_PORT->BSRR =(uint32_t)FAN_PWM_PIN << 16;}while(0)//{GPIO_ResetBits(FAN_RUN_GPIO_PORT, FAN_RUN_PIN);}
+
+
+
 void LED_Strip_Ctrl(void);
 void Plasma_Ctrl(void);
 void Fan_Ctrl_Process(void);
@@ -29,6 +38,22 @@ void power_on_peripheral_handler(void);
 
 void fan_full_fun(void);
 void fan_stop(void);
+
+void compare_set_temp_value(void);
+
+void BEEP_OFF(void);
+
+void BEEP_ON(void);
+
+void beep_high_temperature_sound(void);
+
+void beep_fan_default_sound(void);
+
+void fan_start_power_on(void);
+
+void direct_compare_set_temp_value(void);
+
+void wifiFan_Ctrl_Process(void);
 
 
 #endif 
