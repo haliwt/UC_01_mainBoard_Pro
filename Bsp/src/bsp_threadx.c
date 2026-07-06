@@ -251,68 +251,7 @@ void tx_application_define(void *first_unused_memory)
  
    while(1){
    	
-	// 物理层扫描
-    if(KEY_POWER_VALUE() == KEY_DOWN){ //power key
-		  power_cnt++;
-            if(power_cnt == LONG_PRESS_TIME && discharge_f == 1){
-                tx_event_flags_set(&key_event, KEY_POWER_LONG, TX_OR);
-             }
-    }
-	else if(power_cnt > 0 && KEY_POWER_VALUE() == KEY_UP){
-		    if(power_cnt > 0 && power_cnt < LONG_PRESS_TIME)
-              tx_event_flags_set(&key_event, KEY_POWER_SHORT, TX_OR);
-
-            power_cnt = 0;
-
-	}
-	else if(KEY_MODE_VALUE() == KEY_DOWN && discharge_f ==1){// == 1 && discharge_f ==1){ //key mode
-
-	   
-		 mode_cnt++;
-            if(mode_cnt == LONG_PRESS_TIME  ){
-				tx_event_flags_set(&key_event, KEY_MODE_LONG, TX_OR);
-               
-            }
-	   	
-    }
-	else  if(mode_cnt > 0 && KEY_MODE_VALUE() == KEY_UP ){
-		       if(mode_cnt > 0 && mode_cnt < LONG_PRESS_TIME)
-                tx_event_flags_set(&key_event, KEY_MODE_SHORT, TX_OR);
-		
-        mode_cnt = 0;
-
-	}
-    else if (KEY_UP_VALUE() == KEY_DOWN && discharge_f ==1){ //up key
-		//key_i = _UP_KEY_DOWN;
-	  
-		up_cnt++;
-        if(up_cnt == LONG_PRESS_TIME)
-               tx_event_flags_set(&key_event, KEY_UP_LONG, TX_OR);
-	   	
-
-	}
-	else if(up_cnt > 0 && (KEY_UP_VALUE() == KEY_UP)){
-	         if(up_cnt > 0 && up_cnt < LONG_PRESS_TIME)
-               tx_event_flags_set(&key_event, KEY_UP_SHORT, TX_OR);
-
-          up_cnt = 0;
-	}
-	else if (KEY_DOWN_VALUE() == KEY_DOWN && discharge_f ==1){ //dwon key
-		
-		  down_cnt++;
-          if(down_cnt == LONG_PRESS_TIME && down_cnt_long_f ==0){
-		  	    down_cnt_long_f =1;
-                tx_event_flags_set(&key_event, KEY_DOWN_LONG, TX_OR);
-          	}
-		
-    }
-	else  if(down_cnt > 0 && KEY_DOWN_VALUE() == KEY_UP){
-		 if( down_cnt > 0 && down_cnt < LONG_PRESS_TIME)
-			tx_event_flags_set(&key_event, KEY_DOWN_SHORT, TX_OR);
-			
-	        down_cnt_long_f =0;
-			down_cnt = 0;
-	}
+	
   
 	
 #if DEBUG_ENABLE

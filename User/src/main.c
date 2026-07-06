@@ -301,26 +301,7 @@ void UART1_Int_Call(void)
 
 #endif 
 
-/* USER CODE BEGIN fputc */
-#if defined ( __CC_ARM )
-int fputc(int ch, FILE *f)
-{
-  LL_UART_TransmitData8(UART1, ch);
-  while(LL_UART_IsActiveFlag_TC(UART1) == RESET);
-  return ch;
-}
-#elif defined ( __GNUC__ )
-int _write(int file, char *ptr, int len)
-{
-  for (int i = 0; i < len; ++i)
-  {
-    LL_UART_TransmitData8(UART1, ptr[i]);
-    while(LL_UART_IsActiveFlag_TC(UART1) == RESET);
-  }
-  return len;
-}
-#endif
-/* USER CODE END fputc */
+
 
 
 #if 0

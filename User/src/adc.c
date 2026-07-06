@@ -21,7 +21,7 @@ void ADC_Configuration(void)
   
   ADC_InitStruct.ClockMode = LL_ADC_CLOCK_MODE_PCLK;
   ADC_InitStruct.DataAlign = LL_ADC_DATA_ALIGN_RIGHT;
-  ADC_InitStruct.ScanMode = LL_ADC_SCAN_MODE_DIS;
+  ADC_InitStruct.ScanMode = LL_ADC_SCAN_MODE_EN; //DIS;
   ADC_InitStruct.ContinuousMode = LL_ADC_REG_CONTINUOUS_DIS;
   ADC_InitStruct.REG_ExternalTrig = LL_ADC_REG_EXT_TRIG_DIS;
   ADC_InitStruct.REG_ExternalEvent = LL_ADC_REG_EXTERNAL_TRIG_SWSTART;
@@ -40,12 +40,15 @@ void ADC_Configuration(void)
   
   LL_ADC_SetSampleTime(LL_ADC_SAMPLE_TIME_15_5_CYCLES);
   LL_ADC_REG_SetSequencerLength(LL_ADC_REG_SEQ_SCAN_RANKS_6);
-  LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2);
-  LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3);
-  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6);
-  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9);
-  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12);
-  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13);
+  LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2); //ADC_FAN   // 对应 ADC_ConvertedValues[0]
+  LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3); //ADC_PTC   // 对应 ADC_ConvertedValues[1]
+  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6); //ADC_WATER_2   // 对应 ADC_ConvertedValues[2]
+  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9); //ADC_WATER_3   // 对应 ADC_ConvertedValues[3]
+  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12);//ADC_WATER_4   // 对应 ADC_ConvertedValues[4]
+  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13); //ADC_WATER_1  // 对应 ADC_ConvertedValues[5]
+
+  /* 3. 必须使能 ADC 的 DMA 传输请求 */
+  LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED); // 修改点：新增此行
   
   LL_ADC_INJ_SetTrigAuto(LL_ADC_INJ_TRIG_INDEPENDENT);
   LL_ADC_INJ_SetSequencerLength(LL_ADC_INJ_SEQ_SCAN_RANKS_1);

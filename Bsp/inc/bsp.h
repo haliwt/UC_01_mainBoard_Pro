@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stddef.h> // 确保包含此头文件以使用 NULL 定义，或者通过 main.h 引入
+
 
 
 
@@ -14,15 +16,13 @@
 #include "ys32t031.h"
 #include "main.h"
 
-#if 0
-
+#include "dma.h"
 #include "uart.h"  
 #include "tim.h"
 #include "iwdg.h"
-#include "key.h"
 #include "adc.h"
 
-#endif 
+//
 
 
 #include "tx_api.h"

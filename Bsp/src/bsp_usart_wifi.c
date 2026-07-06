@@ -857,6 +857,7 @@ void Wifi_Rx_InputInfo_Handler(void)
 
 void send_usart2_data(const uint8_t* pdata,uint8_t length)
 {
+  #if 0
   uint8_t i;
   for(i = 0; i < length; i++){
     
@@ -864,7 +865,10 @@ void send_usart2_data(const uint8_t* pdata,uint8_t length)
    UART_SendData(UART2,pdata[i]); 
 
    }
-
+  #else
+   UART2_DMA_Wifi_Send(pdata,length);
+    
+  #endif 
  
 }
 

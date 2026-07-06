@@ -27,11 +27,11 @@ void send_usart1_data(const uint8_t *pdata,uint8_t length)
   for(uint16_t i = 0; i < length; i++)
     {
         // 1. 等待发送寄存器为空 (TXE)
-        while(UART_GetFlagStatus(UART1, UART_FLAG_TXE) == RESET);
+       
         
         // 2. 发送当前第 i 个字节数据
         // 注意：直接使用 pdata[i] 或 *(pdata + i)
-        UART_SendData(UART1, pdata[i]); 
+       UART1_DMA_Disp_Send(pdata, length);
     }
 
 }

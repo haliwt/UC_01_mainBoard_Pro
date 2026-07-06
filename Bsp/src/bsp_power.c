@@ -271,33 +271,7 @@ void Clear_Ram(void)
 		
 	
 		
-		com_data_temp[0]=0;
-	  com_data_temp[1]=0;
-	  com_data_temp[2]=0;
-	  com_data_temp[3]=0;
-		com_data_temp[4]=0;
-	  com_data_temp[5]=0;
-	  com_data_temp[6]=0;
-	  com_data_temp[7]=0;
-		
-		com_data_buf[0]=0;
-	  com_data_buf[1]=0;
-	  com_data_buf[2]=0;
-	  com_data_buf[3]=0;
-		com_data_buf[4]=0;
-	  com_data_buf[5]=0;
-	  com_data_buf[6]=0;
-	  com_data_buf[7]=0;
-	  com_data_buf[8]=0;
-	  com_data_buf[9]=0;
-	  com_data_buf[10]=0;
-	  com_data_buf[11]=0;
-		com_data_buf[12]=0;
-	  com_data_buf[13]=0;
-	  com_data_buf[14]=0;
-	  com_data_buf[15]=0;
-	  //TM1639_Write_Display_Data(com_data_buf,16);
-		
+
 }
 
 
@@ -310,82 +284,13 @@ void Clear_Ram(void)
   *
 **/
 
-//ADC  FAN BE Detected 
-void Adc_Channel_Sample(void)
-{
-    #if 0
-	volatile uint16_t ad_temp;
-    ad_temp = ADC_GetValue(_FCUR_CH,VREFBUF_ADC_VCC);
-	
-    fan_adc_value[_AD_FCUR] = ad_temp;
-	#else
-    uint16_t time_out ;
-   ADC_Channel_Init(2);
-   ADC_SoftwareStartConvCmd(ADC);
 
-    time_out =0  ;
-     while(!ADC_GetFlagStatus(ADC,ADC_FLAG_EOC)){  //等待转换完成
-
-	    time_out ++;
-		if(time_out > 10000){
-            return ;
-
-		}
-
-    }
-  
-    fan_adc_value[0] = ADC_GetConversionValue(ADC);
-       // printf("VSense = %d\n",ptc_adc);
-       // printf_ptc_adc_numbers();
-     
-       // ptc_current = (ptc_adc_numbers * 33000 )/4095;
-		//tx_thread_sleep(10);
-        ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-      //  ADC_SoftwareStartConvCmd(ADC);
-      //  tx_thread_sleep(5);//DelayMS(50);
-
-	#endif 
-}
-
-//AD����һ�׻����˲�
-void AD_Filter(void)
-{
-    //FAN_CURRENT
-	fan_current=(fan_adc_value[0] *3300)/4095;
-	//printf("fan_v = %d \n\r",fan_current);
-}
 
 
 
 
 //ADC  PTC 
-void Adc_PTC_Channel_Sample(void)
-{
-    uint16_t time_out ;
-	#if 0
-	volatile uint16_t ad_ptc_temp;
-	
-    ad_ptc_temp = ADC_GetValue(_PTCCUR_CH,VREFBUF_ADC_VCC);
-	
-    ad_ptc_value[_AD_PTCCUR] = ad_ptc_temp;
-   #else
-     time_out =0  ;
-     while(!ADC_GetFlagStatus(ADC,ADC_FLAG_EOC)){  //等待转换完成
 
-	    time_out ++;
-		if(time_out > 5000){
-            return ;
-
-		}
-
-    }
-	  
-      ad_ptc_value[0] = ADC_GetConversionValue(ADC);
-
-   #endif 
-   
-	
-}
 
 
 /**
@@ -397,16 +302,7 @@ void Adc_PTC_Channel_Sample(void)
 
 
 
-void AD_PTC_Filter(void)
-{
-   // uint16_t tem_ptc;
-	//ptc_adc=(ad_ptc_value[_AD_PTCCUR]*2+ptc_current*18)/20;
 
-	//ptc_current = (ptc_adc * 3300 )/4095;
-
-	ptc_current = (ad_ptc_value[0] * 3300 )/4095;
-
-}
 /****************************************************/
 void printf_ptc_adc_numbers(void)
 {
@@ -414,42 +310,7 @@ void printf_ptc_adc_numbers(void)
 
 }
 
-void ptc_adc_detected_voltage(void)
-{
-   uint16_t time_out ;
-   ADC_Channel_Init(3);
-   ADC_SoftwareStartConvCmd(ADC);
 
-    time_out =0  ;
-     while(!ADC_GetFlagStatus(ADC,ADC_FLAG_EOC)){  //等待转换完成
-
-	    time_out ++;
-		if(time_out > 10000){
-            return ;
-
-		}
-
-    }
-  
-    ad_ptc_value[0] = ADC_GetConversionValue(ADC);
-       // printf("VSense = %d\n",ptc_adc);
-       // printf_ptc_adc_numbers();
-       ptc_adc_numbers =  ad_ptc_value[0];
-       // ptc_current = (ptc_adc_numbers * 33000 )/4095;
-		//tx_thread_sleep(10);
-        ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-      //  ADC_SoftwareStartConvCmd(ADC);
-      //  tx_thread_sleep(5);//DelayMS(50);
-
-}
-
-void ptc_switch_temperature(void)
-{
-   ptc_current = (ad_ptc_value[0] * 3300 )/4095;
-   // ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-  //  ADC_SoftwareStartConvCmd(ADC);
-
-}
 /**
   * @brief  fan run is ok
   * @note  
@@ -500,7 +361,7 @@ static void power_on_initial(void)
 	  }
 	  #endif 
 	  dht11_read_temp_humidity_value();
-	  display_digital_3_numbers();
+	
       gon_t.on_step =1;
 	
 
@@ -508,7 +369,7 @@ static void power_on_initial(void)
 
    case 1:
     dht11_read_temp_humidity_value();
-    display_digital_3_numbers();
+
     gon_t.on_step =2;
 
 
@@ -586,7 +447,7 @@ void power_on_handler(void)
 			 disp_counter ++;
 			 if(disp_counter > 30 && ptc_high_temperature_f == 0 && fan_warning_f ==0 ){
 			 disp_counter=0;	
-			  display_temperature_humidigy_handler();
+	
 
 			 }
 			  
@@ -751,10 +612,10 @@ void power_on_handler(void)
 
 		      if(high_tmep_counter > 2){
 
-                  LED_PTC_OFF();
-			      RELAY_OFF();  
+                
+			    
 		           ptc_high_temperature_f = 1;
-		           SMG_Display_Err(01);
+		         
 			       beep_high_temperature_sound();
                    if(wifi_connected_success_f ==1){
 				   	 Publish_Data_Ptc_Temp_Warning(0x01);
@@ -783,9 +644,7 @@ void power_on_handler(void)
 		   has_warning_counter=0;
 			
 		  if(ptc_high_temperature_f == 1){
-		  	  LED_PTC_OFF();
-			  RELAY_OFF(); 
-			  SMG_Display_Err(01);
+		  	 
 			  beep_high_temperature_sound();
 			  if(wifi_connected_success_f ==1){
 			  	 Publish_Data_Ptc_Temp_Warning(0x01);
@@ -797,9 +656,7 @@ void power_on_handler(void)
 		   if(fan_warning_f == 1){
 			       fan_counter=0;
 				   fan_error=0;
-			        LED_PTC_OFF();
-				    RELAY_OFF(); 
-					SMG_Display_Err(02);
+			      
 					if(wifi_connected_success_f ==1){
                         Publish_Data_fan_Warning(0x01);//fan warning
 					}
@@ -824,9 +681,7 @@ void power_on_handler(void)
 			    #endif 
 			     if(fan_error > 6){
 				  fan_warning_f = 1;
-				       LED_PTC_OFF();
-					    RELAY_OFF(); 
-						SMG_Display_Err(02);
+				     
 						if(wifi_connected_success_f ==1){
                             Publish_Data_fan_Warning(0x01);//fan warning
 						}
