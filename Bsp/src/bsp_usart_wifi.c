@@ -4,24 +4,7 @@ uint8_t TCMQTTRCVPUB[40];
 
 uint8_t rx_app_timer_power_on_flag;
 
-#if 0
-typedef enum _CLOUD_STATE{
-   OPEN_OFF_ITEM=0x01,
-   OPEN_ON_ITEM=2,
-   PTC_OFF_ITEM=3,
-   PTC_ON_ITEM=4,
-   ANION_OFF_ITEM=5,
-   ANION_ON_ITEM=6,
-   SONIC_OFF_ITEM=7,
-   SONIC_ON_ITEM=8,
-   STATE_AI_MODEL_ITEM=9,
-   STATE_TIMER_MODEL_ITEM=10,
-   TEMPERATURE_ITEM=11,
-   FAN_ITEM=12,
-   APP_TIMER_POWER_ON_REF=13,
-   APP_TIMER_POWER_ON_REF_TWO,
-}cloud_state;
-#else
+
 
 typedef enum
 {
@@ -41,7 +24,7 @@ typedef enum
     WIFI_EVT_MAX
 } wifi_event_t;
 
-#endif 
+
 
 
 
@@ -129,7 +112,7 @@ void usart2_rx_callback_invoke(uint8_t data)
 	 	
 		  if(wifi_check_net_f ==1){
 
-		       wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
+		     wifi_t.rx_check_wifi[rx_wifi_data_counter] =wifi_t.rx_inputBuf[0];
 		     rx_wifi_data_counter++;
                   
 				if(rx_wifi_data_counter  > 20  && *wifi_t.rx_inputBuf==0x0A && wifi_check_net_f ==1){
@@ -654,7 +637,7 @@ static void evt_ai_mode(void)
 	if (discharge_f == 1)
     {
      
-        key_mode_short_handler();
+        key_ai_short_handler();
        
 
         if (disp_second_f == 1){

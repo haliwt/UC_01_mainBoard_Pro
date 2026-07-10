@@ -109,6 +109,7 @@ int main(void)
   UART2_Configuration();
   TIM1_Configuration();
   TIM3_Configuration();
+  TIM16_Configuration();
   TIM17_Configuration();
   IWDG_Configuration();
   I2C2_Configuration();

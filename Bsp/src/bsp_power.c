@@ -12,188 +12,59 @@
 
 power_state gon_t;
 
-
-
-volatile uint8_t Times5msCnt;
-uint8_t Times10msCnt;
-//uint8_t Times100msCnt;
-uint8_t Times1minute;
-uint16_t Times1minCnt;
-uint8_t Cacl_time_sec;
-
-volatile uint8_t time_5ms_f;
-
-uint8_t time_wifi_10ms_f;
-
-uint16_t fan_adc_value[1];
-uint16_t ad_ptc_value[1];
-uint16_t fan_current;
-uint16_t ptc_current;
-uint8_t discharge_f;
-
-
-uint16_t current_temperature;
-uint16_t setting_temperature;
-uint16_t disp_temperature;
-uint16_t disp_timing_time;
-uint16_t disp_humidity;
-
-uint8_t AI_led_open_f;
-uint8_t PTC_heat_open_f;
-uint8_t first_temp_compare_f;
-
-uint8_t ptc_prohibit_off_f;
-
-uint8_t Ultra_Sound_open_f;
-uint8_t plasma_open_f;
-
-uint16_t timing_is_reach_disptime;
-
-uint8_t read_ntc_temperature_value;
+// 任务结构体：这次我们直接检查标志位
+typedef struct {
+    volatile uint8_t *task_f; // 指向定时器置位的标志位
+    void (*task_func)(void);  // 任务函数
+} Task_Config_t;
 
 
 
 
-uint8_t Is_time_setting_f;
+// 1ms 系统心跳计数器
 
-uint8_t Is_countdown_timer_f;
-uint8_t set_temperature_value_f;
-uint8_t time_1s_counter;
+// --- 任务函数声明 ---
+void Task_Key_Scan_10ms(void);
+void Task_link_wifi_20ms(void);
+void Task_Logic_100ms(void);
+void Task_ui_200ms(void);
+void Task_Peripheral_300ms(void);
+void Task_400ms(void);
+void Task_500ms(void);
+void Task_600ms(void);
+void Task_900ms(void);
+void Task_System_1s(void);
+void Task_2s(void);
+void Task_3s(void);
+void Task_4s(void);
+void Task_5s(void);
+void Task_10s(void);
 
-//display second board
-uint8_t disp_second_f;
-uint8_t heat_open_close_f;
-uint8_t  key_pressed_set_temp_f;
+void Task_1minutes(void);
+void Task_2minutes(void);
 
-
-
-
-
-uint8_t key_net_config_f;
-uint16_t key_net_config_time;
-uint8_t led_strip_open_f;
-
-uint8_t flash_f;
-
-
-uint16_t device_rest_time;
-
-//countdown timer 
-int8_t timing_min_cnt;
-int8_t setting_timing_second;
-uint8_t real_hours_counter;
-int8_t temporary_timer_hours;
-int8_t setting_timing_hour;
-
-//end
-//timer 
-uint8_t  time_set_hours_counter;
-
-//wroks time two hours
-
-uint8_t  works_interval_f;
-
-
-
-uint8_t fan_open_f;
-uint8_t fan_speed_level;
-
-
-volatile uint8_t beep_times;				//����
-volatile uint8_t beep_lenght;			  //��ĳ��� *100ms
-volatile uint8_t non_beep_length;		//���ʱ��
-uint16_t beep_interval_time;
-
-//temp ref
-uint8_t temperature;
-uint8_t humidity;
-
-uint8_t  soft_version ;
-
-
-
-//peripheral ref
-
-
-uint16_t fan_current_det_time;
-uint8_t fan_warning_f;
-
-uint8_t disp_switch_temp_humi;
-//
-uint8_t soft_version;
-
-//wifi 
-
-uint8_t  link_net_step;
-uint8_t  time_link_net_counter;
-uint8_t  wifi_linking_tencent_f;
-uint8_t  wifi_connected_success_f;
-volatile uint8_t  wifi_rx_numbers;
-uint8_t  wifi_cofig_success_f;
-uint8_t  wifi_app_timer_power_on_f;
-uint8_t  wifi_run_step ;
-uint8_t  wifi_off_step;
-
-uint8_t  wifi_first_connectoed_cloud_f;
-uint8_t  wifi_read_net_data_f;
-
-uint8_t  time_autolink_counter;
-uint8_t  wifi_check_net_f;
-uint8_t dc_connect_net_step	;
-
-volatile uint8_t  rx_wifi_data_success;
-volatile uint8_t   rx_wifi_data_counter;
-uint8_t  mqtt_status;
-
-
-//fan
-uint8_t  fan_one_minute_cuonter;
-uint8_t  time_10ms_f;
-uint16_t ptc_adc_numbers;
-
-
-
-
-
-uint8_t key_be_pressed_f;
-uint8_t disp_set_hours_time_f;
-uint8_t key_input_temp_f;
-
-uint8_t ptc_high_temperature_f ;
-
-
-
-
-uint8_t com_data_temp[8];
-uint8_t com_data_buf[16];
-
-
-const uint8_t LED_TAB[11]={ 
-    _SMA|_SMB|_SMC|_SMD|_SME|_SMF,        //0
-    _SMB|_SMC,                            //1
-    _SMA|_SMB|_SMD|_SME|_SMG,             //2
-    _SMA|_SMB|_SMC|_SMD|_SMG,             //3
-    _SMB|_SMC|_SMF|_SMG,                  //4
-    _SMA|_SMC|_SMD|_SMF|_SMG,             //5
-    _SMA|_SMC|_SMD|_SME|_SMF|_SMG,        //6
-    _SMA|_SMB|_SMC,                       //7
-    _SMA|_SMB|_SMC|_SMD|_SME|_SMF|_SMG,   //8
-    _SMA|_SMB|_SMC|_SMD|_SMF|_SMG,        //9
-    0,                                    //����
+// 2. 任务注册表：将标志位地址与函数关联
+static const Task_Config_t Task_Table[] = {
+    {&gpro_t.time_10ms_f,  Task_Key_Scan_10ms},
+    {&gpro_t.time_20ms_f,  Task_link_wifi_20ms},
+    {&gpro_t.time_100ms_f, Task_Logic_100ms},
+    {&gpro_t.time_200ms_f, Task_ui_200ms},
+    {&gpro_t.time_100ms_fast_led_f, Task_Peripheral_300ms},
+    {&gpro_t.time_400ms_f, Task_400ms},
+    {&gpro_t.time_500ms_f, Task_500ms},
+    {&gpro_t.time_600ms_f, Task_600ms},
+    {&gpro_t.time_1s_f,    Task_System_1s},
+    {&gpro_t.time_2s_f,    Task_2s},
+    {&gpro_t.time_3s_f,    Task_3s},
+    {&gpro_t.time_4s_f,    Task_4s},
+    {&gpro_t.time_5s_f,    Task_5s},
+    {&gpro_t.time_10s_f,    Task_10s},
+    {&gpro_t.time_1m_f,    Task_1minutes},
+    {&gpro_t.time_2m_f,    Task_2minutes}
 };
 
 
-
-uint8_t counter;
-uint8_t power_Led_switch;	
-
-volatile uint16_t i;
-volatile uint16_t bw_i=0;
-volatile uint16_t sw_i=0;
-volatile uint16_t gw_i=0;
-volatile uint16_t disp_timing_time_temp;
-volatile uint16_t timing_diff_value_hour;
-volatile uint16_t timing_diff_value_min;
+#define TASK_COUNT (sizeof(Task_Table) / sizeof(Task_Config_t))
 
 
 volatile uint8_t static beep_sound_f =0;
@@ -218,55 +89,7 @@ void Clear_Ram(void)
 	  gpro_t.time_1s_f = 0;
 	  gpro_t.time_1m_f=0;
 	
-	 // Times5msCnt = 0;
-	  Times10msCnt = 0;
-	 // Times100msCnt = 0;
-	  Times1minute = 0;
-	  Times1minCnt = 0;
-	  Cacl_time_sec = 0;
-	
-	
-	
-	  key_worked_f = 0;
-	  //key_long_f = 0;
-	  key_data = 0;
-	  key_time = 0;
-	
-	  discharge_f = 0;
-		
-		
-		device_rest_time = 0;
-		
-		fan_speed_level = 100;
-		fan_open_f = 0;
-	
-		
-		AI_led_open_f = 0;
-		PTC_heat_open_f = 0;
-		first_temp_compare_f=0;
-		Ultra_Sound_open_f = 0;
-		plasma_open_f = 0;
-		led_strip_open_f = 0;
-		
-		timing_is_reach_disptime = 0;
-		
-		Is_time_setting_f = 0;
-	
-		Is_countdown_timer_f = 0;
-		
-	
-		flash_f = 0;
-	
-		
-		timing_min_cnt = 0;
-		
-		fan_warning_f = 0;
-		fan_current_det_time = 0;
-		
-		disp_switch_temp_humi = 0;
-		beep_interval_time = 0;
-		//wifi 
-		wifi_linking_tencent_f=0;
+
 		
 		
 	
@@ -334,33 +157,8 @@ static void power_on_initial(void)
    	  gon_t.off_step = 0;
       wifi_off_step =0; //WT.EDT 2026.05.15
       
-     #if 0
-      if(wifi_app_timer_power_on_f==0){
-
-	     LED_AI_ON();
-		 LED_PTC_ON();
-		 LED_PLASMA_ON();
-		 LED_MOUSE_ON();
-		 LED_WIFI_ON();
-		 LED_POWER_ON();
-		 LED_TAPE_ON();
-		 LED_TEMP_ON();
-		 LED_HUMI_ON(); 
-
-
-	  }
-	  else{
-		  LED_AI_ON();
-		  LED_WIFI_ON();
-		 LED_POWER_ON();
-		 LED_TAPE_ON();
-		 LED_TEMP_ON();
-		 LED_HUMI_ON(); 
-
-
-	  }
-	  #endif 
-	  dht11_read_temp_humidity_value();
+    
+	 // dht11_read_temp_humidity_value();
 	
       gon_t.on_step =1;
 	
@@ -368,7 +166,7 @@ static void power_on_initial(void)
    break;
 
    case 1:
-    dht11_read_temp_humidity_value();
+    //dht11_read_temp_humidity_value();
 
     gon_t.on_step =2;
 
@@ -377,8 +175,8 @@ static void power_on_initial(void)
 
    case 2:
    	 
-       dht11_read_temp_humidity_value();
-	   display_digital_3_numbers();
+      // dht11_read_temp_humidity_value();
+	  // display_digital_3_numbers();
 	   gon_t.on_step =0xfe;
 
    break;
@@ -414,7 +212,7 @@ void power_on_handler(void)
          if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
 		    time_10ms_f=0;
            
-		    disp_key_input_handler();
+		    //disp_key_input_handler();
 
 			if(heat_open_close_f == 1 && ptc_high_temperature_f == 0 && fan_warning_f ==0)
 	        {
@@ -507,7 +305,7 @@ void power_on_handler(void)
 
 		 if(gpro_t.time_6s_f > 2 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
 		   gpro_t.time_6s_f =0;
-      	   dht11_read_temp_humidity_value();
+      	   //dht11_read_temp_humidity_value();
    	      }
 
 		break;
@@ -1006,20 +804,7 @@ void works_nomal_run_time_handler(void)
  }
   
 
-/**
-  * @brief  // 按键按下时调用
-  * @note  
-  * @param: 
-  *
-**/
-void beep_power_sound(void)
-{
-  
-	BEEP_ON();
-	tx_thread_sleep(20);//delay_ms_dht11(20);//tx_thread_sleep(2);//2*10ms //delay_ms_dht11(20);//DelayMS(20);
-    BEEP_OFF();
 
-}
 
 /**
 	*
@@ -1161,11 +946,6 @@ void power_on_off_handler(void)
 	   Wifi_Rx_InputInfo_Handler();
 	}
 
-//	if(key_net_config_f==0 && gpro_t.time_50ms_f > 2){// 处理腾讯连连通信
-//	     gpro_t.time_50ms_f=0;
-//         wifi_parse_tencennt_hadler();//
-       
-//    }
 	wifi_parse_tencennt_hadler();//
     
 	if(key_net_config_f==0 ){
@@ -1175,4 +955,28 @@ void power_on_off_handler(void)
 
 	
 }
+/**
+  * @brief  
+  * @note  
+  * @param: 
+  *
+**/
+void power_on_ref_init_handler(void)
+{
+  gpro_t.g_ai_flag = 1;
+  gpro_t.g_plasma_flag = 1;
+  gpro_t.g_fan_speed = 100 ;
+
+
+}
+
+void power_off_ref_init_handler(void)
+{
+  gpro_t.g_ai_flag = 0;
+  gpro_t.g_plasma_flag = 0;
+  gpro_t.g_fan_speed = 0 ;
+
+
+}
+
 

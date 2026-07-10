@@ -360,6 +360,10 @@ extern void LED_Strip_Ctrl(void);
 
 
 
+void power_on_ref_init_handler(void);
+
+void power_off_ref_init_handler(void);
+
 void Countdown_timer_Handler(void);
 
 
@@ -381,6 +385,7 @@ void printf_ptc_adc_numbers(void);
 void ptc_adc_detected_voltage(void);
 void ptc_switch_temperature(void);
 	
+
 
 
 

@@ -1,49 +1,28 @@
 #include "bsp.h"
 
 
-void all_led_off(void)
-{
-    LED_AI_OFF();
-	LED_PTC_OFF();
-	LED_PLASMA_OFF();
-	LED_MOUSE_OFF();
-	LED_WIFI_OFF();
-	//LED_POWER_OFF();
-	LED_TAPE_OFF();
-	LED_TEMP_OFF();
-	LED_HUMI_OFF();	
 
+
+void power_on_led_handler(void)
+{
+   LED_POWER_ON();
+   LED_FAN_ON();
+   LED_PLASMA_ON();
+   LED_AI_ON();
 
 }
 
-void power_on_led_open_handler(void)
+
+void power_off_led_handler(void)
 {
-	if(wifi_app_timer_power_on_f==0){
-
-	     LED_AI_ON();
-		 LED_PTC_ON();
-		 LED_PLASMA_ON();
-		 LED_MOUSE_ON();
-		 LED_WIFI_ON();
-		 LED_POWER_ON();
-		 LED_TAPE_ON();
-		 LED_TEMP_ON();
-		 LED_HUMI_ON(); 
-
-
-	  }
-	  else{
-		  LED_AI_ON();
-		  LED_WIFI_ON();
-		 LED_POWER_ON();
-		 LED_TAPE_ON();
-		 LED_TEMP_ON();
-		 LED_HUMI_ON(); 
-
-
-	  }
+	 LED_POWER_OFF();
+	 LED_FAN_OFF();
+	 LED_PLASMA_OFF();
+	 LED_AI_OFF();
 
 }
+
+
 //300ms
 void wifi_fast_led_state(void)
 {

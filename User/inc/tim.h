@@ -23,6 +23,9 @@ void TIM1_Configuration(void);
 
 void TIM3_Configuration(void);
 
+void TIM16_Configuration(void);
+
+
 void TIM17_Configuration(void);
 
 

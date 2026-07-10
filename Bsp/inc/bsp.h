@@ -6,10 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h> // 确保包含此头文件以使用 NULL 定义，或者通过 main.h 引入
-
-
-
-
+#include <stdbool.h>
 
 
 
@@ -27,8 +24,6 @@
 
 #include "tx_api.h"
 
-
-
 #include "bsp_key.h"
 
 
@@ -39,11 +34,15 @@
 #include "bsp_key.h"
 #include "bsp_cmd_link.h"
 #include "bsp_xdp.h"
+#include "bsp_fan.h"
+#include "bsp_buzzer.h"
+#include "bsp_water_adc.h"
 
 
 #include "bsp_gxht40.h"
 #include "bsp_threadx.h"
 #include "bsp_ntc.h"
+#include "interrupt_manager.h"
 
 //wifi
 #include "bsp_usart_wifi.h"
@@ -65,6 +64,12 @@
 
 
 typedef struct _main_ref{
+
+ bool g_power_flag;
+
+ bool g_ai_flag;
+ uint8_t g_fan_speed;
+ bool g_plasma_flag;
 
  
  volatile uint8_t time_10ms_f;

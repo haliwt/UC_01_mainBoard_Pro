@@ -1,28 +1,18 @@
 #include "bsp.h"
 
+#define KEY_POWER_SHORT  (1 << 0)
+#define KEY_POWER_LONG   (1 << 1)
+
+#define KEY_FAN_SHORT     (1 << 2)
+#define KEY_FAN_LONG      (1 << 3)
+
+#define KEY_PLASMA_SHORT   (1 << 4)
+#define KEY_PLASMA_LONG     (1 << 5)
 
 
 
-#define KEY_MODE_SHORT   (1 << 0)
-#define KEY_MODE_LONG    (1 << 1)
-
-#define KEY_UP_SHORT     (1 << 2)
-#define KEY_UP_LONG      (1 << 3)
-
-#define KEY_DOWN_SHORT   (1 << 4)
-#define KEY_DOWN_LONG    (1 << 5)
-
-#define KEY_POWER_SHORT  (1 << 6)
-#define KEY_POWER_LONG   (1 << 7)
-
-
-/***********************************************************************************************************
-											函数声明
-***********************************************************************************************************/
-//#define DEMO_BYTE_POOL_SIZE 4096
-
-//unsigned char free_memory[DEMO_BYTE_POOL_SIZE];
-
+#define KEY_AI_SHORT   (1 << 6)
+#define KEY_AI_LONG    (1 << 7)
 
 
 #define STACK_SIZE_KEY  256//512//256//512//1792//3072//2048//1024//896//768
@@ -42,18 +32,6 @@ TX_EVENT_FLAGS_GROUP key_event;
 
 //TX_TIMER beep_timer;
 	
-	
-
-/*队列*/
-//static TX_QUEUE uart1_rx_queue;
-//static uint8_t uart1_rx_queue_buffer[UART1_RX_BUF_SIZE * sizeof(uint8_t)];
-
-
-///static UCHAR s_decoder_stack[STACK_SIZE_DECODER];
-///static UCHAR s_key_stack[STACK_SIZE_KEY];
-///static UCHAR s_ui_stack[STACK_SIZE_UI];
-//static UCHAR stack_event_pro[STACK_SIZE_EVENT];
-
 __attribute__((aligned(8))) static UCHAR s_ui_stack[STACK_SIZE_UI];
 __attribute__((aligned(8))) static UCHAR s_decoder_stack[STACK_SIZE_DECODER];
 __attribute__((aligned(8))) static UCHAR s_key_stack[STACK_SIZE_KEY];
@@ -219,7 +197,7 @@ void tx_application_define(void *first_unused_memory)
 
     power_on_off_handler();
 
-    IWDG_ReloadCounter();
+    LL_IWDG_ReloadCounter(IWDG);//IWDG_ReloadCounter();
     
 	
 #if DEBUG_ENABLE
@@ -231,18 +209,18 @@ void tx_application_define(void *first_unused_memory)
 }
 
 /**
-  * @brief	:  static void vTaskStart(void *pvParameters
+  * @brief	:  
   * @note	 
   * @param	 None
   * @retval  None
-  */
+**/
  static void key_thread_entry(ULONG thread_input)
  {
    (void)thread_input;  /* 消除未使用的参数警告 */
 
-    static uint16_t mode_cnt = 0;
-    static uint16_t up_cnt = 0;
-    static uint16_t down_cnt = 0;
+    static uint16_t ai_cnt = 0;
+    static uint16_t fan_cnt = 0;
+    static uint16_t plasma_cnt = 0;
     static uint16_t power_cnt = 0;
 
     const uint16_t LONG_PRESS_TIME = 40;   // 300 * 10ms = 3000ms
@@ -250,6 +228,69 @@ void tx_application_define(void *first_unused_memory)
   
  
    while(1){
+
+   // 物理层扫描
+    if(KEY_POWER_VALUE() == KEY_DOWN){ //power key
+		  power_cnt++;
+            if(power_cnt == LONG_PRESS_TIME && discharge_f == 1){
+                tx_event_flags_set(&key_event, KEY_POWER_LONG, TX_OR);
+             }
+    }
+	else if(power_cnt > 0 && KEY_POWER_VALUE() == KEY_UP){
+		    if(power_cnt < LONG_PRESS_TIME)
+              tx_event_flags_set(&key_event, KEY_POWER_SHORT, TX_OR);
+
+            power_cnt = 0;
+
+	}
+	else if(KEY_AI_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){// == 1 && discharge_f ==1){ //key mode
+
+	   
+		 ai_cnt++;
+            if(ai_cnt == LONG_PRESS_TIME  ){
+				tx_event_flags_set(&key_event, KEY_AI_LONG, TX_OR);
+               
+            }
+	   	
+    }
+	else  if(ai_cnt > 0 && KEY_AI_VALUE() == KEY_UP ){
+		       if(ai_cnt < LONG_PRESS_TIME)
+                tx_event_flags_set(&key_event, KEY_AI_SHORT, TX_OR);
+		
+        ai_cnt = 0;
+
+	}
+    else if (KEY_FAN_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){ //up key
+		  fan_cnt++;
+        if(fan_cnt == LONG_PRESS_TIME)
+               tx_event_flags_set(&key_event, KEY_FAN_LONG, TX_OR);
+	   	
+
+	}
+	else if(fan_cnt > 0 && (KEY_FAN_VALUE() == KEY_UP)){
+	         if(fan_cnt < LONG_PRESS_TIME)
+               tx_event_flags_set(&key_event, KEY_FAN_SHORT, TX_OR);
+
+          fan_cnt = 0;
+	}
+	else if (KEY_PLASMA_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){ //dwon key
+		
+		  plasma_cnt++;
+          if(plasma_cnt == LONG_PRESS_TIME && down_cnt_long_f ==0){
+		  	    down_cnt_long_f =1;
+                tx_event_flags_set(&key_event, KEY_PLASMA_LONG, TX_OR);
+          	}
+		
+    }
+	else if(plasma_cnt > 0 && KEY_PLASMA_VALUE() == KEY_UP){
+		  if(plasma_cnt < LONG_PRESS_TIME){
+		    tx_event_flags_set(&key_event, KEY_PLASMA_SHORT, TX_OR);
+
+		  }
+          plasma_cnt =0;
+
+	}
+	
    	
 	
   
@@ -292,27 +333,20 @@ void tx_application_define(void *first_unused_memory)
 			    
              key_power_long_handler();
 		} 
-	    else if(flags & KEY_MODE_SHORT &&  ptc_high_temperature_f ==0 && fan_warning_f ==0){
-             key_mode_short_handler();
+	    else if(flags & KEY_AI_SHORT &&  ptc_high_temperature_f ==0 && fan_warning_f ==0){
+             key_ai_short_handler();
 		} 
-		else if(flags & KEY_MODE_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
-             key_mode_long_handler();
+		else if(flags & KEY_AI_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+             //key_mode_long_handler();
 		} 
-		else if(flags & KEY_UP_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
-			 key_up_short_handler();
+		else if(flags & KEY_FAN_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+			 key_fan_short_handler();
 		}
-	    else if(flags & KEY_DOWN_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
-             key_down_short_handler();
+	    else if(flags & KEY_PLASMA_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+             key_plasma_short_handler();
 		}
 		
-		if(flags & KEY_DOWN_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
-			if(down_cnt_long_f ==1){
-				down_cnt_long_f=2;
-			 key_down_long_handler();
-
-		   }
-		}   
-       
+		
 	   
 	 
 #if DEBUG_ENABLE
@@ -330,24 +364,6 @@ void tx_application_define(void *first_unused_memory)
 	}
       
  }
- /********************************************************************************
-	 **
-	 *Function Name:
-	 *Function : threadx software timer is callback function.
-	 *Input Ref: 
-	 *Return Ref:NO
-	 *
- *******************************************************************************/
-//void my_timer_callback(ULONG input)
-// {
-//    (void) input;
-//	BEEP_OFF();
-
-// }
-// void open_beep_sound(void)
-// {
-//   tx_timer_activate(&beep_timer);
-// }
 /********************************************************************************
 	**
 	*Function Name:
