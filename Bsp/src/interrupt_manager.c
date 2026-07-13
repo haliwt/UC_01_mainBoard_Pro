@@ -14,7 +14,6 @@ void tim17_10ms_tick_handler(void)
 
   volatile static uint8_t c100ms;
        
-	time_10ms_f = 1;
 
 	gpro_t.time_50ms_f++;
 
@@ -25,25 +24,12 @@ void tim17_10ms_tick_handler(void)
 
         if(++cnt1000> 9){ // 100ms *10 =1000ms=1s 
 			cnt1000 = 0;
-			time_1s_counter ++ ;
+			
 
 			gpro_t.time_1s_f =1;
 
-			time_link_net_counter++;
+	        gpro_t.gTime_link_net_counter++;
 
-			disp_switch_temp_humi++;
-			time_set_hours_counter++;
-			setting_timing_second ++;
-			time_autolink_counter++;
-			fan_one_minute_cuonter++;
-			key_net_config_time++;
-
-			gpro_t.time_2s_f++;
-			gpro_t.time_3s_f++;
-			gpro_t.time_4s_f++;
-			gpro_t.time_5s_f++;
-			gpro_t.time_6s_f++;
-			gpro_t.time_7s_f++;
 
 			if(++gpro_t.time_base_1s_counter > 59){//1s *60 =60s 
 				gpro_t.time_base_1s_counter = 0;

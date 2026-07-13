@@ -235,7 +235,7 @@ void tx_application_define(void *first_unused_memory)
    // 物理层扫描
     if(KEY_POWER_VALUE() == KEY_DOWN){ //power key
 		  power_cnt++;
-            if(power_cnt == LONG_PRESS_TIME && discharge_f == 1){
+            if(power_cnt == LONG_PRESS_TIME && gpro_t.g_power_flag == 1){
                 tx_event_flags_set(&key_event, KEY_POWER_LONG, TX_OR);
              }
     }
@@ -246,7 +246,7 @@ void tx_application_define(void *first_unused_memory)
             power_cnt = 0;
 
 	}
-	else if(KEY_AI_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){// == 1 && discharge_f ==1){ //key mode
+	else if(KEY_AI_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){// == 1 && gpro_t.g_power_flag ==1){ //key mode
 
 	   
 		 ai_cnt++;
@@ -332,20 +332,20 @@ void tx_application_define(void *first_unused_memory)
 
              key_power_short_handler();
 		} 
-		else if(flags & KEY_POWER_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+		else if(flags & KEY_POWER_LONG  && gpro_t.fan_warning_f ==0){
 			    
              key_power_long_handler();
 		} 
-	    else if(flags & KEY_AI_SHORT &&  ptc_high_temperature_f ==0 && fan_warning_f ==0){
+	    else if(flags & KEY_AI_SHORT  && gpro_t.fan_warning_f ==0){
              key_ai_short_handler();
 		} 
-		else if(flags & KEY_AI_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+		else if(flags & KEY_AI_LONG  && gpro_t.fan_warning_f ==0){
              //key_mode_long_handler();
 		} 
-		else if(flags & KEY_FAN_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+		else if(flags & KEY_FAN_SHORT  && gpro_t.fan_warning_f ==0){
 			 key_fan_short_handler();
 		}
-	    else if(flags & KEY_PLASMA_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+	    else if(flags & KEY_PLASMA_SHORT  && gpro_t.fan_warning_f ==0){
              key_plasma_short_handler();
 		}
 		

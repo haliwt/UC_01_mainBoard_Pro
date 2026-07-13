@@ -35,7 +35,7 @@ uint8_t read_input_times;
 
 uint8_t disp_ntc_value[DISP_VALUE];
 
-
+uint8_t read_ntc_temperature_value;
 
 
 

@@ -40,7 +40,7 @@ void UART1_Int_Call(void)
            这一步是为了清空移位寄存器和硬件缓冲区，向外设硬件发出“允许继续接收”信号。
            如果不读 DR，单纯清除标志位，硬件的接收移位状态机依然处于锁死状态。
         */
-        volatile uint32_t dummy_read = UART1->DR; 
+        volatile uint32_t dummy_read = UART1->RDR; 
         
         // 使用 volatile 防止这行没用的读取代码被编译器优化掉
         ((void)dummy_read); 
@@ -118,7 +118,7 @@ void UART2_Int_Call(void)
            这一步是为了清空移位寄存器和硬件缓冲区，向外设硬件发出“允许继续接收”信号。
            如果不读 DR，单纯清除标志位，硬件的接收移位状态机依然处于锁死状态。
         */
-        volatile uint32_t dummy_read = UART2->DR; 
+        volatile uint32_t dummy_read = UART2->RDR; 
         
         // 使用 volatile 防止这行没用的读取代码被编译器优化掉
         ((void)dummy_read); 

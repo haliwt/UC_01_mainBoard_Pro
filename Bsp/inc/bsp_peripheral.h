@@ -1,17 +1,18 @@
 #ifndef __BSP_PERIPHERAL_H
 #define __BSP_PERIPHERAL_H
 #include "main.h"
+#include <stdbool.h>
 
-#define PLASMA_ON()   LL_GPIO_SetOutputPin(PLASMA_CTL_GPIO_Port,LL_PLASMA_CTL_Pin)
-#define PLASMA_OFF()  LL_GPIO_ResetOutputPin(PLASMA_CTL_GPIO_Port,LL_PLASMA_CTL_Pin)
+#define PLASMA_CTRL_ON()   LL_GPIO_SetOutputPin(PLASMA_CTL_GPIO_Port,LL_PLASMA_CTL_Pin)
+#define PLASMA_CTRL_OFF()  LL_GPIO_ResetOutputPin(PLASMA_CTL_GPIO_Port,LL_PLASMA_CTL_Pin)
 
-#define TEC_ON()     LL_GPIO_SetOutputPin(COOLER_CTL_GPIO_Port,LL_COOLER_CTL_Pin)
-#define TEC_OFF()    LL_GPIO_ResetOutputPin(COOLER_CTL_GPIO_Port,LL_COOLER_CTL_Pin)
+#define TEC_CTRL_ON()     LL_GPIO_SetOutputPin(COOLER_CTL_GPIO_Port,LL_COOLER_CTL_Pin)
+#define TEC_CTRL_OFF()    LL_GPIO_ResetOutputPin(COOLER_CTL_GPIO_Port,LL_COOLER_CTL_Pin)
 
 #define ANGLE_SENSOR_VALUE()     LL_GPIO_IsInputPinSet(ANGLE_SENSOR_GPIO_Port,LL_ANGLE_SENSOR_Pin)
 
 
-void plasma_set_status(bool idata) // 1-开启，0-关闭
+void plasma_set_status(bool idata); // 1-开启，0-关闭
 
 void ai_set_status(bool idata);    // 1--开启, 0- 关闭
 

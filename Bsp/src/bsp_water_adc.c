@@ -121,7 +121,7 @@ void Water_System_Process(void)
             break;
 
         case LEVEL_3_HIGH:
-           LED_WATER_LEVEL_3()
+           LED_WATER_LEVEL_3();
 		break;
 		
         case LEVEL_2_MEDIUM:

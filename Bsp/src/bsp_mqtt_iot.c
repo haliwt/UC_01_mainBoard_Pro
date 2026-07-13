@@ -77,8 +77,8 @@ uint8_t gmode;
 **********************************************************************/
 void Mqtt_Value_Init(void)
 {
-    fan_speed_level=100;
-    setting_temperature=40 ;
+   // fan_speed_level=100;
+  //  setting_temperature=40 ;
    	sg_info.open=1;
     sg_info.state=1;
     sg_info.ptc=1; 
@@ -91,7 +91,7 @@ void Mqtt_Value_Init(void)
 }
 static void Mqtt_Value_update_data(void)
 {
-    
+    #if 0
     sg_info.open = 1;
 	if(AI_led_open_f==1)gmode =1;
 	sg_info.state = gmode;
@@ -103,6 +103,7 @@ static void Mqtt_Value_update_data(void)
     //if(esp_t.set_temperature_value <20)esp_t.set_temperature_value = 20;
 	//else if(esp_t.set_temperature_value > 40)esp_t.set_temperature_value = 40;
 	sg_info.set_temperature = setting_temperature;
+    #endif 
 
 }
 
@@ -615,6 +616,7 @@ void MqttData_Publis_SetTime(uint8_t time)
 *****************************************************************************/	 	
 void link_wifi_net_handler(void)
 {
+    #if 0
     static uint32_t uid;
     static uint32_t wait_timeout = 0; // 新增：用于非阻塞等待的时间戳
 	message[0] = '\0'; // 只需将第一个字符设为结束符，逻辑上就成了空字符串
@@ -650,15 +652,15 @@ void link_wifi_net_handler(void)
                  link_net_step  = 2;
 				  gpro_t.time_1m_wifi_f=0;
                 
-                time_link_net_counter=0;
+                gpro_t.gpro_t.gTime_link_net_counter=0;
 
             break;
 
             case 2:
 		
-                 if(time_link_net_counter  > 6){
+                 if(gpro_t.gpro_t.gTime_link_net_counter  > 6){
                     
-					time_link_net_counter=0;
+					gpro_t.gpro_t.gTime_link_net_counter=0;
 
                         // WIFI_IC_ENABLE();
             			
@@ -678,8 +680,8 @@ void link_wifi_net_handler(void)
 
 
             case 3:
-            if(time_link_net_counter   > 6){
-                      time_link_net_counter  = 0;
+            if(gpro_t.gpro_t.gTime_link_net_counter   > 6){
+                      gpro_t.gpro_t.gTime_link_net_counter  = 0;
                   
                 send_usart2_data((const uint8_t *)"AT+TCDEVREG\r\n", strlen("AT+TCDEVREG\r\n"));
               
@@ -689,7 +691,7 @@ void link_wifi_net_handler(void)
 
 				 link_net_step  = 4;
 				  gpro_t.time_1m_wifi_f=0;
-                 time_link_net_counter  =0;
+                 gpro_t.gpro_t.gTime_link_net_counter  =0;
                 
             }
 	
@@ -699,10 +701,10 @@ void link_wifi_net_handler(void)
 
             case 4:
 		
-                 if(time_link_net_counter   > 9){//5
-                   time_link_net_counter  = 0;
+                 if(gpro_t.gpro_t.gTime_link_net_counter   > 9){//5
+                   gpro_t.gpro_t.gTime_link_net_counter  = 0;
 
-                   wifi_linking_tencent_f =1;
+                   gpro_t.wifi_linking_tencent_f =1;
 				   
 
 					link_net_step  = 5;
@@ -721,7 +723,7 @@ void link_wifi_net_handler(void)
 	            wait_timeout = tx_time_get() + 300;
 				link_net_step  = 20;
 			    gpro_t.time_1m_wifi_f=0;
-                time_link_net_counter  = 0;
+                gpro_t.gpro_t.gTime_link_net_counter  = 0;
 
                     
 
@@ -729,8 +731,8 @@ void link_wifi_net_handler(void)
 
 			case 20 : //WT.EDIT 2026-07-03 add item
 
-			  if(time_link_net_counter  > 4){
-				   time_link_net_counter  = 0;
+			  if(gpro_t.gpro_t.gTime_link_net_counter  > 4){
+				   gpro_t.gpro_t.gTime_link_net_counter  = 0;
 				   gpro_t.time_1m_wifi_f=0;
 
 			       link_net_step  = 6;
@@ -743,7 +745,7 @@ void link_wifi_net_handler(void)
 
             if(wifi_cofig_success_f==1){
 
-              wifi_connected_success_f=0;
+              gpro_t.wifi_connected_success_flag=0;
 
              send_usart2_data((const uint8_t *)"AT+TCMQTTCONN=1,5000,240,0,1\r\n", strlen("AT+TCMQTTCONN=1,5000,240,0,1\r\n"));
 	
@@ -751,7 +753,7 @@ void link_wifi_net_handler(void)
 
 
 			  link_net_step  = 7;
-			  time_link_net_counter  = 0;
+			  gpro_t.gpro_t.gTime_link_net_counter  = 0;
 				  gpro_t.time_1m_wifi_f=0;
             }
             
@@ -761,9 +763,9 @@ void link_wifi_net_handler(void)
             case 7:
 	
 
-            if( time_link_net_counter   > 7){
+            if( gpro_t.gpro_t.gTime_link_net_counter   > 7){
 
-             if(wifi_connected_success_f==1){
+             if(gpro_t.wifi_connected_success_flag==1){
 			
 	           
                 LED_WIFI_ON();
@@ -781,7 +783,7 @@ void link_wifi_net_handler(void)
 		        }
 		         else{
                 
-                  key_net_config_f =0;
+                  gpro_t.link_net_flag =0;
                   link_net_step = 11;
 				  link_net_step = 0xfe;
                   if(disp_second_f == 1){
@@ -803,7 +805,7 @@ void link_wifi_net_handler(void)
             Subscriber_Data_FromCloud_Handler();//MqttData_Publish_SetOpen(0x01);
 	        wifi_run_step=0; //WT.EDIT 2026-05-15
 	        link_net_step = 0xfe;
-	        key_net_config_f =0;
+	        gpro_t.link_net_flag =0;
 
              gpro_t.time_1m_wifi_f=0;
 
@@ -817,7 +819,7 @@ void link_wifi_net_handler(void)
 
 
         }
-
+    #endif 
 }
 
 

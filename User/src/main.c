@@ -118,6 +118,7 @@ int main(void)
   NVIC_Configuration();
 
   /* USER CODE BEGIN 1 */
+  bsp_init();
    tx_kernel_enter(); 
   /* USER CODE END 1 */
 

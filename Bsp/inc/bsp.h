@@ -42,6 +42,8 @@
 #include "bsp_gxht40.h"
 #include "bsp_threadx.h"
 #include "bsp_ntc.h"
+
+
 #include "interrupt_manager.h"
 
 //wifi
@@ -70,6 +72,19 @@ typedef struct _main_ref{
  bool g_ai_flag;
  uint8_t g_fan_speed;
  bool g_plasma_flag;
+ bool g_tec_flag;
+
+ bool wifi_connected_success_flag;
+ int16_t temperature;
+ int16_t humidity;
+
+ uint8_t fan_warning_f;
+
+ //wifi reference 
+ bool link_net_flag;
+ bool g_is_net_flag;
+ uint8_t wifi_linking_tencent_f;
+ uint8_t wifi_read_net_data_f;
 
  
  volatile uint8_t time_10ms_f;
@@ -84,7 +99,9 @@ typedef struct _main_ref{
  volatile uint8_t time_600ms_f;
  volatile uint8_t time_900ms_f;
 
- volatile uint8_t time_base_1s_counter;
+ volatile uint8_t  time_base_1s_counter;
+
+
  volatile uint8_t time_2s_f;
  volatile uint8_t time_1s_f;
  volatile uint8_t time_3s_f;
@@ -97,6 +114,7 @@ typedef struct _main_ref{
  volatile uint8_t time_1m_f;
  volatile uint8_t time_1m_wifi_f;
  volatile uint8_t time_2m_f;
+ uint8_t gTime_link_net_counter;
 
 
 

@@ -33,14 +33,12 @@ void key_power_long_handler(void);
 
 void key_ai_short_handler(void);
 
-//void key_mode_long_handler(void);
-
 void key_fan_short_handler(void);
 
 
 void key_plasma_short_handler(void);
 
-//void key_down_long_handler(void);
+void ai_module_hanlder(void);
 
 
 #endif 

@@ -98,5 +98,42 @@ void wifiFan_Ctrl_Process(void)
     }
 	}
 }
+/**
+*
+*@brief 
+*@notice
+*@param
+*@retrval 
+*
+**/
+/**
+ * @brief  风扇挡位调节处理函数
+ * @note   每次调用该函数，根据当前的按键计数切换风扇速度
+ * @param  None
+ * @retval None
+ */
+void fan_speed_adjust_handler(uint8_t fan_value)
+{
+    switch (fan_value)
+    {
+        case 1:
+            fan_adjust_low_speed();    // 切换到低速档
+            break;
+
+        case 2:
+            fan_adjust_middle_speed(); // 切换到中速档
+            break;
+
+        case 3:
+            fan_adjust_high_speed();   // 切换到高速档
+            break;
+
+        default:
+                       // 计数器清零
+            //fan_adjust_off();          // 【优化建议】：此处建议调用关闭风扇的函数，实现 1->2->3->关 的循环
+        break;
+    }
+}
+
 
 

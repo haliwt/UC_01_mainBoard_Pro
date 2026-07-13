@@ -24,7 +24,7 @@ main_ref gpro_t;
 **************************************************************************************/
  void bsp_init(void)
  {
-  LED_POWER_ON(); 
+  GXHT40_Init();
 
 
 	
@@ -45,37 +45,6 @@ main_ref gpro_t;
 
 
 
-/**
-*@brief:  totall task
-*@param:
-#@notice
-
-**/
-
-/**
- *
- * @brief 
- * @param 
- * @retrval 
- *
- **/
-
-/**
- *
- * @brief 
- * @param 
- * @retrval 
- *
- **/
-
-
-/**
- *
- * @brief 
- * @param 
- * @retrval 
- *
- **/
 
 
 
@@ -94,61 +63,6 @@ main_ref gpro_t;
 ---前提条件：-
 ---说    明：- 
 ---------------------------------------------------------------------------------*/
-void Task_beep_called_100ms(void)
-{
-    if(beep_times)
-	  {
-		    if(beep_times&0x01)
-		    {
-			      BEEP_ON();
-			
-			      if(beep_lenght>1)
-			      {
-				        beep_lenght--;
-			      }
-			      else 
-			      {
-				        if(beep_times>0)
-				        {
-					          beep_times--;
-				        }
-			      }		
-	       }
-		    else 
-		    {
-			      BEEP_OFF();
-			
-			      if(non_beep_length>1)
-			      {
-				        non_beep_length--;
-			      }
-			      else 
-			      {
-				        if(beep_times>1)//还有一声
-				        {
-					          beep_times--;
-					          non_beep_length=NON_BEEP_LENGTH_DEFAULT;
-					          beep_lenght=2;
-				        }
-				        else 
-				        {
-					          beep_times=0;//结束
-					          non_beep_length=0;
-					          beep_lenght=0;
-				        }
-			      }
-		    }	
-		}
-		else 
-	  {
-	      non_beep_length=0;
-		    beep_lenght=0;
-		    BEEP_OFF();
-	  }
-} 
-
-
-
 
 
 

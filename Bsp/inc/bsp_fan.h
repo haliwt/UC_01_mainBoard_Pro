@@ -16,6 +16,7 @@ void fan_adjust_low_speed(void);
 void wifiFan_Ctrl_Process(void);
 
 
+void fan_speed_adjust_handler(uint8_t speed_value);
 
 
 

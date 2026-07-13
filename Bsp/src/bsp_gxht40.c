@@ -53,7 +53,7 @@ static void Delay_ms(uint32_t ms)
     */
     tx_thread_sleep(ticks + 1);
 
-  #enidf
+  #endif
 }
 
 /**

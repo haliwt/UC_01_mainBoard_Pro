@@ -40,11 +40,11 @@ void power_off_led_handler(void)
 void wifi_fast_led_state(void)
 {
    static uint8_t slowly_led_counter = 0;//100ms
-   if((discharge_f ==1) && (key_net_config_f ==1) && (wifi_connected_success_f == 0)){
+   if((gpro_t.g_power_flag ==1) && (gpro_t.link_net_flag ==1) && (gpro_t.wifi_connected_success_flag == 0)){
 	    LED_WIFI_TOGGLE();
 		
    }
-   else if((discharge_f ==1) && (key_net_config_f ==0) && (wifi_connected_success_f == 0)){
+   else if((gpro_t.g_power_flag ==1) && (gpro_t.link_net_flag ==0) && (gpro_t.wifi_connected_success_flag == 0)){
 
       
 		if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s 
@@ -53,7 +53,7 @@ void wifi_fast_led_state(void)
 		     LED_WIFI_TOGGLE();
 		}
    }
-   else if(discharge_f ==0){
+   else if(gpro_t.g_power_flag ==0){
 	     
 	   if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s
 	     slowly_led_counter=0;
@@ -61,7 +61,7 @@ void wifi_fast_led_state(void)
 
       }
    }
-   else if(wifi_connected_success_f==1 && discharge_f ==1){
+   else if(gpro_t.wifi_connected_success_flag==1 && gpro_t.g_power_flag ==1){
 			
 	       LED_WIFI_ON();
 
@@ -75,13 +75,13 @@ void wifi_fast_led_state(void)
 void wifi_led_state_handler(void)
 {
 	
-     if(key_net_config_f==1) return ;
-	 if(wifi_connected_success_f==1)
+     if(gpro_t.link_net_flag==1) return ;
+	 if(gpro_t.wifi_connected_success_flag==1)
 		{
 			LED_WIFI_ON();
 //			  #if DEBUG_ENABLE
 
-//			   printf("wifi_flag = %d\n\r",wifi_connected_success_f);
+//			   printf("wifi_flag = %d\n\r",gpro_t.wifi_connected_success_flag);
 
 //			  #endif 
 		}

@@ -255,16 +255,16 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
                 
 		        gon_t.on_step=0;
 				
-		        BEEP_ON();//buzzer_sound_fun();
+		        beep_key_click();//buzzer_sound_fun();
 	            SendWifiData_Answer_Cmd(0x01,0x01);
 	            tx_thread_sleep(10);
 				if(soft_version > 2)soft_version =0;
-				if(soft_version ==0 && wifi_app_timer_power_on_f==0){
-				   discharge_f  = 1;//gpro_t.gpower_on = power_on;
-				   fan_full_fun();//fan_full_run();//WT.EDIT 2026.01.26
-				   PLASMA_ON();//PLASMA_ON();;
-                   ultra_sound_on(20);//(159); //ultra_sound_on(uint16_t us_duty);   //ultra_sound_on(40);   //ultrasnoic ON 
-                   RELAY_ON();//RELAY_ON();
+				if(soft_version ==0 ){
+				   gpro_t.g_power_flag  = 1;//gpro_t.gpower_on = power_on;
+				  // fan_full_fun();//fan_full_run();//WT.EDIT 2026.01.26
+				  // PLASMA_CTRL_ON();//PLASMA_ON();;
+                  // ultra_sound_on(20);//(159); //ultra_sound_on(uint16_t us_duty);   //ultra_sound_on(40);   //ultrasnoic ON 
+                 //  RELAY_ON();//RELAY_ON();
 
 				}
 	         
@@ -274,10 +274,10 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
         else if(pdata[3] == 0x0){ //close 
 
 		     counter_power_flag ++;
-			 BEEP_ON();
+			 beep_key_click();
 		     gon_t.off_step=0;
-             discharge_f  = 0 ;//gpro_t.gpower_on = power_off;
-			 RELAY_OFF();
+             gpro_t.g_power_flag  = 0 ;//gpro_t.gpower_on = power_off;
+			 //RELAY_CTRL_OFF();
              
               SendWifiData_Answer_Cmd(0x01,0x0); //power off .
               tx_thread_sleep(10); 
@@ -294,18 +294,20 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
      break;
 
 	  case ptc_on_off: //PTC key of command .
+          
+      #if 0
 
        if(pdata[3] == 0x01 ){//phone_cmd_power
 
-	     BEEP_ON();
+	     beep_key_click();
 	
-			ptc_prohibit_off_f =1; //ptc_prohibit_off_f = 1;
+			//ptc_prohibit_off_f =1; //ptc_prohibit_off_f = 1;
 			 
 			 if(works_interval_f==0){//two hours have a rest ten minutes .
-	         if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
+	       //  if(gpro_t.fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
 	             
-	              RELAY_ON();
-            }
+	           //   RELAY_ON();
+           // }
              
            SendWifiData_Answer_Cmd(0x02,0x01); //
            tx_thread_sleep(10); 
@@ -317,7 +319,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
        else if(pdata[3]== 0x0 ){
 	   
 		 
-          BEEP_ON();
+          beep_key_click();
 		
 	          ptc_prohibit_off_f = 0;
 		      RELAY_OFF();
@@ -327,6 +329,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
           tx_thread_sleep(10); 
      
        }
+       #endif 
       break;
 
 	  
@@ -334,11 +337,11 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
    
 		  if(pdata[3]== 0x01){
 			 
-			BEEP_ON();
+			beep_key_click();
 			
-			 plasma_open_f = 1;
+			 gpro_t.g_plasma_flag = 1;//plasma_open_f = 1;
 			 if(works_interval_f==0){
-				 PLASMA_ON(); ;
+				 PLASMA_CTRL_ON(); ;
    
 			}
 
@@ -348,11 +351,11 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			 
 		  }
 		  else if(pdata[3]  == 0x0){
-			 BEEP_ON();
+			 beep_key_click();
 			
 			 
-			 plasma_open_f = 0;
-			  PLASMA_OFF();
+			 gpro_t.g_plasma_flag = 0;
+			  PLASMA_CTRL_OFF();
 
 			SendWifiData_Answer_Cmd(0x03,0x0); //
 			tx_thread_sleep(10); 
@@ -366,8 +369,9 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	   
    	case 0x04: //ultrasonic	ACTIVE OPEN OR CLOSE
           
-		  if(pdata[3]  == 0x01){  //open 
-			 BEEP_ON();
+	#if 0	 
+    if(pdata[3]  == 0x01){  //open 
+			 beep_key_click();
 			Ultra_Sound_open_f =1;
    
 			if(works_interval_f==0){
@@ -380,7 +384,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
    
 		  }
 		  else if(pdata[3] == 0x0){ //close 
-              BEEP_ON();
+              beep_key_click();
 			Ultra_Sound_open_f = 0;
    
 			ultra_sound_off();
@@ -390,18 +394,18 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
    
 		  }
    
-   
+        #endif 
     break;
 
 	
      case  wifi_link: // link wifi command
-
+        #if 0
        if(pdata[3] == 0x01){  // link wifi 
         
-          BEEP_ON();
+          beep_key_click();
           link_net_step =0;
-	      wifi_connected_success_f=0;
-          key_net_config_f =1;
+	      gpro_t.wifi_connected_success_flag=0;
+          gpro_t.link_net_flag =1;
 		  key_net_config_time =0;
          
 		
@@ -410,28 +414,28 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
          
       
         }
-
+      #endif 
 
      break;
 
 	  case buzzer_sound_s: //buzzer sound command 
           if(pdata[3] == 0x01)
-            BEEP_ON();
+            beep_key_click();
 		 
      break;
 
 	 case 0x10: //power on or off don't sound .
-
+        #if 0
 	     if(wifi_app_timer_power_on_f ==1) return ;
 	     if(pdata[3] == 0x01){ //open
            
 		   gon_t.on_step=0;
-	      discharge_f = 1;
+	      gpro_t.g_power_flag = 1;
 		   SendWifiData_Answer_Cmd(0x10,0x01);
 	       tx_thread_sleep(10);
 		    fan_full_fun();//WT.EDIT 2026.01.26
 		    if(wifi_app_timer_power_on_f ==0){
-			    PLASMA_ON();;
+			    PLASMA_CTRL_ON();;
 	             ultra_sound_on(20);   //ultrasnoic ON 
 	             RELAY_ON();
 
@@ -441,19 +445,19 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
         else if(pdata[3] == 0x0){ //close 
 
 			    RELAY_OFF(); //ptc off
-				 PLASMA_OFF() ; //plasma turn off.
+				 PLASMA_CTRL_OFF() ; //plasma turn off.
 	            ultra_sound_off();
 			
               SendWifiData_Answer_Cmd(0x10,0x0); //power off .
               tx_thread_sleep(10); 
       
              gon_t.off_step=0;
-              discharge_f = 0;
+              gpro_t.g_power_flag = 0;
 			 
 		     
         }
 
-
+       #endif 
 	 break;
 
       case 0x11:
@@ -464,17 +468,17 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	  	 if(pdata[3]==1){ // recach 2 hours fan stop
 
             // gon_t.off_step=1;
-              discharge_f = 1;
+              gpro_t.g_power_flag = 1;
 			 
                fan_stop();
-			   RELAY_OFF(); //ptc off;
+			   //RELAY_OFF(); //ptc off;
 			   tx_thread_sleep(10);
-			     PLASMA_OFF() ; //plasma turn off.
-	           ultra_sound_off();
+			     PLASMA_CTRL_OFF() ; //plasma turn off.
+	          // ultra_sound_off();
          }
 		 else{
             
-		    fan_full_fun();//Fan_RunSpeed_Fun();//WT.EDIT 2026.01.26
+		    //fan_full_fun();//Fan_RunSpeed_Fun();//WT.EDIT 2026.01.26
         }
 
 
@@ -482,7 +486,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	  
 	  case 0x16 : //buzzer sound command with answer .
 
-        BEEP_ON();
+        beep_key_click();
         
          //SendWifiData_Answer_Cmd(0x16,0x01); //WT.EDIT 2025.07.28
 
@@ -496,8 +500,8 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	  if(pdata[3] == 0x02){
 	 
 		
-          AI_led_open_f =0;
-           if(wifi_connected_success_f ==1){
+            gpro_t.g_ai_flag = 0;//AI_led_open_f =0;
+           if(gpro_t.wifi_connected_success_flag ==1){
 	          MqttData_Publish_AitState(2);
 			   tx_thread_sleep(20);//tx_thread_sleep(200);//HAL_Delay(350);
 	       }
@@ -506,9 +510,9 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
        }
        else if(pdata[3] == 0x01){ //AI mode 
        
-	      AI_led_open_f=1;
+	      gpro_t.g_ai_flag=1;
 
-         if(wifi_connected_success_f ==1){
+         if(gpro_t.wifi_connected_success_flag ==1){
 	         MqttData_Publish_AitState(1);
 			 tx_thread_sleep(20);//tx_thread_sleep(200);//HAL_Delay(350);
 	      }
@@ -519,12 +523,13 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	 break;
 
 	 case 0x18: //WT.EDIT 2026.03.02
+        #if 0
          if(pdata[3]==1){ // recach 2 hours fan stop
                fan_rx_stop_flag =1 ;
 			   works_interval_f=1;
 		       fan_stop();
                RELAY_OFF(); //ptc off;
-			   PLASMA_OFF() ; //plasma turn off.
+			   PLASMA_CTRL_OFF() ; //plasma turn off.
                ultra_sound_off();
          }
 		 else{
@@ -534,19 +539,19 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			  	RELAY_ON();
 				
              }
-			 if(plasma_open_f==1)PLASMA_ON();;
+			 if(plasma_open_f==1)PLASMA_CTRL_ON();;
 			 if(Ultra_Sound_open_f==1) ultra_sound_on(20);
         }
-
+       #endif 
 	 break;
 
 	  case 0x19: //works 2 hours ,then have a rest 10 minutes ->notice 
-
+        #if 0
 	    if(pdata[3]==1){ // recach 2 hours 
 
             works_interval_f=1;
 	         RELAY_OFF(); //ptc off;
-			 PLASMA_OFF() ; //plasma turn off.
+			 PLASMA_CTRL_OFF() ; //plasma turn off.
             ultra_sound_off();
 			
 		}
@@ -563,18 +568,19 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			  	RELAY_ON();
 				
               }
-			  if(plasma_open_f==1)PLASMA_ON();;
+			  if(plasma_open_f==1)PLASMA_CTRL_ON();;
 			  if(Ultra_Sound_open_f==1) ultra_sound_on(20);
 			 // Fan_RunSpeed_Fun();//WT.EDIT 2026.01.26
 			  
 		}
 	   
-
+       #endif 
 	  break;
 
   
 	  case 0x1B: //write set temperature value .data.2026.01.06
-	  
+	      
+        #if 0
         if(pdata[3]== 0x01){
 		      ptc_prohibit_off_f =0;
 			   ptc_prohibit_off_f = 1;//gctl_t.gDry = 1;
@@ -584,7 +590,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		        
 				 SendWifiData_Answer_Cmd(0x22,0x01); //WT.EDIT 2025.07.28
 		         tx_thread_sleep(10);
-				 if(wifi_connected_success_f==1){ 
+				 if(gpro_t.wifi_connected_success_flag==1){ 
 					  MqttData_Publish_SetPtc(0x01);
 					  tx_thread_sleep(20);
 					
@@ -602,13 +608,13 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
            tx_thread_sleep(10);
 
 		  
-		  if(wifi_connected_success_f==1){ 
+		  if(gpro_t.wifi_connected_success_flag==1){ 
 			MqttData_Publish_SetPtc(0x0);
 			tx_thread_sleep(20);
 		  }
          
 	   }
-			 
+			#endif  
       break;
      
  
@@ -619,7 +625,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 
 	case 0x22: //PTC ON OR OFF by compare temperature value .
-
+        #if 0
 	    if(ptc_prohibit_off_f  == 1)return ;
 		
         if(pdata[3]== 0x01){
@@ -639,7 +645,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 //		         }
 				 if(ptc_set_wifi !=ptc_prohibit_off_f){
 				 	ptc_set_wifi =ptc_prohibit_off_f;
-					 if(wifi_connected_success_f==1){ 
+					 if(gpro_t.wifi_connected_success_flag==1){ 
 						  MqttData_Publish_SetPtc(0x01);
 						tx_thread_sleep(20);
 						
@@ -661,22 +667,22 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
          	}
 		  if(ptc_set_wifi !=ptc_prohibit_off_f){
 				 	ptc_set_wifi =ptc_prohibit_off_f;
-		  if(wifi_connected_success_f==1){ 
+		  if(gpro_t.wifi_connected_success_flag==1){ 
 			MqttData_Publish_SetPtc(0x0);
 			tx_thread_sleep(20);
 		  }
 		  }
          
 	  }
-	
+	  #endif 
    
      break;
 
 
 	 
 	 case 0x2A: //smart phone or display  board set temperature .receive.
-	 
-		   if(pdata[4]==0x01 && discharge_f == 1){
+	     #if 0
+		   if(pdata[4]==0x01 && gpro_t.g_power_flag == 1){
 			  
 			   if(pdata[5] >19 && pdata[5] < 41){
 			   	ptc_prohibit_off_f  = 0;
@@ -699,7 +705,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		       }
 
 		
-				   if(wifi_connected_success_f==1){
+				   if(gpro_t.wifi_connected_success_flag==1){
 					   MqttData_Publis_SetTemp(setting_temperature);
 					   tx_thread_sleep(20);//tx_thread_sleep(200);//HAL_Delay(350);
 					}
@@ -708,7 +714,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		   
 			}
 		
-		
+		  #endif 
 	 break;
 
 	 
@@ -778,13 +784,13 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 	     if(pddata[4] == 0x01){ //open
 
 		    gon_t.on_step=0;
-	       discharge_f = 1;
+	       gpro_t.g_power_flag = 1;
 
 		 }
         else if(pddata[4] == 0x0){ //close 
 
 		   gon_t.off_step=1;
-          discharge_f =0;
+          gpro_t.g_power_flag =0;
 			 
 		}
 	   
