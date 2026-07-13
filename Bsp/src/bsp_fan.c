@@ -8,7 +8,6 @@
 *@param
 *
 **/
-
 void fan_stop(void)
 {
   LL_TIM_OC_SetCompareCH1(TIM1, 0);
@@ -24,7 +23,6 @@ void fan_stop(void)
 *@param
 *
 **/
-
 void fan_adjust_high_speed(void)
 {
     
@@ -40,7 +38,6 @@ void fan_adjust_high_speed(void)
 *@param
 *
 **/
-
 void fan_adjust_middle_speed(void)
 {
 
@@ -58,7 +55,6 @@ void fan_adjust_middle_speed(void)
 *@param
 *
 **/
-
 void fan_adjust_low_speed(void)
 {
 
@@ -76,31 +72,28 @@ void fan_adjust_low_speed(void)
 *@param
 *
 **/
-
 void wifiFan_Ctrl_Process(void)
 {
    
-	if(discharge_f){
+	if(gpro_t.g_plasma_flag){
 	   if(works_interval_f == 0 && fan_rx_stop_flag ==0){
 	      	
 	     
 		if((fan_open_f)){
 			if(fan_speed_level < 34)
 			{
-			fan_on(10);
+			  fan_adjust_low_speed();
 			}
 			else if(fan_speed_level > 33 && fan_speed_level < 67)
 			{
-			fan_on(20);
+		      fan_adjust_middle_speed();
 			}
 			else if(fan_speed_level==100 || fan_speed_level > 66)
 			{
-			fan_on(40);
+			  fan_adjust_high_speed();
 			}
 
-			///__NOP();__NOP();__NOP();__NOP();__NOP();
-
-			//FAN_RUN_ON();
+		
 		}
     }
 	}

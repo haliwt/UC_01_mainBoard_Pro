@@ -14,8 +14,11 @@ power_state gon_t;
 
 // 任务结构体：这次我们直接检查标志位
 typedef struct {
-    volatile uint8_t *task_f; // 指向定时器置位的标志位
-    void (*task_func)(void);  // 任务函数
+	uint32_t last_tick; 	   // 记录上一次真正运行时的系统绝对时间戳
+    //volatile uint8_t *task_f; // 指向定时器置位的标志位
+    //uint32_t period;        // 任务运行周期
+    uint32_t period_ms;     // 存储的是 毫秒(ms) 值，更改名字更清晰
+    void (*task_handler)(void);  // 任务函数
 } Task_Config_t;
 
 
@@ -24,43 +27,33 @@ typedef struct {
 // 1ms 系统心跳计数器
 
 // --- 任务函数声明 ---
-void Task_Key_Scan_10ms(void);
-void Task_link_wifi_20ms(void);
-void Task_Logic_100ms(void);
-void Task_ui_200ms(void);
-void Task_Peripheral_300ms(void);
-void Task_400ms(void);
-void Task_500ms(void);
-void Task_600ms(void);
-void Task_900ms(void);
-void Task_System_1s(void);
-void Task_2s(void);
-void Task_3s(void);
-void Task_4s(void);
-void Task_5s(void);
-void Task_10s(void);
+static void handler_wifi_state(void);
+static void handler_wifi_update_data(void);
+static void handler_works_hours(void);
+static void handler_fan_adc(void);
+static void handler_wifi_update_temp_humidity(void);
+static void handler_read_gxht40ad(void);
+static void handler_fan_speed_state(void);
+static void handler_hardware_module_action(void);
+static void handler_rx_widi_data(void);
+static void handler_send_ai_wif(void);
+static void handler_wifi_report(void);
 
-void Task_1minutes(void);
-void Task_2minutes(void);
 
 // 2. 任务注册表：将标志位地址与函数关联
-static const Task_Config_t Task_Table[] = {
-    {&gpro_t.time_10ms_f,  Task_Key_Scan_10ms},
-    {&gpro_t.time_20ms_f,  Task_link_wifi_20ms},
-    {&gpro_t.time_100ms_f, Task_Logic_100ms},
-    {&gpro_t.time_200ms_f, Task_ui_200ms},
-    {&gpro_t.time_100ms_fast_led_f, Task_Peripheral_300ms},
-    {&gpro_t.time_400ms_f, Task_400ms},
-    {&gpro_t.time_500ms_f, Task_500ms},
-    {&gpro_t.time_600ms_f, Task_600ms},
-    {&gpro_t.time_1s_f,    Task_System_1s},
-    {&gpro_t.time_2s_f,    Task_2s},
-    {&gpro_t.time_3s_f,    Task_3s},
-    {&gpro_t.time_4s_f,    Task_4s},
-    {&gpro_t.time_5s_f,    Task_5s},
-    {&gpro_t.time_10s_f,    Task_10s},
-    {&gpro_t.time_1m_f,    Task_1minutes},
-    {&gpro_t.time_2m_f,    Task_2minutes}
+static Task_Config_t g_tasks[] = {
+    // last_tick,  period(ms),  task_handler
+    {0,            10,          Task_Key_Scan_10ms},
+    {0,            20,          Task_link_wifi_20ms},
+    {0,            100,         Task_Logic_100ms},
+    {0,            200,         Task_ui_200ms},
+    {0,            300,         Task_Peripheral_300ms}, // 彻底纠正了之前的 100ms 错位 Bug
+    {0,            400,         Task_400ms},
+    {0,            500,         Task_500ms},
+    {0,            600,         Task_600ms},
+    {0,            1000,        Task_System_1s},
+    {0,            60000,       Task_1minutes},        // 1分钟 = 60000ms
+    {0,            120000,      Task_2minutes}         // 2分钟 = 120000ms
 };
 
 
@@ -71,6 +64,7 @@ volatile uint8_t static beep_sound_f =0;
 static void power_on_handler(void);
 static void power_off_handler(void);
 static void power_on_initial(void);
+static void power_on_cycle_handler(void);
 
 
 /**
@@ -81,51 +75,14 @@ static void power_on_initial(void);
 **/
 void Clear_Ram(void)
 {
-    time_5ms_f = 0;
-	
+	time_5ms_f = 0;
+	gpro_t.time_400ms_f =0;
+	gpro_t.time_500ms_f =0;
+	gpro_t.time_1s_f = 0;
+	gpro_t.time_1m_f=0;
 
-	  gpro_t.time_400ms_f =0;
-	  gpro_t.time_500ms_f =0;
-	  gpro_t.time_1s_f = 0;
-	  gpro_t.time_1m_f=0;
-	
-
-		
-		
-	
-		
 
 }
-
-
-
-
-/**
-  * @brief  fan run is error
-  * @note  
-  * @param: 
-  *
-**/
-
-
-
-
-
-
-//ADC  PTC 
-
-
-
-/**
-  * @brief  fan run is error
-  * @note  
-  * @param: 
-  *
-**/
-
-
-
-
 /****************************************************/
 void printf_ptc_adc_numbers(void)
 {
@@ -150,7 +107,6 @@ void printf_ptc_adc_numbers(void)
 static void power_on_initial(void)
 {
 
-   
    switch(gon_t.on_step){
 
    case 0:
@@ -206,8 +162,60 @@ void power_on_handler(void)
         if(gon_t.on_step  < 8){
 		  power_on_initial();
         }
+		else{
 	 // ✨【新增：紧急事件拦截响应】✨
         // 如果按键任务设置完温度，将 g_pro.g_immediate_heat_f 置为 1
+           power_on_cycle_handler();
+
+		}
+        
+}
+
+void power_on_cycle_handler(void)
+{
+	 // 获取当前系统的绝对时间戳
+      uint32_t current_tick = tx_time_get();
+    // 通过时间片轮询核心算法，分时调用各个功能模块
+    for (uint8_t i = 0; i < TASK_COUNT; i++) 
+    {
+
+       // 【关键对齐】：将配置表的 ms 转换为当前硬件环境的 Tick 数
+        // 既然 1 Tick = 10ms，那么 Tick数 = ms / 10
+        uint32_t period_tick = g_tasks[i].period_ms / 10;
+        
+        // 防止配置错误：如果误填了小于 10ms 的周期，强制算作 1 个 Tick
+        
+        if (period_tick == 0) {
+            period_tick = 1; 
+        }
+
+        // 使用纯 Tick 单位进行无符号减法，完美天然支持死循环绕回（Overflow）
+		if ((current_tick - g_tasks[i].last_tick) >= period_tick) 
+        {
+            // 【工业级进化：防轰炸饱和截断】
+            // 如果卡顿/被高优先级抢占的时间超过了 2 个周期，直接对齐当前时间，放弃追赶
+            if ((current_tick - g_tasks[i].last_tick) > ( period_tick * 2)) 
+            {
+                g_tasks[i].last_tick = current_tick;
+            }
+            else 
+            {
+                // 如果只是正常范围内的轻微抖动，滚动累加周期，死锁锁相，消除长期长跑漂移
+                g_tasks[i].last_tick += period_tick;
+            }
+            
+            // 触发对应周期的执行函数（确保不为 NULL，防止空指针崩溃）
+            if (g_tasks[i].task_handler != NULL)
+            {
+                g_tasks[i].task_handler(); 
+            }
+        }
+    }
+
+
+}
+
+#if 0
        
          if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
 		    time_10ms_f=0;
@@ -514,6 +522,7 @@ void power_on_handler(void)
 
         
 }
+#endif 
 /************************************************************************
  *
  * Function Name: LED_Power_Breathing(void)

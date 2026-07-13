@@ -112,7 +112,7 @@ int main(void)
   TIM16_Configuration();
   TIM17_Configuration();
   IWDG_Configuration();
-  I2C2_Configuration();
+  
   ADC_Configuration();
   DMA_Configuration();
   NVIC_Configuration();

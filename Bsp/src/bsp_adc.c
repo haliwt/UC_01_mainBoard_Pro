@@ -77,7 +77,7 @@ void adc_ntc_value(void)
 }
 
 
-void adc_water_2_value(void)
+uint16_t adc_water_3_value(void)//adc_water_2_value
 {
     /* 1. 一阶低通滤波（理顺原本注释掉的代码）
           新采样值权重占 2/20，历史滤波值权重占 18/20 */
@@ -86,9 +86,11 @@ void adc_water_2_value(void)
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
     ptc_voltage_mv = (ADC_ConvertedValues[2] * 3300) / 4095;
+
+	return ptc_voltage_mv;
 }
 
-void adc_water_3_value(void)
+uint16_t adc_water_2_value(void)//adc_water_3_value
 {
     /* 1. 一阶低通滤波（理顺原本注释掉的代码）
           新采样值权重占 2/20，历史滤波值权重占 18/20 */
@@ -97,9 +99,11 @@ void adc_water_3_value(void)
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
     ptc_voltage_mv = (ADC_ConvertedValues[3] * 3300) / 4095;
+
+	return ptc_voltage_mv;
 }
 
-void adc_water_4_value(void)
+uint16_t adc_water_1_value(void)//adc_water_4_value
 {
     /* 1. 一阶低通滤波（理顺原本注释掉的代码）
           新采样值权重占 2/20，历史滤波值权重占 18/20 */
@@ -108,9 +112,11 @@ void adc_water_4_value(void)
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
     ptc_voltage_mv = (ADC_ConvertedValues[4] * 3300) / 4095;
+
+	return ptc_voltage_mv;
 }
 
-void adc_water_1_value(void)
+uint16_t adc_water_warning_value(void)//adc_water_1_value
 {
     /* 1. 一阶低通滤波（理顺原本注释掉的代码）
           新采样值权重占 2/20，历史滤波值权重占 18/20 */
@@ -119,9 +125,32 @@ void adc_water_1_value(void)
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
     ptc_voltage_mv = (ADC_ConvertedValues[5] * 3300) / 4095;
+
+	return ptc_voltage_mv;
 }
 
 
+uint16_t adc_ntc_mv_value(void)
+{
 
 
+//LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2); //ADC_FAN   // 对应 ADC_ConvertedValues[0]
+//LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3); //ADC_PTC   // 对应 ADC_ConvertedValues[1]
+	/* 2. 转换成电压（单位：毫伏 mV）
+		   假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
+	 ptc_voltage_mv = (ADC_ConvertedValues[1] * 3300) / 4095;
+	
+	 return ptc_voltage_mv;
+
+}
+
+uint16_t adc_fan_mv_value(void)
+{
+	/* 2. 转换成电压（单位：毫伏 mV）
+		   假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
+	 ptc_voltage_mv = (ADC_ConvertedValues[0] * 3300) / 4095;
+	
+	 return ptc_voltage_mv;
+
+}
 

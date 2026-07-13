@@ -3,6 +3,11 @@
 
 
 
+/**
+*@brief:  
+*@param:
+*@notice
+**/
 void power_on_led_handler(void)
 {
    LED_POWER_ON();
@@ -13,6 +18,11 @@ void power_on_led_handler(void)
 }
 
 
+/**
+*@brief:  
+*@param:
+*@notice
+**/
 void power_off_led_handler(void)
 {
 	 LED_POWER_OFF();
@@ -22,8 +32,11 @@ void power_off_led_handler(void)
 
 }
 
-
-//300ms
+/**
+*@brief:  
+*@param:
+*@notice
+**/
 void wifi_fast_led_state(void)
 {
    static uint8_t slowly_led_counter = 0;//100ms
@@ -54,8 +67,11 @@ void wifi_fast_led_state(void)
 
    	}
 }
-
-
+/**
+*@brief:  
+*@param:
+*@notice
+**/
 void wifi_led_state_handler(void)
 {
 	
@@ -70,7 +86,21 @@ void wifi_led_state_handler(void)
 //			  #endif 
 		}
 
-	}
+}
+
+
+/**
+*@brief:  water of detected display led
+*@param:
+*@notice
+**/
+void Water_level_indicator_light(void)
+{
+     
+
+
+}
+
 
 
 

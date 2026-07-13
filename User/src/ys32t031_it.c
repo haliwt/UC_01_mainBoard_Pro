@@ -156,7 +156,7 @@ void TIM17_IRQHandler(void)
 }
 
 /**
-  * @brief  This function handles UART1_IRQn.
+  * @brief  This function handles UART1_IRQn displayBoard.
   * @param  None
   * @retval None
   */
@@ -165,12 +165,14 @@ void UART1_IRQHandler(void)
   extern void UART1_Int_Call(void);
   UART1_Int_Call();
   /* USER CODE BEGIN UART1_IRQHandler */
-  
+  LL_USART_ClearFlag_ORE(USART1);
+  if (LL_USART_IsActiveFlag_FE(USART1))  LL_USART_ClearFlag_FE(USART1);
+  if (LL_USART_IsActiveFlag_NE(USART1))  LL_USART_ClearFlag_NE(USART1);
   /* USER CODE END UART1_IRQHandler */
 }
 
 /**
-  * @brief  This function handles UART2_IRQn.
+  * @brief  This function handles UART2_IRQn wifi.
   * @param  None
   * @retval None
   */

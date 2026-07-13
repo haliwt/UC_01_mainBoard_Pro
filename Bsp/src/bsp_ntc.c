@@ -172,7 +172,7 @@ static const uint16_t R10K_152_180[29]={99,97,95,93,91,90,88,86,85,83,81,80,79,7
 	                  
 
 
-///
+
 
 
 static const uint8_t R10K_Init_0_120_simple[25]={
@@ -185,36 +185,12 @@ static const uint8_t R10K_Init_0_120_simple[25]={
 };
 
 
-
-#if 0
-static const uint8_t R10K_Init_0_81_simple[23]={
-
-    25,24,23,22,21,
-	20,19,18,17,16,
-	15,14,13,12,11,
-	10,9,8,7,6,
-	5,4,3
-};
-#endif 
-
-
-
-
-//static uint16_t Get_Adc_Average(uint32_t ch,uint8_t times);
-
-
-
-
-
 static void Calculate_Speicial_Temperature_Value(uint8_t temp);
 
 uint16_t ptc_res_temp_voltage;
 
 uint8_t disp_value;
 uint16_t adcx,temp_vlue;
-
-
-
 
 
 

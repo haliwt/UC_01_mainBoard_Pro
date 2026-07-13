@@ -178,6 +178,7 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(LED_WATER_G_GPIO_Port, &GPIO_InitStruct);
 
+  #if 0
   // I2C2_SCL
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
@@ -197,6 +198,24 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(I2C_SDA_GPIO_Port, &GPIO_InitStruct);
+  #endif 
+  LL_GPIO_SetOutputPin(I2C_SCL_GPIO_Port, LL_I2C_SCL_Pin);
+  LL_GPIO_SetOutputPin(I2C_SDA_GPIO_Port, LL_I2C_SDA_Pin);
+  LL_GPIO_StructInit(&GPIO_InitStruct);
+  GPIO_InitStruct.Pin = LL_I2C_SCL_Pin| LL_I2C_SDA_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+
+   // GPIO_Input
+  LL_GPIO_StructInit(&GPIO_InitStruct);
+  GPIO_InitStruct.Pin = LL_ANGLE_SENSOR_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(ANGLE_SENSOR_GPIO_Port, &GPIO_InitStruct);
+  
 }
 
 

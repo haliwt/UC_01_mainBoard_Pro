@@ -6,6 +6,7 @@
 void water_pwm_on(void);
 void water_pwm_off(void);
 
+void Water_System_Process(void);
 
 
 

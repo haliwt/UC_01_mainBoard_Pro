@@ -30,6 +30,9 @@ TX_SEMAPHORE wifi_semaphore;
 
 TX_EVENT_FLAGS_GROUP key_event;
 
+TX_TIMER buzzer_timer; // 定时器控制块，仅占用几十字节内存
+
+
 //TX_TIMER beep_timer;
 	
 __attribute__((aligned(8))) static UCHAR s_ui_stack[STACK_SIZE_UI];

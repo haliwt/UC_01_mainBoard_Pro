@@ -10,20 +10,46 @@
 
 #include "uart.h"   
 #include "ys32t031.h"
+#include "bsp.h"
 
-
+/*接收数据中断（RXNE - Receive Data Register Not Empty*/
 
 
 //Display Board TX and RX 
 void UART1_Int_Call(void)
 {
+  uint8_t res ;
   if(LL_UART_IsActiveFlag_RXNE(UART1)&& LL_UART_IsEnabledIT_RXNE(UART1))
   {
     /* USER CODE BEGIN Code_UART1_Int_Call_UART_FLAG_RXNE */
-    // UART_ReceiveData(UART1);
+     res =  LL_UART_ReceiveData8(UART1);
+	  usart1_isr_callback_handler(res);
     
     /* USER CODE END Code_UART1_Int_Call_UART_FLAG_RXNE */
   }
+
+  /* =====================================================================
+       2. 溢出错误处理 (ORE) —— 彻底防止串口死锁卡死
+       ===================================================================== */
+    // 检查是否触发了溢出错误（上一个数据没读走，新数据又覆盖上来了）
+    if (LL_UART_IsActiveFlag_ORE(UART1))
+    {
+        /* 
+           【核心解锁步骤】
+           必须先强行读取一次数据寄存器（DR）。
+           这一步是为了清空移位寄存器和硬件缓冲区，向外设硬件发出“允许继续接收”信号。
+           如果不读 DR，单纯清除标志位，硬件的接收移位状态机依然处于锁死状态。
+        */
+        volatile uint32_t dummy_read = UART1->DR; 
+        
+        // 使用 volatile 防止这行没用的读取代码被编译器优化掉
+        ((void)dummy_read); 
+        
+        /* 
+           可以增加一个错误计数器，方便你在 ThreadX 任务中监控串口健康度
+           g_uart1_error_count.ore_count++; 
+        */
+    }
 
   if (LL_UART_IsActiveFlag_TC(UART1) && LL_UART_IsEnabledIT_TC(UART1))
   {
@@ -34,11 +60,12 @@ void UART1_Int_Call(void)
   }
 
   UART1->ICR = 0xFF;//ICR：Interrupt Clear Register 的缩写，即 “中断清除寄存器”。
+  //LL_UART_ClearFlag_ORE(UART1)
 }
 
 
 /**
-* @brief  UART2�����ַ���
+* @brief  UART1 displayBoard
  * @param  String: �ַ���
  * @retval None
  */
@@ -63,16 +90,44 @@ void UART1_Configuration(void)
 
   LL_UART_Enable(UART1);
 }
+/**
+* @brief  UART2  wifi 
+ * @param  String: �ַ���
+ * @retval None
+ */
 
 void UART2_Int_Call(void)
 {
   if(LL_UART_IsActiveFlag_RXNE(UART2)&& LL_UART_IsEnabledIT_RXNE(UART2))
   {
     /* USER CODE BEGIN Code_UART2_Int_Call_UART_FLAG_RXNE */
-    // UART_ReceiveData(UART2);
+    // LL_UART_ReceiveData8(UART2);
     
     /* USER CODE END Code_UART2_Int_Call_UART_FLAG_RXNE */
   }
+
+    /* =====================================================================
+       2. 溢出错误处理 (ORE) —— 彻底防止串口死锁卡死
+       ===================================================================== */
+    // 检查是否触发了溢出错误（上一个数据没读走，新数据又覆盖上来了）
+    if (LL_UART_IsActiveFlag_ORE(UART2))
+    {
+        /* 
+           【核心解锁步骤】
+           必须先强行读取一次数据寄存器（DR）。
+           这一步是为了清空移位寄存器和硬件缓冲区，向外设硬件发出“允许继续接收”信号。
+           如果不读 DR，单纯清除标志位，硬件的接收移位状态机依然处于锁死状态。
+        */
+        volatile uint32_t dummy_read = UART2->DR; 
+        
+        // 使用 volatile 防止这行没用的读取代码被编译器优化掉
+        ((void)dummy_read); 
+        
+        /* 
+           可以增加一个错误计数器，方便你在 ThreadX 任务中监控串口健康度
+           g_uart1_error_count.ore_count++; 
+        */
+    }
 
   if (LL_UART_IsActiveFlag_TC(UART2) && LL_UART_IsEnabledIT_TC(UART2))
   {

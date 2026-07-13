@@ -45,7 +45,7 @@ void ADC_Configuration(void)
   LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6); //ADC_WATER_2   // 对应 ADC_ConvertedValues[2]
   LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9); //ADC_WATER_3   // 对应 ADC_ConvertedValues[3]
   LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12);//ADC_WATER_4   // 对应 ADC_ConvertedValues[4]
-  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13); //ADC_WATER_1  // 对应 ADC_ConvertedValues[5]
+  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13); //ADC_WATER_1  // 对应 ADC_ConvertedValues[5] 
 
   /* 3. 必须使能 ADC 的 DMA 传输请求 */
   LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED); // 修改点：新增此行

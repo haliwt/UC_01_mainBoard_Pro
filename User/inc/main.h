@@ -153,6 +153,11 @@ extern "C" {
 #define COOLER_CTL_GPIO_Port GPIOA
 #define LL_COOLER_CTL_Pin LL_GPIO_PIN_6
 
+//ANAGLE INPUT GPIO
+#define ANGLE_SENSOR_GPIO_Port GPIOF
+#define LL_ANGLE_SENSOR_Pin LL_GPIO_PIN_9
+
+
 
 //ADC 
 
