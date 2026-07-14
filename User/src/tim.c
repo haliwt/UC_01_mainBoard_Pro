@@ -23,8 +23,8 @@ void TIM1_Configuration(void)
   // Overflow time = ((Auto-reload 31999 + 1) * (Prescaler 0 + 1)) / 64000000 = 500 μs, frequency= 2 kHz
   // 频率计算: 64,000,000 / ((0 + 1) * (2559 + 1)) = 25,000 Hz (25 kHz)
   LL_TIM_StructInit(&TIM_InitStruct);
-  TIM_InitStruct.Prescaler = 63;
-  TIM_InitStruct.Autoreload = 39; // TIM_ARR
+  TIM_InitStruct.Prescaler = 0;
+  TIM_InitStruct.Autoreload = 2559; // TIM_ARR
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.ClockDivision = 0;
   TIM_InitStruct.RepetitionCounter = 0;
