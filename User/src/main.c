@@ -112,9 +112,16 @@ int main(void)
   TIM16_Configuration();
   TIM17_Configuration();
   IWDG_Configuration();
+
   
   ADC_Configuration();
   DMA_Configuration();
+  DMA_ADC_Init();
+  LL_DMA_Configuration_Channel3((uint32_t)ADC_ConvertedValues,
+                              (uint32_t)&ADC->DR,
+                              ADC_CH_COUNT);
+  LL_ADC_REG_StartConversionSWStart();
+  
   NVIC_Configuration();
 
   /* USER CODE BEGIN 1 */

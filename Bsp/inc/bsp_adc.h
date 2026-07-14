@@ -2,6 +2,13 @@
 #define __BSP_ADC_H
 #include "main.h"
 
+#define  ADC_CH_COUNT  6
+
+#define  ADC_ENABLE    1
+
+
+extern uint16_t ADC_ConvertedValues[ADC_CH_COUNT];
+
 
 void adc_read_6channels_value(void);
 

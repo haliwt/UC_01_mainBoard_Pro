@@ -51,9 +51,9 @@ static Task_Config_t g_tasks[] = {
     {0,            10,         handler_AI_module_action},//10ms*10
     {0,            150,        handler_read_water_level_state},//1.5s
     {0,            300,        handler_works_hours},
-    {0,            400,        handler_read_gxht40ad},
+    {0,            450,        handler_read_gxht40ad},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
-    {0,            100,        handler_read_adc_value}         // 10ms*100=1000ms =1s
+    {0,            400,        handler_read_adc_value}         // 10ms*100=1000ms =1s
     
 };
 
@@ -215,7 +215,7 @@ void power_on_cycle_handler(void)
  ************************************************************************/
 static void handler_read_water_level_state(void)
 {
-	//Water_System_Process();
+	Water_System_Process();
 }
 static void handler_wifi_update_data(void)
 {
@@ -229,7 +229,7 @@ static void handler_works_hours(void)
    works_two_hours_times_handler();
 
 }
-uint8_t counter_test;
+uint8_t counter_test,adc_counter;
 
 static void handler_read_gxht40ad(void)
 {
@@ -261,8 +261,8 @@ static void handler_AI_module_action(void)
 
 static void handler_read_adc_value(void)
 {
-
- // adc_read_6channels_value();
+  adc_counter++;
+  adc_read_6channels_value();
 
 }
 

@@ -80,6 +80,7 @@ typedef struct _main_ref{
  int16_t humidity;
 
  uint8_t fan_warning_f;
+ bool dma_dong_flag ;
 
  //wifi reference 
  bool link_net_flag;

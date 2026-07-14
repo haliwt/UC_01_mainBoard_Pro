@@ -1,8 +1,6 @@
 #include "bsp.h"
 
-#define  ADC_CH_COUNT  6
 
-#define  ADC_ENABLE    1
 
 //uint16_t ADC_DATA_BUF[ADC_DMA_CH_LEN];
 
@@ -25,35 +23,7 @@ uint16_t ptc_voltage_mv = 0;   // 全局或静态变量：转换后的电压值�
 #endif 
 void adc_read_6channels_value(void)
 {
- #if 0
-   uint8_t i = 0;
-/* 3. 配置 DMA 通道 3 */
-    // 传入：内存数组地址、ADC 数据寄存器地址、传输长度（6）
-    LL_DMA_Configuration_Channel3((uint32_t)ADC_ConvertedValues, (uint32_t)&ADC->DR, ADC_CH_COUNT);
 
-    for(i = 0; i < ADC_CH_COUNT; i++)
-        {
-            // 顺次输出：Channel_2, 3, 6, 9, 12, 13
-            printf("CH[%d]=%d  ", i, ADC_ConvertedValues[i]);
-        }
-        printf("\n");
-        
-        /* 延时 500ms 再次触发 */
-       tx_thread_sleep(10) ;//LL_mDelay(500);
-
-	   /* --- 重新启动下一轮 ADC+DMA 采集 --- */
-        // a. 先关闭 DMA 通道以允许重新配置长度
-        LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_3);
-        
-        // b. 重新设置需要传输的数据长度
-        LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_3, ADC_CH_COUNT);
-        
-        // c. 重新使能 DMA 通道，开始静静等待 ADC 扔数据过来
-        LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_3);
-        
-        // d. 再次软件触发 ADC 开始新一轮 6 通道扫描
-        LL_ADC_REG_StartConversionSWStart();
-	#else
 
     uint8_t i = 0;
 
@@ -63,10 +33,17 @@ void adc_read_6channels_value(void)
     /* 2. 等待 DMA 传输完成（非常重要！）
        如果你不用中断，必须在这里判断 DMA 传输完成标志位（TC - Transfer Complete），
        否则直接打印会读到垃圾数据。注意：请根据你的芯片型号修改 DMAx 和 CHANNELx */
+
+	
+  
     while (!LL_DMA_IsActiveFlag_TC3(DMA)) 
     {
         // 等待传输完成... 
         // 如果是在 RTOS (ThreadX) 中，这里也可以用信号量等待，防止死等卡死 CPU
+        // 如果当前 DMA 还没传完（可能 ADC 还在转换中），为了不饿死 UI，直接开溜
+        // 但在退出前，必须通过休眠让出 CPU 拥有权
+       // tx_thread_sleep(20); 
+       // return;
     }
     
     /* 3. 清除 DMA 传输完成标志位，为下一轮做准备 */
@@ -82,24 +59,28 @@ void adc_read_6channels_value(void)
 	#endif 
         
     /* 5. 延时 500ms 再次触发 */
-    tx_thread_sleep(10); // ThreadX 延时
+    tx_thread_sleep(50); // ThreadX 延时
 
     /* 6. --- 重新启动下一轮 ADC+DMA 采集 --- */
     // a. 先关闭 DMA 通道以允许重新配置长度
-    LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_3);
+   // LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_3);
     
     // b. 重新设置需要传输的数据长度
-    LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_3, ADC_CH_COUNT);
+   /// LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_3, ADC_CH_COUNT);
     
     // c. 重新使能 DMA 通道
-    LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_3);
+   // LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_3);
+
+	 LL_DMA_Configuration_Channel3((uint32_t)ADC_ConvertedValues,
+                              (uint32_t)&ADC->DR,
+                              ADC_CH_COUNT);
     
     // d. 再次软件触发 ADC 开始新一轮 6 通道扫描
     LL_ADC_REG_StartConversionSWStart(); 
 
 
 
-	#endif 
+	
 }
 
 

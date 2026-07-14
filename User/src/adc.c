@@ -9,21 +9,23 @@
 */
 
 #include "adc.h"   
-
+#include "bsp.h"
 
 // ADC 初始化配置
 void ADC_Configuration(void)
 {
-  LL_ADC_InitTypeDef ADC_InitStruct;
+
+ #if 0
+ LL_ADC_InitTypeDef ADC_InitStruct;
   LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC);
   LL_ADC_DeInit();
   LL_ADC_StructInit(&ADC_InitStruct);
   
   ADC_InitStruct.ClockMode = LL_ADC_CLOCK_MODE_PCLK;
   ADC_InitStruct.DataAlign = LL_ADC_DATA_ALIGN_RIGHT;
-  ADC_InitStruct.ScanMode = LL_ADC_SCAN_MODE_EN; //DIS;
+  ADC_InitStruct.ScanMode = LL_ADC_SCAN_MODE_EN;   //LL_ADC_SCAN_MODE_DIS;
   ADC_InitStruct.ContinuousMode = LL_ADC_REG_CONTINUOUS_DIS;
-  ADC_InitStruct.REG_ExternalTrig = LL_ADC_REG_EXT_TRIG_DIS;
+  ADC_InitStruct.REG_ExternalTrig = LL_ADC_REG_EXT_TRIG_EN;
   ADC_InitStruct.REG_ExternalEvent = LL_ADC_REG_EXTERNAL_TRIG_SWSTART;
   ADC_InitStruct.INJ_ExternalTrig = LL_ADC_INJ_EXT_TRIG_DIS;
   ADC_InitStruct.INJ_ExternalEvent = LL_ADC_INJ_EXTERNAL_TRIG_SWSTART;
@@ -38,17 +40,14 @@ void ADC_Configuration(void)
   LL_ADC_INJ_SetSequencerDiscont(LL_ADC_INJ_DISCONTINUOUS_DIS);
   LL_ADC_REG_SetSequencerDiscont(DISABLE);
   
-  LL_ADC_SetSampleTime(LL_ADC_SAMPLE_TIME_15_5_CYCLES);
+  LL_ADC_SetSampleTime(LL_ADC_SAMPLE_TIME_127_5_CYCLES);
   LL_ADC_REG_SetSequencerLength(LL_ADC_REG_SEQ_SCAN_RANKS_6);
-  LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2); //ADC_FAN   // 对应 ADC_ConvertedValues[0]
-  LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3); //ADC_PTC   // 对应 ADC_ConvertedValues[1]
-  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6); //ADC_WATER_2   // 对应 ADC_ConvertedValues[2]
-  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9); //ADC_WATER_3   // 对应 ADC_ConvertedValues[3]
-  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12);//ADC_WATER_4   // 对应 ADC_ConvertedValues[4]
-  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13); //ADC_WATER_1  // 对应 ADC_ConvertedValues[5] 
-
-  /* 3. 必须使能 ADC 的 DMA 传输请求 */
-  LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED); // 修改点：新增此行
+  LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2);
+  LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3);
+  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6);
+  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9);
+  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12);
+  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13);
   
   LL_ADC_INJ_SetTrigAuto(LL_ADC_INJ_TRIG_INDEPENDENT);
   LL_ADC_INJ_SetSequencerLength(LL_ADC_INJ_SEQ_SCAN_RANKS_1);
@@ -62,6 +61,41 @@ void ADC_Configuration(void)
 
   LL_ADC_ClearFlag_EOC();
   LL_ADC_Enable();
+
+  #else
+  LL_ADC_InitTypeDef ADC_InitStruct;
+    uint32_t i;
+  
+    LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC);
+    LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA);
+  
+    LL_ADC_StructInit(&ADC_InitStruct);
+  
+    ADC_InitStruct.ClockMode = LL_ADC_CLOCK_MODE_PCLK;             
+    ADC_InitStruct.ScanMode = LL_ADC_SCAN_MODE_EN;              
+    ADC_InitStruct.ContinuousMode = LL_ADC_REG_CONTINUOUS_DIS;        
+    ADC_InitStruct.DataAlign = LL_ADC_DATA_ALIGN_RIGHT;             
+    ADC_InitStruct.REG_ExternalTrig = LL_ADC_REG_EXT_TRIG_EN;  
+    ADC_InitStruct.REG_ExternalEvent = LL_ADC_REG_EXTERNAL_TRIG_SWSTART; 
+    LL_ADC_Init(ADC, &ADC_InitStruct);
+  
+		LL_VREFBUF_Enable(VREFBUF);
+		//LL_ADC_EnableTempSensor();
+	
+    LL_ADC_SetSampleTime(LL_ADC_SAMPLE_TIME_127_5_CYCLES);
+    LL_ADC_REG_SetSequencerLength(LL_ADC_REG_SEQ_SCAN_RANKS_6);  
+    for(i=0; i<ADC_CH_COUNT; i++)
+    {
+        LL_ADC_REG_SetSequencerRanks(i+1, i+1);
+    }
+    
+    LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
+    LL_ADC_ClearFlag_EOC();
+    LL_ADC_Enable();
+
+
+  #endif 
 }
 
 
