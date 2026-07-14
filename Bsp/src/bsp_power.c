@@ -48,12 +48,12 @@ static void handler_task(void);
 // 2. 任务注册表：将标志位地址与函数关联
 static Task_Config_t g_tasks[] = {
     // last_tick,  period(ms),  task_handler
-    {0,            100,         handler_AI_module_action},
-    {0,            1500,        handler_read_water_level_state},//1.5s
-    {0,            3000,        handler_works_hours},
-    {0,            4000,        handler_read_gxht40ad},
-    {0,            60000,       handler_wifi_update_data},        // 1分钟 = 60000ms
-    {0,            1000,        handler_read_adc_value}         // 1s
+    {0,            10,         handler_AI_module_action},//10ms*10
+    {0,            150,        handler_read_water_level_state},//1.5s
+    {0,            300,        handler_works_hours},
+    {0,            400,        handler_read_gxht40ad},
+    {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
+    {0,            100,        handler_read_adc_value}         // 10ms*100=1000ms =1s
     
 };
 
@@ -68,6 +68,9 @@ static void power_on_initial(void);
 static void power_on_cycle_handler(void);
 
 static void works_two_hours_times_handler(void);
+
+uint8_t gxht4_rec=0;
+
 
 /**
   * @brief  fan run is ok
@@ -143,7 +146,8 @@ void power_on_handler(void)
 		else{
 	 // ✨【新增：紧急事件拦截响应】✨
         // 如果按键任务设置完温度，将 g_pro.g_immediate_heat_f 置为 1
-           power_on_cycle_handler();
+          power_on_cycle_handler();
+	
 
 		}
         
@@ -166,27 +170,27 @@ void power_on_cycle_handler(void)
 
        // 【关键对齐】：将配置表的 ms 转换为当前硬件环境的 Tick 数
         // 既然 1 Tick = 10ms，那么 Tick数 = ms / 10
-        uint32_t period_tick = g_tasks[i].period_ms / 10;
+        //uint32_t period_tick = g_tasks[i].period_ms / 10;
         
         // 防止配置错误：如果误填了小于 10ms 的周期，强制算作 1 个 Tick
         
-        if (period_tick == 0) {
-            period_tick = 1; 
-        }
+       // if (period_tick == 0) {
+         //   period_tick = 1; 
+       // }
 
         // 使用纯 Tick 单位进行无符号减法，完美天然支持死循环绕回（Overflow）
-		if ((current_tick - g_tasks[i].last_tick) >= period_tick) 
+		if ((current_tick - g_tasks[i].last_tick) >= g_tasks[i].period_ms) 
         {
             // 【工业级进化：防轰炸饱和截断】
             // 如果卡顿/被高优先级抢占的时间超过了 2 个周期，直接对齐当前时间，放弃追赶
-            if ((current_tick - g_tasks[i].last_tick) > ( period_tick * 2)) 
+            if ((current_tick - g_tasks[i].last_tick) > ( g_tasks[i].period_ms * 2)) 
             {
                 g_tasks[i].last_tick = current_tick;
             }
             else 
             {
                 // 如果只是正常范围内的轻微抖动，滚动累加周期，死锁锁相，消除长期长跑漂移
-                g_tasks[i].last_tick += period_tick;
+                g_tasks[i].last_tick += g_tasks[i].period_ms;
             }
             
             // 触发对应周期的执行函数（确保不为 NULL，防止空指针崩溃）
@@ -211,7 +215,7 @@ void power_on_cycle_handler(void)
  ************************************************************************/
 static void handler_read_water_level_state(void)
 {
-	Water_System_Process();
+	//Water_System_Process();
 }
 static void handler_wifi_update_data(void)
 {
@@ -225,21 +229,24 @@ static void handler_works_hours(void)
    works_two_hours_times_handler();
 
 }
+uint8_t counter_test;
+
 static void handler_read_gxht40ad(void)
 {
-   static uint8_t rec;
-	rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
-	if(rec==0){
+    
+     gxht4_rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+	if(gxht4_rec==0){
       #if 1
       printf("temp = %d , humidity = %d \r\n",gpro_t.temperature,gpro_t.humidity);
 	  #endif 
+	
 
 	}
 	else{
 		#if 1
 	      printf("read temp is error !!!!\r\n");
 		#endif 
-
+	   counter_test++;
 	}
 
 
@@ -255,7 +262,7 @@ static void handler_AI_module_action(void)
 static void handler_read_adc_value(void)
 {
 
-  adc_read_6channels_value();
+ // adc_read_6channels_value();
 
 }
 
@@ -464,15 +471,17 @@ static void works_two_hours_times_handler(void)
   * @param: 
   *
 **/
+uint8_t power_counter;
 void power_on_off_handler(void)
 {
 
  
-	 switch(gpro_t.g_plasma_flag){
+	 switch(gpro_t.g_power_flag){
 
       case 1:
+	  	   power_counter ++;
            power_on_handler();
-	 
+	    
 	  break;
 
 	  case 0:

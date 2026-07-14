@@ -163,26 +163,7 @@ void UART2_Configuration(void)
 }
 
 
-/* USER CODE BEGIN fputc */
-//#if defined ( __CC_ARM )
-int fputc(int ch, FILE *f)
-{
-  LL_UART_TransmitData8(UART1, ch);
-  while(LL_UART_IsActiveFlag_TC(UART1) == RESET);
-  return ch;
-}
-//#elif defined ( __GNUC__ )
-int _write(int file, char *ptr, int len)
-{
-  for (int i = 0; i < len; ++i)
-  {
-    LL_UART_TransmitData8(UART1, ptr[i]);
-    while(LL_UART_IsActiveFlag_TC(UART1) == RESET);
-  }
-  return len;
-}
-//#endif
-/* USER CODE END fputc */
+
 
 
 
@@ -233,8 +214,43 @@ void UART2_DMA_Wifi_Send(const uint8_t *pData, uint16_t Size)
 
 
 
+/* USER CODE BEGIN fputc */
+//#if defined ( __CC_ARM )
+int fputc(int ch, FILE *f)
+{
+  uint32_t timeout = 50000; // 根据波特率设定合理的超时计数
+  LL_UART_TransmitData8(UART1, ch);
+// while(LL_UART_IsActiveFlag_TC(UART1) == RESET){//增加超时跳出，防止串口硬件异常时卡死全系统
+   
+//        if (--timeout == 0) {
+//            return ch; // 超时了，直接退出，不陪它死等
+//        }
+//    }
+  while (!LL_UART_IsActiveFlag_TXE(UART1));
+
+  return ch;
+}
+////#elif defined ( __GNUC__ )
+//int _write(int file, char *ptr, int len)
+//{
+//  for (int i = 0; i < len; ++i)
+//  {
+//    LL_UART_TransmitData8(UART1, ptr[i]);
+//    while(LL_UART_IsActiveFlag_TC(UART1) == RESET);
+//  }
+//  return len;
+//}
+//#endif
+/* USER CODE END fputc */
 
 
+// 自己写一个安全的、绝对不依赖 C 库的字符发送函数
+void My_UART_SendChar(uint8_t ch) 
+{
+    // 只有时钟开启且寄存器有效时，这样写才安全
+    // 如果怕卡死，这里甚至不需要等
+    UART1->TDR = ch; 
+}
 
 
 

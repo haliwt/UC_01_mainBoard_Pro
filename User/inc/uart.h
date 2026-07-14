@@ -32,6 +32,7 @@ void UART1_DMA_Disp_Send(const uint8_t *pData, uint16_t Size);
 
 void UART2_DMA_Wifi_Send(const uint8_t *pData, uint16_t Size);
 
+void My_UART_SendChar(uint8_t ch) ;
 
 
 #ifdef __cplusplus

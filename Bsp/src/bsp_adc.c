@@ -71,7 +71,7 @@ void adc_read_6channels_value(void)
     
     /* 3. 清除 DMA 传输完成标志位，为下一轮做准备 */
     LL_DMA_ClearFlag_TC3(DMA);
-    #if 0
+    #if 1
     /* 4. 此时数据 100% 已经是最新准确的了，开始顺次输出 */
     for(i = 0; i < ADC_CH_COUNT; i++)
     {

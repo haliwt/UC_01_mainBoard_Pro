@@ -15,7 +15,7 @@
 #define KEY_AI_LONG    (1 << 7)
 
 
-#define STACK_SIZE_KEY  256//512//256//512//1792//3072//2048//1024//896//768
+#define STACK_SIZE_KEY  512//256//512//1792//3072//2048//1024//896//768
 #define STACK_SIZE_DECODER  256//512//512//256
 #define STACK_SIZE_UI    1536//1536//1024//256
 #define STACK_SIZE_EVENT  512
@@ -49,8 +49,10 @@ static void ui_thread_entry(ULONG thread_input);
 static void key_event_thread_entry(ULONG thread_input);
 /* 定时器回调函数 */
 //void my_timer_callback(ULONG input);
-	
-uint8_t down_cnt_long_f= 0;
+
+
+uint8_t entry_ui_counter,entry_key_counter,entry_key_event_counter;
+
 
 #if DEBUG_ENABLE
 
@@ -175,7 +177,8 @@ void tx_application_define(void *first_unused_memory)
        // 阻塞等待 ISR 投递
       if(tx_semaphore_get(&wifi_semaphore, TX_WAIT_FOREVER) == TX_SUCCESS)
       {
-          decoder_handler() ;
+          
+		  decoder_handler() ;
 		    
        }
 	   else{
@@ -201,7 +204,7 @@ void tx_application_define(void *first_unused_memory)
     power_on_off_handler();
 
     LL_IWDG_ReloadCounter(IWDG);//IWDG_ReloadCounter();
-    
+    entry_ui_counter++;
 	
 #if DEBUG_ENABLE
 	 debug_stack_ui_check();
@@ -235,7 +238,7 @@ void tx_application_define(void *first_unused_memory)
    // 物理层扫描
     if(KEY_POWER_VALUE() == KEY_DOWN){ //power key
 		  power_cnt++;
-            if(power_cnt == LONG_PRESS_TIME && gpro_t.g_power_flag == 1){
+            if(power_cnt == LONG_PRESS_TIME  && gpro_t.g_power_flag == true){
                 tx_event_flags_set(&key_event, KEY_POWER_LONG, TX_OR);
              }
     }
@@ -248,8 +251,7 @@ void tx_application_define(void *first_unused_memory)
 	}
 	else if(KEY_AI_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){// == 1 && gpro_t.g_power_flag ==1){ //key mode
 
-	   
-		 ai_cnt++;
+	   ai_cnt++;
             if(ai_cnt == LONG_PRESS_TIME  ){
 				tx_event_flags_set(&key_event, KEY_AI_LONG, TX_OR);
                
@@ -263,7 +265,7 @@ void tx_application_define(void *first_unused_memory)
         ai_cnt = 0;
 
 	}
-    else if (KEY_FAN_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){ //up key
+    else if (KEY_FAN_VALUE() == KEY_DOWN  && gpro_t.g_power_flag == true){ //up key
 		  fan_cnt++;
         if(fan_cnt == LONG_PRESS_TIME)
                tx_event_flags_set(&key_event, KEY_FAN_LONG, TX_OR);
@@ -279,8 +281,8 @@ void tx_application_define(void *first_unused_memory)
 	else if (KEY_PLASMA_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){ //dwon key
 		
 		  plasma_cnt++;
-          if(plasma_cnt == LONG_PRESS_TIME && down_cnt_long_f ==0){
-		  	    down_cnt_long_f =1;
+          if(plasma_cnt == LONG_PRESS_TIME ){
+		  	  
                 tx_event_flags_set(&key_event, KEY_PLASMA_LONG, TX_OR);
           	}
 		
@@ -301,6 +303,7 @@ void tx_application_define(void *first_unused_memory)
 #if DEBUG_ENABLE
 	 debug_stack_key_check();
 #endif 
+    entry_key_counter++;
     tx_thread_sleep(6);//10ms*6=60 
 	
     } 
@@ -327,6 +330,8 @@ void tx_application_define(void *first_unused_memory)
                            TX_WAIT_FOREVER);//TX_NO_WAIT);//TX_WAIT_FOREVER);//
                            
      if(status == TX_SUCCESS){
+
+	 entry_key_event_counter ++;
 
 	    if(flags & KEY_POWER_SHORT){
 

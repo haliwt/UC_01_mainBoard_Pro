@@ -8,6 +8,7 @@
 /* GPIO 引脚及端口宏定义（在此处修改为您实际连接的引脚） */
 #define GXHT40_SCL_PORT         GPIOF
 #define GXHT40_SCL_PIN          LL_GPIO_PIN_6
+
 #define GXHT40_SDA_PORT         GPIOF
 #define GXHT40_SDA_PIN          LL_GPIO_PIN_7
 
@@ -18,13 +19,25 @@
 #define SDA_L()                 LL_GPIO_ResetOutputPin(GXHT40_SDA_PORT, GXHT40_SDA_PIN)
 #define SDA_READ()              LL_GPIO_IsInputPinSet(GXHT40_SDA_PORT, GXHT40_SDA_PIN)
 
+static void I2C_Stop(void);
+
+static void SDA_Mode_Input(void)
+{
+    LL_GPIO_SetPinMode(GXHT40_SDA_PORT, GXHT40_SDA_PIN, LL_GPIO_MODE_INPUT);
+}
+
+static void SDA_Mode_Output(void)
+{
+    LL_GPIO_SetPinMode(GXHT40_SDA_PORT, GXHT40_SDA_PIN, LL_GPIO_MODE_OUTPUT);
+}
+
 /**
  * @brief 软件 I2C 微秒级延时
  * @note  YS32T031 运行在不同主频时，可通过调整循环次数来控制 I2C 速率（建议保持在 100kHz 左右）
  */
 static void I2C_Delay(void)
 {
-    volatile uint32_t i = 30; 
+    volatile uint32_t i = 150; 
     while(i--);
 }
 
@@ -33,27 +46,10 @@ static void I2C_Delay(void)
  */
 static void Delay_ms(uint32_t ms)
 {
-   #if 0
-   // 可以替换为 YS32 LL 库中对应的延时函数，如 LL_mDelay(ms)
-    volatile uint32_t count = ms * 16000;//64MHZ 
+   // 放弃 tx_thread_sleep，改用绝对不依赖操作系统的裸机死等延时
+    // 在 YS32T031 运行在 64MHz 主频下，每毫秒大约需要 16000 次循环
+    volatile uint32_t count = ms * 16000; 
     while(count--);
-   #else
-    //tx_thread_sleep(ms);//LL_mDelay(ms);
-    /* 
-       1. 计算基础 Ticks（向上取整，避免不足 10ms 的部分被舍弃）
-          例如输入 ms = 10 时，(10 + 9) / 10 = 1 Tick
-    */
-    uint32_t ticks = (ms + 9) / 10; 
-
-    /* 
-       2. 核心避坑：额外 +1 个 Tick。
-          在 1 tick = 10ms 的粗颗粒度系统下，必须 +1 才能确保
-          实际延时绝对大于硬件所要求的 8.3ms 转换时间[cite: 1]。
-          此时输入 10ms，实际会休眠 2 个 Ticks（即 10ms ~ 20ms 之间）。
-    */
-    tx_thread_sleep(ticks + 1);
-
-  #endif
 }
 
 /**
@@ -65,6 +61,7 @@ void GXHT40_Init(void)
     // 注意：请根据 YS32 具体的总线映射选择外设使能宏（如：LL_IOP_GRP1_EnableClock 或 LL_AHB_GRP1_EnableClock）
     //LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA); 
 
+    uint8_t i;
 	LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
     LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOF);
 
@@ -74,13 +71,23 @@ void GXHT40_Init(void)
     GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
-    GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+    GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
     
     LL_GPIO_Init(GXHT40_SCL_PORT, &GPIO_InitStruct);
 
     // 3. 释放总线
-    SCL_H();
-    SDA_H();
+   // 3. 【核心救命代码】：I2C 总线强制解锁（九脉冲释放 SDA）
+    SDA_H(); // 释放 SDA 
+    for ( i = 0; i < 9; i++)
+    {
+        SCL_L();
+        I2C_Delay();
+        SCL_H();
+        I2C_Delay();
+    }
+    
+    // 4. 发送一个 Stop 信号，让总线彻底复位
+    I2C_Stop();
 }
 
 /* ==========================================
@@ -101,9 +108,10 @@ static void I2C_Start(void)
 static void I2C_Stop(void)
 {
     SDA_L();
+    I2C_Delay(); // 👈 【救命延时】：必须等 SDA 稳定在低电平后，才能去动 SCL！
     SCL_H();
-    I2C_Delay();
-    SDA_H();
+    I2C_Delay(); // 👈 确保 SCL 稳定在高电平
+    SDA_H();     // 👈 在 SCL 为高时，SDA 由低变高，这才是完美的 STOP 信号
     I2C_Delay();
 }
 
@@ -119,9 +127,11 @@ static uint8_t I2C_WriteByte(uint8_t byte)
         SCL_H();
         I2C_Delay();
         SCL_L();
+		I2C_Delay(); // 👈 增加这一句，确保每个时钟低电平周期完整，并给数据线留出切换时间
     }
     
     // 读取应答信号 (ACK)
+    #if 0
     SDA_H(); 
     I2C_Delay();
     SCL_H();
@@ -129,6 +139,25 @@ static uint8_t I2C_WriteByte(uint8_t byte)
     ack = SDA_READ(); // 0: ACK, 1: NACK
     SCL_L();
     I2C_Delay();
+	#else
+			// 释放 SDA，让从机能拉低
+		SDA_Mode_Input();  
+		I2C_Delay();
+
+		SCL_H();
+		I2C_Delay();
+
+		ack = SDA_READ();   // 0 = ACK, 1 = NACK
+
+		SCL_L();
+		I2C_Delay();
+
+		// 切回输出模式
+		SDA_Mode_Output();
+
+
+
+	#endif 
     
     return ack;
 }
@@ -136,7 +165,8 @@ static uint8_t I2C_WriteByte(uint8_t byte)
 static uint8_t I2C_ReadByte(uint8_t send_ack)
 {
     uint8_t byte = 0;
-    SDA_H(); 
+    //SDA_H(); 
+    SDA_Mode_Input();  
     for (uint8_t i = 0; i < 8; i++)
     {
         byte <<= 1;
@@ -146,7 +176,7 @@ static uint8_t I2C_ReadByte(uint8_t send_ack)
         if (SDA_READ()) byte |= 0x01;
         SCL_L();
     }
-    
+    SDA_Mode_Output();
     // 发送应答或非应答
     if (send_ack) SDA_L(); // ACK
     else SDA_H();          // NACK
