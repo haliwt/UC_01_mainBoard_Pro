@@ -41,7 +41,8 @@ static void handler_wifi_update_data(void);
 static void handler_works_hours(void);
 static void handler_read_gxht40ad(void);
 static void handler_AI_module_action(void);
-static void handler_task(void);
+static void handler_fan_adc_value(void);
+static void handler_tec_adc_value(void);
 
 
 
@@ -53,7 +54,9 @@ static Task_Config_t g_tasks[] = {
     {0,            300,        handler_works_hours},
     {0,            450,        handler_read_gxht40ad},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
-    {0,            400,        handler_read_adc_value}         // 10ms*100=1000ms =1s
+    {0,            400,        handler_read_adc_value},         // 10ms*100=1000ms =1s
+    {0,            550,        handler_fan_adc_value},
+    {0,            420,        handler_tec_adc_value},
     
 };
 
@@ -265,6 +268,22 @@ static void handler_read_adc_value(void)
   adc_read_6channels_value();
 
 }
+
+static void handler_fan_adc_value(void)
+{
+
+	gpro_t.fan_adc_value =adc_fan_mv_value();
+
+
+}
+static void handler_tec_adc_value(void)
+{
+
+	gpro_t.ntc_adc_value =adc_ntc_mv_value();
+
+
+}
+
 
 /************************************************************************
  *

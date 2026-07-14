@@ -82,6 +82,9 @@ typedef struct _main_ref{
  uint8_t fan_warning_f;
  bool dma_dong_flag ;
 
+ uint16_t fan_adc_value;
+ uint16_t ntc_adc_value;
+
  //wifi reference 
  bool link_net_flag;
  bool g_is_net_flag;

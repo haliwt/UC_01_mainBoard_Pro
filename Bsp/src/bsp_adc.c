@@ -25,7 +25,7 @@ void adc_read_6channels_value(void)
 {
 
 
-    uint8_t i = 0;
+    uint8_t i ;
 
     /* 1. 【核心修改】不要在读取函数里重复初始化 DMA！ 
        LL_DMA_Configuration_Channel3(...) 应该移到 main.c 的初始化部分中去 */
@@ -76,7 +76,7 @@ void adc_read_6channels_value(void)
                               ADC_CH_COUNT);
     
     // d. 再次软件触发 ADC 开始新一轮 6 通道扫描
-    LL_ADC_REG_StartConversionSWStart(); 
+     LL_ADC_REG_StartConversionSWStart(); 
 
 
 
