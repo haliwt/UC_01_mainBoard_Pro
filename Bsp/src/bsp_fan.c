@@ -65,47 +65,7 @@ void fan_adjust_low_speed(void)
 }
 
 
-/**
-*
-*@brief 
-*@notice
-*@param
-*
-**/
-void wifiFan_Ctrl_Process(void)
-{
-   
-	if(gpro_t.g_plasma_flag){
-	   if(works_interval_f == 0 && fan_rx_stop_flag ==0){
-	      	
-	     
-		if((fan_open_f)){
-			if(fan_speed_level < 34)
-			{
-			  fan_adjust_low_speed();
-			}
-			else if(fan_speed_level > 33 && fan_speed_level < 67)
-			{
-		      fan_adjust_middle_speed();
-			}
-			else if(fan_speed_level==100 || fan_speed_level > 66)
-			{
-			  fan_adjust_high_speed();
-			}
 
-		
-		}
-    }
-	}
-}
-/**
-*
-*@brief 
-*@notice
-*@param
-*@retrval 
-*
-**/
 /**
  * @brief  风扇挡位调节处理函数
  * @note   每次调用该函数，根据当前的按键计数切换风扇速度

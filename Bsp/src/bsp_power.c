@@ -70,17 +70,6 @@ static void power_on_cycle_handler(void);
 static void works_two_hours_times_handler(void);
 
 /**
-  * @brief  fan run is error
-  * @note  
-  * @param: 
-  *
-**/
-
-/****************************************************/
-
-
-
-/**
   * @brief  fan run is ok
   * @note  
   *
@@ -266,7 +255,7 @@ static void handler_AI_module_action(void)
 static void handler_read_adc_value(void)
 {
 
-   adc_read_6channels_value();
+  adc_read_6channels_value();
 
 }
 

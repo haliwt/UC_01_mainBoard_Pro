@@ -36,6 +36,7 @@
 #include "bsp_xdp.h"
 #include "bsp_fan.h"
 #include "bsp_buzzer.h"
+#include "bsp_adc.h"
 #include "bsp_water_adc.h"
 
 

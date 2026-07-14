@@ -22,6 +22,7 @@ uint16_t ptc_voltage_mv = 0;   // 全局或静态变量：转换后的电压值�
 #endif 
 void adc_read_6channels_value(void)
 {
+ #if 0
    uint8_t i = 0;
 /* 3. 配置 DMA 通道 3 */
     // 传入：内存数组地址、ADC 数据寄存器地址、传输长度（6）
@@ -49,6 +50,53 @@ void adc_read_6channels_value(void)
         
         // d. 再次软件触发 ADC 开始新一轮 6 通道扫描
         LL_ADC_REG_StartConversionSWStart();
+	#else
+
+    uint8_t i = 0;
+
+    /* 1. 【核心修改】不要在读取函数里重复初始化 DMA！ 
+       LL_DMA_Configuration_Channel3(...) 应该移到 main.c 的初始化部分中去 */
+
+    /* 2. 等待 DMA 传输完成（非常重要！）
+       如果你不用中断，必须在这里判断 DMA 传输完成标志位（TC - Transfer Complete），
+       否则直接打印会读到垃圾数据。注意：请根据你的芯片型号修改 DMAx 和 CHANNELx */
+    while (!LL_DMA_IsActiveFlag_TC3(DMA)) 
+    {
+        // 等待传输完成... 
+        // 如果是在 RTOS (ThreadX) 中，这里也可以用信号量等待，防止死等卡死 CPU
+    }
+    
+    /* 3. 清除 DMA 传输完成标志位，为下一轮做准备 */
+    LL_DMA_ClearFlag_TC3(DMA);
+    #if 0
+    /* 4. 此时数据 100% 已经是最新准确的了，开始顺次输出 */
+    for(i = 0; i < ADC_CH_COUNT; i++)
+    {
+        // Channel_2, 3, 6, 9, 12, 13
+        printf("CH[%d]=%d  ", i, ADC_ConvertedValues[i]);
+    }
+    printf("\n");
+	#endif 
+        
+    /* 5. 延时 500ms 再次触发 */
+    tx_thread_sleep(10); // ThreadX 延时
+
+    /* 6. --- 重新启动下一轮 ADC+DMA 采集 --- */
+    // a. 先关闭 DMA 通道以允许重新配置长度
+    LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_3);
+    
+    // b. 重新设置需要传输的数据长度
+    LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_3, ADC_CH_COUNT);
+    
+    // c. 重新使能 DMA 通道
+    LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_3);
+    
+    // d. 再次软件触发 ADC 开始新一轮 6 通道扫描
+    LL_ADC_REG_StartConversionSWStart(); 
+
+
+
+	#endif 
 }
 
 

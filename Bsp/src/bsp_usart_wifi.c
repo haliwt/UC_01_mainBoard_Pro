@@ -694,7 +694,7 @@ static void evt_fan(void)
 	if (gpro_t.g_power_flag == 1)
     {
         beep_key_click();
-		wifiFan_Ctrl_Process();
+		//wifiFan_Ctrl_Process();
         MqttData_Publis_SetFan(fan_speed_level);
 		
 

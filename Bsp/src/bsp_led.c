@@ -41,7 +41,7 @@ void wifi_fast_led_state(void)
 {
    static uint8_t slowly_led_counter = 0;//100ms
    if((gpro_t.g_power_flag ==1) && (gpro_t.link_net_flag ==1) && (gpro_t.wifi_connected_success_flag == 0)){
-	    LED_WIFI_TOGGLE();
+	   // LED_WIFI_TOGGLE();
 		
    }
    else if((gpro_t.g_power_flag ==1) && (gpro_t.link_net_flag ==0) && (gpro_t.wifi_connected_success_flag == 0)){
@@ -50,20 +50,20 @@ void wifi_fast_led_state(void)
 		if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s 
 
 		    slowly_led_counter =0;
-		     LED_WIFI_TOGGLE();
+		    // LED_WIFI_TOGGLE();
 		}
    }
    else if(gpro_t.g_power_flag ==0){
 	     
 	   if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s
 	     slowly_led_counter=0;
-        LED_POWER_TOGGLE();
+       // LED_POWER_TOGGLE();
 
       }
    }
    else if(gpro_t.wifi_connected_success_flag==1 && gpro_t.g_power_flag ==1){
 			
-	       LED_WIFI_ON();
+	      // LED_WIFI_ON();
 
    	}
 }
@@ -78,7 +78,7 @@ void wifi_led_state_handler(void)
      if(gpro_t.link_net_flag==1) return ;
 	 if(gpro_t.wifi_connected_success_flag==1)
 		{
-			LED_WIFI_ON();
+			//LED_WIFI_ON();
 //			  #if DEBUG_ENABLE
 
 //			   printf("wifi_flag = %d\n\r",gpro_t.wifi_connected_success_flag);
@@ -94,12 +94,6 @@ void wifi_led_state_handler(void)
 *@param:
 *@notice
 **/
-void Water_level_indicator_light(void)
-{
-     
-
-
-}
 
 
 

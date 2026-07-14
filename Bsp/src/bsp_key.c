@@ -46,6 +46,20 @@ void key_power_short_handler(void)
 *@param
 *
 **/
+
+void key_power_long_handler(void)
+{
+
+
+}
+
+/**
+*
+*@brief 
+*@notice
+*@param
+*
+**/
 void key_fan_short_handler(void)
 {
    

@@ -173,6 +173,7 @@ extern power_state gon_t;
 
 void power_on_handler(void);
 
+void power_on_off_handler(void);
 
 	
 #ifdef __cplusplus
