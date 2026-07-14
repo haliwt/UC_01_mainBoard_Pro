@@ -71,14 +71,14 @@ void ai_set_status(bool idata)    // 1--开启, 0- 关闭
 {
     if(idata == true){
 
-      LED_AI_ON();
+      LED_KEY_AI_ON();
 	  power_on_ctrl_handler();
 	  LED_FAN_ON();
       LED_PLASMA_ON();
       
 	}
 	else{
-       LED_AI_OFF();
+       LED_KEY_AI_OFF();
 
 	}
 

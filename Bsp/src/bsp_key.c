@@ -63,15 +63,17 @@ void key_power_long_handler(void)
 void key_fan_short_handler(void)
 {
    
-   if(gpro_t.g_ai_flag == true ||  works_interval_f ==1) return;
+   if(gpro_t.g_ai_flag == true ) return;
    
  
       beep_key_click();
 	  gpro_t.g_fan_speed++;
       if (gpro_t.g_fan_speed > 3) {
          gpro_t.g_fan_speed= 1; // 确保异常时能正确恢复到 1 档
-       }
-      fan_speed_adjust_handler(gpro_t.g_fan_speed);
+      }
+	  if(works_interval_f ==0){
+        fan_speed_adjust_handler(gpro_t.g_fan_speed);
+	   }
 
    
 }
@@ -86,12 +88,14 @@ void key_fan_short_handler(void)
 void key_plasma_short_handler(void)
 { 
    static uint8_t plasma_key_cnt = 0;
-   if(gpro_t.g_ai_flag == true || works_interval_f ==1) return;
+   if(gpro_t.g_ai_flag == true) return;
    
 	
    beep_key_click();
    gpro_t.g_plasma_flag = !gpro_t.g_plasma_flag;
-   plasma_set_status(gpro_t.g_plasma_flag);
+   if(works_interval_f ==0){
+      plasma_set_status(gpro_t.g_plasma_flag);
+   }
 	
 	
 
@@ -125,12 +129,12 @@ void ai_module_hanlder(void)
       power_on_ctrl_handler();
 	  LED_FAN_ON();
       LED_PLASMA_ON();
-      LED_AI_ON();
+      LED_KEY_AI_ON();
 
    }
    else{
 
-     LED_AI_OFF();
+     LED_KEY_AI_OFF();
      plasma_set_status(gpro_t.g_plasma_flag);
      fan_speed_adjust_handler(gpro_t.g_fan_speed);
 

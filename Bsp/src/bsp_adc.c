@@ -1,6 +1,9 @@
 #include "bsp.h"
 
 #define  ADC_CH_COUNT  6
+
+#define  ADC_ENABLE    1
+
 //uint16_t ADC_DATA_BUF[ADC_DMA_CH_LEN];
 
 /* 建立一个 16 位数组，专门用于接收 6 个通道的 ADC 原始值 */
@@ -101,28 +104,6 @@ void adc_read_6channels_value(void)
 
 
 
-void adc_fan_value(void)
-{
-    /* 1. 一阶低通滤波（理顺原本注释掉的代码）
-          新采样值权重占 2/20，历史滤波值权重占 18/20 */
-   // ptc_adc_filtered = (ad_ptc_value[0] * 2 + ptc_adc_filtered * 18) / 20;
-
-    /* 2. 转换成电压（单位：毫伏 mV）
-          假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
-    ptc_voltage_mv = (ADC_ConvertedValues[0]* 3300) / 4095;
-}
-
-
-void adc_ntc_value(void)
-{
-    /* 1. 一阶低通滤波（理顺原本注释掉的代码）
-          新采样值权重占 2/20，历史滤波值权重占 18/20 */
-   // ptc_adc_filtered = (ad_ptc_value[0] * 2 + ptc_adc_filtered * 18) / 20;
-
-    /* 2. 转换成电压（单位：毫伏 mV）
-          假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
-    ptc_voltage_mv = (ADC_ConvertedValues[1] * 3300) / 4095;
-}
 
 
 uint16_t adc_water_3_value(void)//adc_water_2_value
@@ -134,6 +115,9 @@ uint16_t adc_water_3_value(void)//adc_water_2_value
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
     ptc_voltage_mv = (ADC_ConvertedValues[2] * 3300) / 4095;
+	#if ADC_ENABLE
+      printf("water_adc_3 = %d\r\n",ptc_voltage_mv);
+	#endif 
 
 	return ptc_voltage_mv;
 }
@@ -147,6 +131,9 @@ uint16_t adc_water_2_value(void)//adc_water_3_value
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
     ptc_voltage_mv = (ADC_ConvertedValues[3] * 3300) / 4095;
+	#if ADC_ENABLE
+      printf("water_adc_2 = %d\r\n",ptc_voltage_mv);
+	#endif
 
 	return ptc_voltage_mv;
 }
@@ -160,6 +147,9 @@ uint16_t adc_water_1_value(void)//adc_water_4_value
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
     ptc_voltage_mv = (ADC_ConvertedValues[4] * 3300) / 4095;
+	#if ADC_ENABLE
+      printf("water_adc_1 = %d\r\n",ptc_voltage_mv);
+	#endif
 
 	return ptc_voltage_mv;
 }
@@ -173,6 +163,9 @@ uint16_t adc_water_warning_value(void)//adc_water_1_value
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
     ptc_voltage_mv = (ADC_ConvertedValues[5] * 3300) / 4095;
+	#if ADC_ENABLE
+      printf("water_adc_0 = %d\r\n",ptc_voltage_mv);
+	#endif
 
 	return ptc_voltage_mv;
 }
@@ -187,6 +180,10 @@ uint16_t adc_ntc_mv_value(void)
 	/* 2. 转换成电压（单位：毫伏 mV）
 		   假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
 	 ptc_voltage_mv = (ADC_ConvertedValues[1] * 3300) / 4095;
+     #if ADC_ENABLE
+		   printf("ntc_adc = %d\r\n",ptc_voltage_mv);
+	#endif
+
 	
 	 return ptc_voltage_mv;
 
@@ -197,6 +194,10 @@ uint16_t adc_fan_mv_value(void)
 	/* 2. 转换成电压（单位：毫伏 mV）
 		   假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
 	 ptc_voltage_mv = (ADC_ConvertedValues[0] * 3300) / 4095;
+
+	 #if ADC_ENABLE
+      printf("fan_adc = %d\r\n",ptc_voltage_mv);
+	#endif
 	
 	 return ptc_voltage_mv;
 

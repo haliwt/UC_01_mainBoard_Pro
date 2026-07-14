@@ -66,7 +66,7 @@ void UART1_Int_Call(void)
 
 /**
 * @brief  UART1 displayBoard
- * @param  String: ×Ö·û´®
+ * @param  String: 
  * @retval None
  */
 // UART1 åˆå§‹åŒ–é…ç½®,Display Board bpd = 9600
@@ -164,14 +164,14 @@ void UART2_Configuration(void)
 
 
 /* USER CODE BEGIN fputc */
-#if defined ( __CC_ARM )
+//#if defined ( __CC_ARM )
 int fputc(int ch, FILE *f)
 {
   LL_UART_TransmitData8(UART1, ch);
   while(LL_UART_IsActiveFlag_TC(UART1) == RESET);
   return ch;
 }
-#elif defined ( __GNUC__ )
+//#elif defined ( __GNUC__ )
 int _write(int file, char *ptr, int len)
 {
   for (int i = 0; i < len; ++i)
@@ -181,7 +181,7 @@ int _write(int file, char *ptr, int len)
   }
   return len;
 }
-#endif
+//#endif
 /* USER CODE END fputc */
 
 

@@ -1,6 +1,11 @@
 #include "bsp.h"
 
 
+#define FAN_SPEED_HIGH       40
+#define FAN_SPEED_MIDDLE     20
+#define FAN_SPEED_LOW        10
+
+
 /**
 *
 *@brief 
@@ -25,8 +30,8 @@ void fan_stop(void)
 **/
 void fan_adjust_high_speed(void)
 {
-    
-    LL_TIM_OC_SetCompareCH1(TIM1, 2560); // 设置 100% 占空比
+    LL_TIM_DisableCounter(TIM1);         
+    LL_TIM_OC_SetCompareCH1(TIM1, FAN_SPEED_HIGH); // 设置 100% 占空比
 	LL_TIM_EnableCounter(TIM1);             // 使能定时器计数器 (对应 TIM_Cmd)
     LL_TIM_EnableAllOutputs(TIM1);          // 使能主输出 (对应 TIM_CtrlPWMOutputs, 仅高级定时器 TIM1 需要)
 
@@ -41,8 +46,8 @@ void fan_adjust_high_speed(void)
 void fan_adjust_middle_speed(void)
 {
 
-	
-	LL_TIM_OC_SetCompareCH1(TIM1, 2304); // 设置 90% 占空比
+	 LL_TIM_DisableCounter(TIM1);  
+	LL_TIM_OC_SetCompareCH1(TIM1, FAN_SPEED_MIDDLE); // 设置 90% 占空比
 	LL_TIM_EnableCounter(TIM1); 			// 使能定时器计数器 (对应 TIM_Cmd)
 	LL_TIM_EnableAllOutputs(TIM1);			// 使能主输出 (对应 TIM_CtrlPWMOutputs, 仅高级定时器 TIM1 需要)
 
@@ -57,8 +62,9 @@ void fan_adjust_middle_speed(void)
 **/
 void fan_adjust_low_speed(void)
 {
+	LL_TIM_DisableCounter(TIM1);  
 
-	LL_TIM_OC_SetCompareCH1(TIM1, 2048); // 设置 80% 占空比
+	LL_TIM_OC_SetCompareCH1(TIM1, FAN_SPEED_LOW); // 设置 80% 占空比
 	LL_TIM_EnableCounter(TIM1);             // 使能定时器计数器 (对应 TIM_Cmd)
     LL_TIM_EnableAllOutputs(TIM1);          // 使能主输出 (对应 TIM_CtrlPWMOutputs, 仅高级定时
 

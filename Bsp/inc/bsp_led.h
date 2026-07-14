@@ -12,8 +12,8 @@
 #define LED_PLASMA_ON()    LL_GPIO_ResetOutputPin(LED_PLASMA_GPIO_Port, LL_LED_PLASMA_Pin)
 #define LED_PLASMA_OFF()   LL_GPIO_SetOutputPin(LED_PLASMA_GPIO_Port, LL_LED_PLASMA_Pin)
 
-#define LED_AI_ON()
-#define LED_AI_OFF()       LL_GPIO_SetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
+#define LED_KEY_AI_ON()        LL_GPIO_ResetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
+#define LED_KEY_AI_OFF()       LL_GPIO_SetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
 
 #define LED_WATER_INDICATOR_1()      LL_GPIO_SetOutputPin(LED_WATER_RB_GPIO_Port,LL_LED_WATER_RB_Pin)     
 #define LED_WATER_LEVEL_1()          LL_GPIO_ResetOutputPin(LED_WATER_RB_GPIO_Port,LL_LED_WATER_RB_Pin)     

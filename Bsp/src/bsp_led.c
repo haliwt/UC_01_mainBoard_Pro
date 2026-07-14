@@ -13,7 +13,7 @@ void power_on_led_handler(void)
    LED_POWER_ON();
    LED_FAN_ON();
    LED_PLASMA_ON();
-   LED_AI_ON();
+   LED_KEY_AI_ON();
 
 }
 
@@ -28,7 +28,7 @@ void power_off_led_handler(void)
 	 LED_POWER_OFF();
 	 LED_FAN_OFF();
 	 LED_PLASMA_OFF();
-	 LED_AI_OFF();
+	 LED_KEY_AI_OFF();
 
 }
 
