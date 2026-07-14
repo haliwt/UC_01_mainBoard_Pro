@@ -52,6 +52,7 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(ADC_WATER_3_GPIO_Port, &GPIO_InitStruct);
 
+ #if 0
   // COMP1_OUT
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Alternate = LL_GPIO_AF_7;
@@ -59,6 +60,7 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(LED_R_1_GPIO_Port, &GPIO_InitStruct);
+  #endif 
 
   // TIM1_CH1
   LL_GPIO_StructInit(&GPIO_InitStruct);
@@ -154,8 +156,6 @@ void GPIO_Configuration(void)
 
 
 
-
-  
 
   //KEY LED GPIO_Output
   LL_GPIO_SetOutputPin(LED_AI_GPIO_Port,LL_LED_AI_Pin);

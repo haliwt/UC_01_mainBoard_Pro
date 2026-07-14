@@ -99,8 +99,8 @@ extern "C" {
 #define LED_B_3_GPIO_Port GPIOB
 #define LL_LED_B_3_Pin LL_GPIO_PIN_14
 
-#define LED_G_2_GPIO_Port GPIOB
-#define LL_LED_G_2_Pin LL_GPIO_PIN_15
+#define LED_G_2_GPIO_Port 				GPIOB
+#define LL_LED_G_2_Pin 					LL_GPIO_PIN_15
 
 
 #define LED_WATER_G_GPIO_Port GPIOF
@@ -121,8 +121,8 @@ extern "C" {
 #define KEY_POWER_GPIO_Port GPIOB
 #define LL_KEY_POWER_Pin LL_GPIO_PIN_6
 
-#define KEY_AI_GPIO_Port GPIOB
-#define LL_KEY_AI_Pin LL_GPIO_PIN_5
+#define KEY_AI_GPIO_Port 				GPIOB
+#define LL_KEY_AI_Pin 					LL_GPIO_PIN_5
 
 #define KEY_FAN_GPIO_Port GPIOB
 #define LL_KEY_FAN_Pin LL_GPIO_PIN_4
