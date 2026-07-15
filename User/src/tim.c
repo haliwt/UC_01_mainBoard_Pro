@@ -112,7 +112,7 @@ void TIM17_Configuration(void)
   // Overflow time = ((Auto-reload 63999 + 1) * (Prescaler 9 + 1)) / 64000000 = 10 ms, frequency= 100 Hz
   LL_TIM_StructInit(&TIM_InitStruct);
   TIM_InitStruct.Prescaler = 63;
-  TIM_InitStruct.Autoreload = 999; // 计 1000 个数 = 1000us = 10ms// TIM_ARR
+  TIM_InitStruct.Autoreload = 9999; // 计 1000 个数 = 1000us = 10ms// TIM_ARR
   TIM_InitStruct.ClockDivision = 0;
   TIM_InitStruct.RepetitionCounter = 0;
   LL_TIM_Init(TIM17, &TIM_InitStruct);

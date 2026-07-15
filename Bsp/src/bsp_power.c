@@ -341,9 +341,10 @@ static void handler_tec_adc_value(void)
  * 返回值:无
  *
  ************************************************************************/
+ uint8_t fan_one_f;
 static void power_off_handler(void)
 {
-    static uint8_t fan_one_f ,dc_power_f;
+    static uint8_t  dc_power_f;
 	
 	switch(gon_t.off_step){
 	
@@ -448,7 +449,7 @@ static void power_off_handler(void)
 			
 			}
 		
-          gon_t.off_step = 3;
+          gon_t.off_step = 2;
 		break;
 
    }
