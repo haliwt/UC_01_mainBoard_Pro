@@ -20,7 +20,7 @@ extern "C" {
 #include "stdbool.h"
 
 //fan
-extern uint8_t  fan_one_minute_cuonter;
+
 
 //time couter 
 
@@ -29,7 +29,6 @@ extern bool  works_interval_f;
 
 extern uint8_t  soft_version ;
 
-extern uint8_t disp_second_f;
 
 
 

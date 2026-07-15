@@ -61,17 +61,7 @@ void adc_read_6channels_value(void)
     /* 5. 延时 500ms 再次触发 */
     tx_thread_sleep(50); // ThreadX 延时
 
-    /* 6. --- 重新启动下一轮 ADC+DMA 采集 --- */
-    // a. 先关闭 DMA 通道以允许重新配置长度
-   // LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_3);
-    
-    // b. 重新设置需要传输的数据长度
-   /// LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_3, ADC_CH_COUNT);
-    
-    // c. 重新使能 DMA 通道
-   // LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_3);
-
-	 LL_DMA_Configuration_Channel3((uint32_t)ADC_ConvertedValues,
+    LL_DMA_Configuration_Channel3((uint32_t)ADC_ConvertedValues,
                               (uint32_t)&ADC->DR,
                               ADC_CH_COUNT);
     
@@ -89,66 +79,80 @@ void adc_read_6channels_value(void)
 
 uint16_t adc_water_3_value(void)//adc_water_2_value
 {
-    /* 1. 一阶低通滤波（理顺原本注释掉的代码）
+   uint16_t water_3_value;
+  /* 1. 一阶低通滤波（理顺原本注释掉的代码）
           新采样值权重占 2/20，历史滤波值权重占 18/20 */
    // ptc_adc_filtered = (ad_ptc_value[0] * 2 + ptc_adc_filtered * 18) / 20;
 
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
-    ptc_voltage_mv = (ADC_ConvertedValues[2] * 3300) / 4095;
+    water_3_value= (ADC_ConvertedValues[2] * 3300) / 4095;
+    tx_thread_sleep(10);
 	#if ADC_ENABLE
       printf("water_adc_3 = %d\r\n",ptc_voltage_mv);
 	#endif 
-
-	return ptc_voltage_mv;
+     ADC_ConvertedValues[2]=0;
+	return water_3_value;
 }
 
 uint16_t adc_water_2_value(void)//adc_water_3_value
 {
-    /* 1. 一阶低通滤波（理顺原本注释掉的代码）
+
+    uint16_t water_2_value;
+   /* 1. 一阶低通滤波（理顺原本注释掉的代码）
           新采样值权重占 2/20，历史滤波值权重占 18/20 */
    // ptc_adc_filtered = (ad_ptc_value[0] * 2 + ptc_adc_filtered * 18) / 20;
 
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
-    ptc_voltage_mv = (ADC_ConvertedValues[3] * 3300) / 4095;
+    water_2_value = (ADC_ConvertedValues[3] * 3300) / 4095;
+    tx_thread_sleep(10);
 	#if ADC_ENABLE
       printf("water_adc_2 = %d\r\n",ptc_voltage_mv);
 	#endif
+	ADC_ConvertedValues[3]=0;
 
-	return ptc_voltage_mv;
+	return water_2_value;
 }
 
 uint16_t adc_water_1_value(void)//adc_water_4_value
 {
-    /* 1. 一阶低通滤波（理顺原本注释掉的代码）
+
+   uint16_t water_1_value;
+  /* 1. 一阶低通滤波（理顺原本注释掉的代码）
           新采样值权重占 2/20，历史滤波值权重占 18/20 */
    // ptc_adc_filtered = (ad_ptc_value[0] * 2 + ptc_adc_filtered * 18) / 20;
 
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
-    ptc_voltage_mv = (ADC_ConvertedValues[4] * 3300) / 4095;
+    water_1_value = (ADC_ConvertedValues[4] * 3300) / 4095;
+	tx_thread_sleep(10);
 	#if ADC_ENABLE
       printf("water_adc_1 = %d\r\n",ptc_voltage_mv);
 	#endif
+	ADC_ConvertedValues[4]=0;
 
-	return ptc_voltage_mv;
+	return water_1_value;
 }
 
 uint16_t adc_water_warning_value(void)//adc_water_1_value
 {
+	uint16_t water_4_value;
+
+
     /* 1. 一阶低通滤波（理顺原本注释掉的代码）
           新采样值权重占 2/20，历史滤波值权重占 18/20 */
    // ptc_adc_filtered = (ad_ptc_value[0] * 2 + ptc_adc_filtered * 18) / 20;
 
     /* 2. 转换成电压（单位：毫伏 mV）
           假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
-    ptc_voltage_mv = (ADC_ConvertedValues[5] * 3300) / 4095;
+    water_4_value = (ADC_ConvertedValues[5] * 3300) / 4095;
 	#if ADC_ENABLE
       printf("water_adc_0 = %d\r\n",ptc_voltage_mv);
 	#endif
+	ADC_ConvertedValues[5]=0;
 
-	return ptc_voltage_mv;
+	return water_4_value;
 }
 
 
@@ -164,7 +168,7 @@ uint16_t adc_ntc_mv_value(void)
      #if ADC_ENABLE
 		   printf("ntc_adc = %d\r\n",ptc_voltage_mv);
 	#endif
-
+   
 	
 	 return ptc_voltage_mv;
 

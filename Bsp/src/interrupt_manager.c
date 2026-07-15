@@ -15,7 +15,7 @@ void tim17_10ms_tick_handler(void)
   volatile static uint8_t c100ms;
        
 
-	gpro_t.time_50ms_f++;
+	
 
 	if(++cnt100 >=10){ //10* 10 = 100ms .
 		cnt100 =0;
@@ -26,17 +26,18 @@ void tim17_10ms_tick_handler(void)
 			cnt1000 = 0;
 			
 
-			gpro_t.time_1s_f =1;
+			
 
 	        gpro_t.gTime_link_net_counter++;
+			gpro_t.gTimer_one_minute_cuonter++;
 
 
 			if(++gpro_t.time_base_1s_counter > 59){//1s *60 =60s 
 				gpro_t.time_base_1s_counter = 0;
-
-				gpro_t.time_1m_f++;
-				gpro_t.time_1m_wifi_f++;
-				gpro_t.time_2m_f++;
+                gpro_t.gTimer_one_minute++;
+			
+				
+				
 
             }
 

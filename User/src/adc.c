@@ -92,10 +92,10 @@ void ADC_Configuration(void)
 
 	  LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2);
 	  LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3);
-	  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6);
-	  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9);
-	  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12);
-	  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13);
+	  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6);  //第三级水位[2]
+	  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9);  //第二级水位[3]
+	  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12); //第一级数位[4]
+	  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13); // 警告水位[5]
     
     LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
     LL_ADC_ClearFlag_EOC();

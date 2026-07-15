@@ -772,7 +772,7 @@ void link_wifi_net_handler(void)
 
 			   MqttData_Publish_SetOpen(0x01);
 			   
-               if(disp_second_f ==1){
+               if(gpro_t.g_power_flag ==1){
 			   	SendData_Set_Command(0x1F,0x01);//SendWifiData_To_Data(0x1F,0x01); //link wifi order 1 --link wifi net is success.
                 wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);
                	}
@@ -786,7 +786,7 @@ void link_wifi_net_handler(void)
                   gpro_t.link_net_flag =0;
                   link_net_step = 11;
 				  link_net_step = 0xfe;
-                  if(disp_second_f == 1){
+                  if(gpro_t.g_power_flag == 1){
 				  	SendData_Set_Command(0x1F,0);//SendWifiData_To_Data(0x1F,0x00) ;	 //Link wifi net is fail .WT.EDTI .2024.08.31
                     
 				  }

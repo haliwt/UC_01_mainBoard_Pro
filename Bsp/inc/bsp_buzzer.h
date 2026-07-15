@@ -17,6 +17,7 @@ void beep_fan_default_sound(void);
 
 void beep_water_warning_sound(void);
 
+void beep_fan_default_sound(void);
 
 
 

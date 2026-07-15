@@ -81,6 +81,7 @@ typedef struct _main_ref{
 
  uint8_t fan_warning_f;
  bool dma_dong_flag ;
+ bool tec_control_flag;
 
  uint16_t fan_adc_value;
  uint16_t ntc_adc_value;
@@ -91,35 +92,26 @@ typedef struct _main_ref{
  uint8_t wifi_linking_tencent_f;
  uint8_t wifi_read_net_data_f;
 
- 
- volatile uint8_t time_10ms_f;
- volatile uint8_t time_20ms_f;
- volatile uint8_t time_50ms_f;
+ uint16_t water_pos_1_flag ;
+ uint16_t water_pos_2_flag ;
+ uint16_t water_pos_3_flag ;
+ uint16_t water_pos_warning_value;
+ bool water_pos_warning_flag ;
+
+
 
  //volatile uint8_t time_200ms_f;
  volatile uint8_t time_100ms_fast_led_f;
 
- volatile uint8_t time_400ms_f;
- volatile uint8_t time_500ms_f;
- volatile uint8_t time_600ms_f;
- volatile uint8_t time_900ms_f;
+
 
  volatile uint8_t  time_base_1s_counter;
 
 
- volatile uint8_t time_2s_f;
- volatile uint8_t time_1s_f;
- volatile uint8_t time_3s_f;
- volatile uint8_t time_4s_f;
- volatile uint8_t time_5s_f;
- volatile uint8_t time_6s_f;
- volatile uint8_t time_7s_f;
- volatile uint8_t time_10s_f;
+  volatile uint8_t gTimer_one_minute;
 
- volatile uint8_t time_1m_f;
- volatile uint8_t time_1m_wifi_f;
- volatile uint8_t time_2m_f;
- uint8_t gTime_link_net_counter;
+volatile uint8_t gTime_link_net_counter;
+volatile uint8_t gTimer_one_minute_cuonter;
 
 
 

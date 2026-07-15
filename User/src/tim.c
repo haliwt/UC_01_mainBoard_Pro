@@ -55,7 +55,7 @@ void TIM3_Configuration(void)
   // Overflow time = ((Auto-reload 15999 + 1) * (Prescaler 0 + 1)) / 64000000 = 250 μs, frequency = 4 kHz
   LL_TIM_StructInit(&TIM_InitStruct);
   TIM_InitStruct.Prescaler = 63;
-  TIM_InitStruct.Autoreload =249;//25KHZ // TIM_ARR
+  TIM_InitStruct.Autoreload =249;//4KHZ // TIM_ARR
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.ClockDivision = 0;
   LL_TIM_Init(TIM3, &TIM_InitStruct);
@@ -72,32 +72,33 @@ void TIM3_Configuration(void)
   LL_TIM_EnableAllOutputs(TIM3);
 }
 
-// TIM16 初始化配置 PMW 检测水位
+// TIM16 初始化配置 PMW 检测水位 20
 void TIM16_Configuration(void)
 {
-  LL_TIM_InitTypeDef TIM_InitStruct = {0};
-  LL_TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
+	LL_TIM_InitTypeDef TIM_InitStruct = {0};
+	 LL_TIM_OC_InitTypeDef TIM_OC_InitStruct = {0};
+	
+	 LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM16);
+	
+	 // Overflow time = ((Auto-reload 39 + 1) * (Prescaler 63 + 1)) / 64000000 = 40 μs, frequency= 25 kHz
+	 LL_TIM_StructInit(&TIM_InitStruct);
+	 TIM_InitStruct.Prescaler = 63;
+	 TIM_InitStruct.Autoreload = 39; // TIM_ARR
+	 TIM_InitStruct.ClockDivision = 0;
+	 TIM_InitStruct.RepetitionCounter = 0;
+	 LL_TIM_Init(TIM16, &TIM_InitStruct);
+	
+	 LL_TIM_OC_StructInit(&TIM_OC_InitStruct);
+	 TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
+	 TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
+	 TIM_OC_InitStruct.CompareValue = 0; // TIM_CCR, Duty = TIM_CCR/(TIM_ARR+1)
+	 TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_LOW;
+	 TIM_OC_InitStruct.OCIdleState = LL_TIM_OCIDLESTATE_LOW;
+	 LL_TIM_OC_Init(TIM16,LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
+	
+	 LL_TIM_EnableCounter(TIM16);
+	 LL_TIM_EnableAllOutputs(TIM16);
 
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM16);
-
-  // Overflow time = ((Auto-reload 31999 + 1) * (Prescaler 0 + 1)) / 64000000 = 500 μs, frequency= 2 kHz
-  LL_TIM_StructInit(&TIM_InitStruct);
-  TIM_InitStruct.Prescaler = 63;
-  TIM_InitStruct.Autoreload = 199; // TIM_ARR
-  TIM_InitStruct.ClockDivision = 0;
-  TIM_InitStruct.RepetitionCounter = 0;
-  LL_TIM_Init(TIM16, &TIM_InitStruct);
-
-  LL_TIM_OC_StructInit(&TIM_OC_InitStruct);
-  TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
-  TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
-  TIM_OC_InitStruct.CompareValue = 0; // TIM_CCR, Duty = TIM_CCR/(TIM_ARR+1)
-  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_LOW;
-  TIM_OC_InitStruct.OCIdleState = LL_TIM_OCIDLESTATE_LOW;
-  LL_TIM_OC_Init(TIM16,LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
-
-  LL_TIM_EnableCounter(TIM16);
-  LL_TIM_EnableAllOutputs(TIM16);
 }
 
 

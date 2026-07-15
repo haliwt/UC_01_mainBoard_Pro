@@ -75,15 +75,15 @@ void beep_high_temperature_sound(void)
 void beep_fan_default_sound(void)
 {
 	beep_key_click();
-	tx_thread_sleep(40);//10ms*40 = 400ms
+	tx_thread_sleep(10);//10ms*40 = 400ms
 	beep_key_click();
-	tx_thread_sleep(40);
+	tx_thread_sleep(10);
 	beep_key_click();
-	tx_thread_sleep(40);
+	tx_thread_sleep(10);
 	beep_key_click();
-	tx_thread_sleep(40);
+	tx_thread_sleep(110);
 	beep_key_click();
-	tx_thread_sleep(40);
+	tx_thread_sleep(10);
 	beep_key_click();
 	tx_thread_sleep(40);
 
@@ -98,17 +98,17 @@ void beep_fan_default_sound(void)
 void beep_water_warning_sound(void)
 {
 	beep_key_click();
-	tx_thread_sleep(50);//10ms*50 = 400ms
+	tx_thread_sleep(10);//10ms*50 = 400ms
 	beep_key_click();
-	tx_thread_sleep(50);
+	tx_thread_sleep(10);
 	beep_key_click();
-	tx_thread_sleep(50);
+	tx_thread_sleep(10);
 	beep_key_click();
-	tx_thread_sleep(50);
+	tx_thread_sleep(10);
 	beep_key_click();
-	tx_thread_sleep(50);
+	tx_thread_sleep(10);
 	beep_key_click();
-	tx_thread_sleep(50);
+	tx_thread_sleep(10);
 
 }
 

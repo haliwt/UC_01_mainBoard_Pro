@@ -15,6 +15,8 @@
 #define LED_KEY_AI_ON()        LL_GPIO_ResetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
 #define LED_KEY_AI_OFF()       LL_GPIO_SetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
 
+
+//水位指示灯
 #define LED_WATER_INDICATOR_1()      LL_GPIO_SetOutputPin(LED_WATER_RB_GPIO_Port,LL_LED_WATER_RB_Pin)     
 #define LED_WATER_LEVEL_1()          LL_GPIO_ResetOutputPin(LED_WATER_RB_GPIO_Port,LL_LED_WATER_RB_Pin)     
 
@@ -22,7 +24,7 @@
 #define LED_WATER_LEVEL_2()         LL_GPIO_ResetOutputPin(LED_WATER_R_GPIO_Port,LL_LED_WATER_R_Pin)    
 
 #define LED_WATER_INDICATOR_3()     LL_GPIO_SetOutputPin(LED_WATER_G_GPIO_Port,LL_LED_WATER_G_Pin)    
-#define LED_WATER_LEVEL_3()         LL_GPIO_ResetOutputPin(LED_WATER_R_GPIO_Port,LL_LED_WATER_R_Pin)    
+#define LED_WATER_LEVEL_3()         LL_GPIO_ResetOutputPin(LED_WATER_G_GPIO_Port,LL_LED_WATER_G_Pin)    
 
 #define LED_WATER_INDICATOR_4()    LL_GPIO_SetOutputPin(LED_WATER_B_GPIO_Port,LL_LED_WATER_B_Pin)    
 #define LED_WATER_WARNING()              LL_GPIO_ResetOutputPin(LED_WATER_B_GPIO_Port,LL_LED_WATER_B_Pin)

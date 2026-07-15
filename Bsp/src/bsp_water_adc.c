@@ -5,7 +5,7 @@
 #define ALARM_OFF()   Platform_Buzzer_Set(0)  // 关闭报警
 
 // 传感器“有水”的电压阈值（单位：mV，根据实际传感器微调）
-#define WATER_TOUCH_THRESHOLD_MV    2000
+#define WATER_TOUCH_THRESHOLD_MV     180//280//400
 
 
 // 定义水位等级枚举
@@ -27,7 +27,8 @@ typedef enum {
 **/
 void water_pwm_on(void)
 {
-    LL_TIM_OC_SetCompareCH1(TIM16,100); // 设置 50% 占空比
+    LL_TIM_DisableCounter(TIM16); 
+	LL_TIM_OC_SetCompareCH1(TIM16,20); // 设置 50% 占空比
 	LL_TIM_EnableCounter(TIM16);             // 使能定时器计数器 (对应 TIM_Cmd)
     LL_TIM_EnableAllOutputs(TIM16);          // 使能主输出 (对应 TIM_CtrlPWMOutputs, 仅高级定时    
 }
@@ -46,14 +47,101 @@ void water_pwm_off(void)
  * @brief  获取当前综合水位等级
  * @return WaterLevel_t 当前的水位状态 (LEVEL_0 到 LEVEL_4)
  */
-WaterLevel_t Get_Current_Water_Level(void)
+ uint8_t water_pos_step;
+void Water_System_Process(void)
 {
-    // 读取 4 个通道的实时电压值
-    uint16_t v_water_3 = adc_water_3_value();
-    uint16_t v_water_2 = adc_water_2_value();
-    uint16_t v_water_1 = adc_water_1_value();
-    uint16_t v_water_warn = adc_water_warning_value();
+  
+   // 读取 4 个通道的实时电压值
+    switch(water_pos_step){
 
+	case 0:
+	    gpro_t.water_pos_1_flag  = adc_water_1_value();
+
+	    if(gpro_t.water_pos_1_flag > WATER_TOUCH_THRESHOLD_MV){
+
+		    water_pos_step =1;
+			LED_WATER_LEVEL_1();
+		    LED_WATER_INDICATOR_2();
+		    LED_WATER_INDICATOR_3();
+			LED_WATER_INDICATOR_4();
+			gpro_t.water_pos_warning_flag= 0;
+
+		}
+		else{
+            //no water 
+            water_pos_step =0;
+            gpro_t.water_pos_warning_flag= 0;
+			LED_WATER_INDICATOR_1();
+			LED_WATER_INDICATOR_2();
+		    LED_WATER_INDICATOR_3();
+			LED_WATER_INDICATOR_4();
+
+		}
+
+	break;
+	    
+
+	case 1:
+	    gpro_t.water_pos_2_flag  = adc_water_2_value();
+		
+		if(gpro_t.water_pos_2_flag > WATER_TOUCH_THRESHOLD_MV){
+
+		    water_pos_step =2;
+			LED_WATER_LEVEL_2();
+		    
+		    LED_WATER_INDICATOR_3();
+			LED_WATER_INDICATOR_4();
+			gpro_t.water_pos_warning_flag= 0;
+
+		}
+		else{
+		   water_pos_step =0;
+		   
+        }
+
+
+	break;
+
+	case 2:
+	
+       gpro_t.water_pos_3_flag  = adc_water_3_value();
+	   if(gpro_t.water_pos_3_flag > WATER_TOUCH_THRESHOLD_MV){
+
+		    water_pos_step =3;
+			LED_WATER_LEVEL_3();
+	
+			LED_WATER_INDICATOR_4();
+			 gpro_t.water_pos_warning_flag= 0;
+
+		}
+		else{
+		   water_pos_step =1;
+        }
+
+	break;
+
+	case 3:
+         gpro_t.water_pos_warning_value  = adc_water_warning_value();
+		 if(gpro_t.water_pos_warning_value> WATER_TOUCH_THRESHOLD_MV){
+
+		    //water_pos_step =2;
+		    gpro_t.water_pos_warning_flag= 1;
+			LED_WATER_WARNING();
+		    beep_water_warning_sound();
+
+		}
+		else{
+		   water_pos_step =2;
+		   
+        }
+	break;
+
+	default:
+
+	break;
+
+    }
+ #if 0
     // 采用“从最高级向最低级”倒推的逻辑判定
     // 只要高级别传感器有水，说明水位已经到达该高度
     if (v_water_warn >= WATER_TOUCH_THRESHOLD_MV) 
@@ -74,8 +162,10 @@ WaterLevel_t Get_Current_Water_Level(void)
     }
     
     return LEVEL_0_EMPTY;        // 容器空或低于1级水位
+    #endif 
 }
 
+#if 0
 /**
  * @brief  水位监控主处理函数（需在主循环中持续调用）
  */
@@ -162,3 +252,5 @@ void Water_System_Process(void)
        if (current_level == LEVEL_1_LOW) { Light_Up_LED1(); }
     */
 }
+
+#endif 

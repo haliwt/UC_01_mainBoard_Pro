@@ -417,15 +417,15 @@ void Parse_Tencent_Data(void)
 
 		if(strstr((const char*)wifi_t.rx_data_array, "+TCMQTTCONN:FAIL,202") != NULL){
 
-                 if(gpro_t.time_2m_f > 1){
-				 	 gpro_t.time_2m_f = 0;
+                // if(gpro_t.time_2m_f > 1){
+				 	// gpro_t.time_2m_f = 0;
 					 gpro_t.wifi_connected_success_flag  = 0;
 					 //dc_connect_net_step = 0;
 					 ///wifi_off_step=0;
 				     //wifi_run_step = 0;
 				     gpro_t.wifi_connected_success_flag =0;
 					 wifi_app_timer_power_on_f = 0;
-                 }
+                // }
                 return ;
 				
 		}
@@ -449,7 +449,7 @@ static void evt_open_on(void)
         MqttData_Publish_SetOpen(1);
 		tx_thread_sleep(20);
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x20, 0x01);
 			tx_thread_sleep(10);
         }
@@ -466,7 +466,7 @@ static void evt_open_off(void)
         gpro_t.g_power_flag = 0;
        // System_Status_PowerOff();
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x20, 0x00);
             tx_thread_sleep(10);
         }
@@ -491,7 +491,7 @@ static void evt_ptc_on(void)
 
        // key_input_temp_f = 1;
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x02, 0x01);
 			tx_thread_sleep(10);
         }
@@ -516,7 +516,7 @@ static void evt_ptc_off(void)
 
        /// key_input_temp_f = 1;
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x02, 0x00);
 		   tx_thread_sleep(10);
         }
@@ -535,7 +535,7 @@ static void evt_anion_on(void)
         beep_key_click();
         //plasma_open_f = 1;
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x03, 0x01);
 			tx_thread_sleep(10);
         }
@@ -557,7 +557,7 @@ static void evt_anion_off(void)
         beep_key_click();
         //plasma_open_f = 0;
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x03, 0x00);
 
 		   tx_thread_sleep(10);
@@ -578,7 +578,7 @@ static void evt_sonic_on(void)
         beep_key_click();
         //Ultra_Sound_open_f = 1;
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x04, 0x01);
 			tx_thread_sleep(10);
         }
@@ -598,7 +598,7 @@ static void evt_sonic_off(void)
         beep_key_click();
         //Ultra_Sound_open_f = 0;
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x04, 0x00);
 
 		tx_thread_sleep(10);
@@ -623,7 +623,7 @@ static void evt_timer_mode(void)
         ///disp_set_hours_time_f = 1;
         //time_set_hours_counter = 0;
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
 			tx_thread_sleep(10);
             SendWifiData_To_Cmd(0x27, 0x02);
 
@@ -645,7 +645,7 @@ static void evt_ai_mode(void)
         key_ai_short_handler();
        
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Cmd(0x27, 0x01);
 			tx_thread_sleep(10);//wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);
         }
@@ -669,7 +669,7 @@ static void evt_temperature(void)
        /// key_input_temp_f = 4;
        // time_1s_counter = 0;
 
-        if (disp_second_f == 1){
+        if (gpro_t.g_power_flag == 1){
             SendWifiData_To_Data(0x2A, setting_temperature);
 			tx_thread_sleep(10);
         }

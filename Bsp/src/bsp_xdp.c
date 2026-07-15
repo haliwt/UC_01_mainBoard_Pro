@@ -461,7 +461,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	 break;
 
       case 0x11:
-		    disp_second_f = pdata[3];
+		    gpro_t.g_power_flag = pdata[3];
 	  break; 
 
 	  case 0x12: //powe off fan run one minute stop .

@@ -12,9 +12,8 @@
 
 power_state gon_t;
 
-uint8_t disp_second_f;
+
 bool  works_interval_f;
-uint8_t  fan_one_minute_cuonter;
 
 uint8_t  soft_version ;
 
@@ -30,12 +29,20 @@ typedef struct {
 } Task_Config_t;
 
 
+typedef struct{
+
+  uint8_t adc_6_channels_done_flag;
+  uint8_t adc_channels_done_flag;
+
+}Run_Ref_t;
+
+Run_Ref_t gl_ref;
 
 
 // 1ms 系统心跳计数器
 
 // --- 任务函数声明 ---
-static void handler_read_adc_value(void);
+static void handler_read_6_channels_adc_value(void);
 static void handler_read_water_level_state(void);
 static void handler_wifi_update_data(void);
 static void handler_works_hours(void);
@@ -50,13 +57,14 @@ static void handler_tec_adc_value(void);
 static Task_Config_t g_tasks[] = {
     // last_tick,  period(ms),  task_handler
     {0,            10,         handler_AI_module_action},//10ms*10
-    {0,            150,        handler_read_water_level_state},//1.5s
+    {0,            200,        handler_read_water_level_state},//1.5s
     {0,            300,        handler_works_hours},
     {0,            450,        handler_read_gxht40ad},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
-    {0,            400,        handler_read_adc_value},         // 10ms*100=1000ms =1s
+    {0,            400,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
     {0,            550,        handler_fan_adc_value},
     {0,            420,        handler_tec_adc_value},
+    
     
 };
 
@@ -102,8 +110,10 @@ static void power_on_initial(void)
 	  gpro_t.g_ai_flag = true;
 
 	  gpro_t.time_base_1s_counter=0;
-	  gpro_t.time_1m_f=0;
+	  gpro_t.gTimer_one_minute=0;
 	  works_interval_f=0;
+	  //error 
+	  gpro_t.fan_warning_f=0;
 	  //wifi 
 	  gpro_t.g_is_net_flag=0;
   
@@ -218,7 +228,10 @@ void power_on_cycle_handler(void)
  ************************************************************************/
 static void handler_read_water_level_state(void)
 {
-	Water_System_Process();
+   if(gl_ref.adc_channels_done_flag  ==1){
+  	    gl_ref.adc_channels_done_flag++; 
+	     Water_System_Process();
+   	}
 }
 static void handler_wifi_update_data(void)
 {
@@ -229,7 +242,9 @@ static void handler_wifi_update_data(void)
 }
 static void handler_works_hours(void)
 {
-   works_two_hours_times_handler();
+  
+     works_two_hours_times_handler();
+   
 
 }
 uint8_t counter_test,adc_counter;
@@ -262,24 +277,57 @@ static void handler_AI_module_action(void)
 
 
 
-static void handler_read_adc_value(void)
+static void handler_read_6_channels_adc_value(void)
 {
   adc_counter++;
+  water_pwm_on();
   adc_read_6channels_value();
+ // water_pwm_off();
+  gl_ref.adc_6_channels_done_flag = 1;
+  gl_ref.adc_channels_done_flag = 1;
+  water_pwm_off();
 
 }
 
 static void handler_fan_adc_value(void)
 {
+    static uint8_t adc_fan_counter;
+	if(gl_ref.adc_6_channels_done_flag ==1 || gl_ref.adc_6_channels_done_flag ==2){
+	   gl_ref.adc_6_channels_done_flag++;
+	   gpro_t.fan_adc_value =adc_fan_mv_value();
+	   
+	   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD){
+	   	
+	        adc_fan_counter =0;
+       }
+	   else if(gpro_t.fan_adc_value < FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
+	       adc_fan_counter ++;
+           if(adc_fan_counter > 6){
+			  adc_fan_counter=0;
+			  gpro_t.fan_warning_f =1;
+		      gpro_t.tec_control_flag = 0;
+		      TEC_CTRL_OFF();
+		   }
 
-	gpro_t.fan_adc_value =adc_fan_mv_value();
+	   }
+
+    }
+
+	if(gpro_t.fan_warning_f ==1){
+         TEC_CTRL_OFF();
+         beep_fan_default_sound(); 
+		 
+	}
 
 
 }
 static void handler_tec_adc_value(void)
 {
-
+   if(gl_ref.adc_6_channels_done_flag ==1 || gl_ref.adc_6_channels_done_flag ==2){
+   	   gl_ref.adc_6_channels_done_flag++;
 	gpro_t.ntc_adc_value =adc_ntc_mv_value();
+
+   	}
 
 
 }
@@ -308,9 +356,9 @@ static void power_off_handler(void)
 			power_off_led_handler();
 		
 			power_off_ctrl_handler();
-	        fan_one_minute_cuonter =0;
+	        gpro_t.gTimer_one_minute_cuonter =0;
 			gpro_t.time_base_1s_counter=0;
-			gpro_t.time_1m_f=0;
+			gpro_t.gTimer_one_minute=0;
 			works_interval_f=0;
 			
 	        gon_t.off_step = 1;
@@ -330,7 +378,7 @@ static void power_off_handler(void)
 			  else{
 
                   fan_adjust_high_speed();
-				  fan_one_minute_cuonter =0;
+				  	gpro_t.gTimer_one_minute_cuonter =0;
 			  }
 
 			if(gpro_t.wifi_connected_success_flag ==1 ){
@@ -346,14 +394,14 @@ static void power_off_handler(void)
 		case 2:
 
 
-		   if(fan_one_f == 1  && fan_one_minute_cuonter>59){
+		   if(fan_one_f == 1  && gpro_t.gTimer_one_minute_cuonter>59){
 				     fan_one_f ++;
 	                 fan_stop();
 
 				 }
 
-				 if(gpro_t.wifi_connected_success_flag ==1 && gpro_t.time_2s_f > 5){
-                     gpro_t.time_2s_f=0;
+				 if(gpro_t.wifi_connected_success_flag ==1 ){
+                    
 				     MqttData_Publish_SetOpen(0);  
 				   	
 			    }
@@ -366,9 +414,9 @@ static void power_off_handler(void)
 		 case 3:
 
 
-		    if(gpro_t.wifi_connected_success_flag ==1 &&  gpro_t.time_3s_f> 5 ){//10ms*800 =8000ms =8s
+		    if(gpro_t.wifi_connected_success_flag ==1  ){//10ms*800 =8000ms =8s
       
-			       gpro_t.time_3s_f =0;
+			     
 				   Subscriber_Data_FromCloud_Handler();
 		    	
 	    
@@ -378,7 +426,7 @@ static void power_off_handler(void)
 		break;
 
 		case 4:
-			
+			#if 0
 
 		    if(gpro_t.wifi_connected_success_flag ==1 &&   gpro_t.time_4s_f> 8){
 				gpro_t.time_4s_f=0;
@@ -388,6 +436,7 @@ static void power_off_handler(void)
 				Publish_Data_Ptc_Temp_Warning(0);
 				
 		    }
+            #endif 
 		    gon_t.off_step = 5;
 
 		break;
@@ -420,16 +469,16 @@ static void works_two_hours_times_handler(void)
 	  case 0:
 	 
 		#if  0 //DEBUG_ENABLE 
-			if(gpro_t.time_1m_f >11 && works_interval_f==0){
+			if(gpro_t.gTimer_one_minute >11 && works_interval_f==0){
 		#else 
-			if(gpro_t.time_1m_f > 119 && works_interval_f==0){
+			if(gpro_t.gTimer_one_minute > 119 && works_interval_f==0){
 
 		#endif 
 
-			gpro_t.time_1m_f = 0;
+			gpro_t.gTimer_one_minute = 0;
 		    gpro_t.time_base_1s_counter=0;
 			works_interval_f=1;
-			fan_one_minute_cuonter =0;
+			gpro_t.gTimer_one_minute_cuonter =0;
 
 			
 			PLASMA_CTRL_OFF();
@@ -447,12 +496,12 @@ static void works_two_hours_times_handler(void)
 
 			
         #if 0
-		   if(works_interval_f==1 && gpro_t.time_1m_f >9){
+		   if(works_interval_f==1 && gpro_t.gTimer_one_minute >9){
 		#else 
-		  if(works_interval_f==1 && gpro_t.time_1m_f >10){
+		  if(works_interval_f==1 && gpro_t.gTimer_one_minute >10){
 
 		#endif 
-				gpro_t.time_1m_f = 0;  
+				gpro_t.gTimer_one_minute = 0;  
 				works_interval_f =0;
 		        gpro_t.time_base_1s_counter=0;
 				

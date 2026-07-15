@@ -60,7 +60,7 @@ void wifi_auto_detected_link_state(void)
            tx_thread_sleep(20);//wait_timeout = tx_time_get()+20;//tx_thread_sleep(20); //delay_ms(200);//HAL_Delay(200);
          
 
-          if(disp_second_f== 1){
+          if(gpro_t.g_power_flag== 1){
 		  	  SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
               tx_thread_sleep(10);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
           }
@@ -72,14 +72,14 @@ void wifi_auto_detected_link_state(void)
 
       link_counter_times =5;
       if(gpro_t.wifi_connected_success_flag==0){
-          if(disp_second_f== 1){
+          if(gpro_t.g_power_flag== 1){
 		  	SendData_Set_Command(0x1F,0);//SendWifiData_To_Data(0x1F,0x0); //WT.EDIT 2025.04.02 0x1F: wifi link net is succes 
             tx_thread_sleep(10);//wait_timeout = tx_time_get()+10; // tx_thread_sleep(10);//delay_ms(100);
           	}
 
 	  }
 	  else{
-	      if(disp_second_f== 1){
+	      if(gpro_t.g_power_flag== 1){
 		  	SendData_Set_Command(0x1F,1);//SendWifiData_To_Data(0x1F,0x0); //WT.EDIT 2025.04.02 0x1F: wifi link net is succes 
 		    tx_thread_sleep(10);//wait_timeout = tx_time_get()+10;//tx_thread_sleep(10);// delay_ms(100);
 	      	}
@@ -174,7 +174,7 @@ static void auto_connect_wifi_handler(void)
 				time_autolink_counter=0;
 				gpro_t.wifi_linking_tencent_f =0;
 	            dc_connect_net_step =5;
-	            if(disp_second_f==1){
+	            if(gpro_t.g_power_flag==1){
 					SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
 	                //delay_ms(100);
 	                wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);//10*100ms = 
@@ -189,7 +189,7 @@ static void auto_connect_wifi_handler(void)
 			time_autolink_counter=0;
 			gpro_t.wifi_linking_tencent_f =0;
 	       dc_connect_net_step=5;
-	       if(disp_second_f==1){
+	       if(gpro_t.g_power_flag==1){
 		   	SendWifiData_To_Cmd(0x1F,0x00);
 		    wait_timeout = tx_time_get()+ 10;//tx_thread_sleep(10);//delay_ms(100);
 	       	}
@@ -382,13 +382,13 @@ void wifi_power_on_handler(void)
 
 			sw_flag = sw_flag ^ 0x01;
 			if(sw_flag == 1){
-				if(disp_second_f == 1){
+				if(gpro_t.g_power_flag == 1){
 					SendWifiData_olderCmd(0x1F,0x01);//SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
 				    wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 				}
 			}
 			else{
-				if(disp_second_f == 1){
+				if(gpro_t.g_power_flag == 1){
 					SendWifiData_To_Data(0x1F,0x01);
 				    wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 			       }
@@ -399,13 +399,13 @@ void wifi_power_on_handler(void)
 			counter =0;
 			sw_flag = sw_flag ^ 0x01;
 			if(sw_flag == 1){
-				if(disp_second_f == 1){
+				if(gpro_t.g_power_flag == 1){
 					SendWifiData_olderCmd(0x1F,0x0);//SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
 				    wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 					}
 			}
 			else{
-				if(disp_second_f == 1){
+				if(gpro_t.g_power_flag == 1){
 				SendWifiData_To_Data(0x1F,0x0);
 				wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 				}
@@ -422,7 +422,7 @@ void wifi_power_on_handler(void)
        if(gpro_t.link_net_flag ==0 && gpro_t.wifi_connected_success_flag ==1 && wifi_app_timer_power_on_f ==0 && wifi_first_connectoed_cloud_f ==1){
     
             wifi_first_connectoed_cloud_f++;
-		   if(disp_second_f == 1){
+		   if(gpro_t.g_power_flag == 1){
 		   	SendData_Set_Command(0x1F,0x01);//SendWifiData_To_Data(0x1F,0x01);
              wait_timeout=tx_time_get()+10;//tx_thread_sleep(10);//delay_ms(100);
 			    wifi_run_step =9;
@@ -538,13 +538,13 @@ void wifi_power_off_handler(void)
 	
 			   sw_flag = sw_flag ^ 0x01;
 			   if(sw_flag == 1){
-				   if(disp_second_f == 1){
+				   if(gpro_t.g_power_flag == 1){
 				   	SendWifiData_olderCmd(0x1F,0x01);//SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
 				     wait_timeout = tx_time_get()+ 10;//delay_ms(100);
 				   	}
 			   }
 			   else{
-				   if(disp_second_f == 1){
+				   if(gpro_t.g_power_flag == 1){
 				   	SendWifiData_To_Data(0x1F,0x01);
 				    wait_timeout = tx_time_get()+ 10;//delay_ms(100);
 				   	}
@@ -555,13 +555,13 @@ void wifi_power_off_handler(void)
 			  
 			   sw_flag = sw_flag ^ 0x01;
 			   if(sw_flag == 1){
-				   if(disp_second_f == 1){
+				   if(gpro_t.g_power_flag == 1){
 				   	SendWifiData_olderCmd(0x1F,0x0);//SendWifiData_To_Cmd(0x1F,0x01); //link wifi order 1 --link wifi net is success.
 				    wait_timeout = tx_time_get()+ 10;//delay_ms(100);
 				   }
 			   }
 			   else{
-				   if(disp_second_f == 1){
+				   if(gpro_t.g_power_flag == 1){
 				   	SendWifiData_To_Data(0x1F,0x0);
 				    wait_timeout = tx_time_get()+ 10;//delay_ms(100);
 				   	}
@@ -650,7 +650,7 @@ static void smartphone_timer_power_on_handler(void)
 	if(plasma_open_f==1){ //Anion
 
 
-	if(disp_second_f == 1){
+	if(gpro_t.g_power_flag == 1){
 		SendWifiData_To_Cmd(0x03,0x01);
 	    tx_thread_sleep(10);//wait_timeout = tx_time_get() + 10; //tx_thread_sleep(10);//delay_ms(100);
 		}
@@ -658,7 +658,7 @@ static void smartphone_timer_power_on_handler(void)
 	}
 	else{
 	plasma_open_f =0;
-	if(disp_second_f == 1){
+	if(gpro_t.g_power_flag == 1){
 		SendWifiData_To_Cmd(0x03,0x0);
 	    tx_thread_sleep(10);//wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);//delay_ms(100);
 		}
@@ -667,14 +667,14 @@ static void smartphone_timer_power_on_handler(void)
 
 	if(Ultra_Sound_open_f==1){
 
-	if(disp_second_f == 1){
+	if(gpro_t.g_power_flag == 1){
 		SendWifiData_To_Cmd(0x04,0x01);
 	    tx_thread_sleep(10);//wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);//delay_ms(100);
 		}
 	}
 	else {
 	Ultra_Sound_open_f=0;
-	if(disp_second_f == 1){
+	if(gpro_t.g_power_flag == 1){
 		SendWifiData_To_Cmd(0x04,0x0);
 	    tx_thread_sleep(10);//wait_timeout = tx_time_get() + 10; //tx_thread_sleep(10);//delay_ms(100);
 		}
@@ -684,7 +684,7 @@ static void smartphone_timer_power_on_handler(void)
 
 	if(PTC_heat_open_f==1){
 
-	if(disp_second_f == 1){
+	if(gpro_t.g_power_flag == 1){
 		SendWifiData_To_Cmd(0x02,0x01);
 	    tx_thread_sleep(10);//wait_timeout = tx_time_get() + 10;//tx_thread_sleep(10);//delay_ms(100);
 		}
@@ -693,7 +693,7 @@ static void smartphone_timer_power_on_handler(void)
 		ptc_prohibit_off_f =1;
 		LED_PTC_OFF();
 		RELAY_OFF();
-		if(disp_second_f == 1){
+		if(gpro_t.g_power_flag == 1){
 			SendWifiData_To_Cmd(0x02,0x0);
 
 		    tx_thread_sleep(10);//wait_timeout = tx_time_get() + 10;
