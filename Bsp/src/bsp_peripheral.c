@@ -14,7 +14,9 @@ void power_on_ctrl_handler(void)
 {
     fan_adjust_high_speed();
 	PLASMA_CTRL_ON();
-	TEC_CTRL_ON() ;
+	if(gpro_t.water_pos_warning_flag==0){
+		TEC_CTRL_ON() ;
+	}
 }
 
 void power_off_ctrl_handler(void)

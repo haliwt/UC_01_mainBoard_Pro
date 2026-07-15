@@ -13,10 +13,6 @@
 #define DISP_VALUE            10
 
 
-
-
-
-
 uint16_t *pArray[23];
 uint8_t find_out_temperature_value;
 uint8_t temp_uint16_t_vlue;
@@ -35,20 +31,12 @@ uint8_t read_input_times;
 
 uint8_t disp_ntc_value[DISP_VALUE];
 
-uint8_t read_ntc_temperature_value;
+
 
 
 
 
 static int8_t  Binary_Search(const uint8_t *array ,uint8_t key,uint8_t length);
-
-
-
-
-
-
-
-//static uint8_t Calculate_Display_Temperature_Value(const uint16_t *pt,uint16_t ntc_res,uint8_t length);
 
 static uint8_t Calculate_Display_Temperature_Value(const uint16_t *pt,uint8_t key,uint16_t ntc_res_value,uint8_t length);
 
@@ -226,7 +214,7 @@ void Get_Ntc_Resistance_Temperature_Handler(uint16_t voltage)
 	 }
      else Calculate_Speicial_Temperature_Value(disp_temp_degree);
 	
-     read_ntc_temperature_value =ntc_t.read_ntc_tem_value;
+     gpro_t.ntc_temperature_value =ntc_t.read_ntc_tem_value;
    // g_pro.read_ntc_temperature_value = ntc_res_linear_value(ntc_t.read_ntc_tem_value);
 
    }
@@ -238,6 +226,7 @@ void Get_Ntc_Resistance_Temperature_Handler(uint16_t voltage)
 	*Return Ref: No
 	*
 *****************************************************************/
+#if 0
 void getNtc_temperatureValue_init(uint16_t voltage)
 {
    // static uint8_t read_adc_value;
@@ -253,12 +242,12 @@ void getNtc_temperatureValue_init(uint16_t voltage)
     
 	Calculate_Speicial_Temperature_Value(disp_temp_degree);
     
-    read_ntc_temperature_value = ntc_t.read_ntc_tem_value;
+    gpro_t.ntc_temperature_value = ntc_t.read_ntc_tem_value;
      
     // g_pro.read_ntc_temperature_value = ntc_res_linear_value(ntc_t.read_ntc_tem_value);
 
  }
-
+#endif 
 /*************************************************************************
 	*
 	*Functin Name: static int8_t  Binary_Search(uint8_t *R10K_NTC_81 ,uint8_t key)

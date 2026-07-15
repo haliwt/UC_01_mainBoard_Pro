@@ -5,7 +5,7 @@
 #define ALARM_OFF()   Platform_Buzzer_Set(0)  // 关闭报警
 
 // 传感器“有水”的电压阈值（单位：mV，根据实际传感器微调）
-#define WATER_TOUCH_THRESHOLD_MV     180//280//400
+#define WATER_TOUCH_THRESHOLD_MV     260//280//400
 
 
 // 定义水位等级枚举
@@ -61,10 +61,12 @@ void Water_System_Process(void)
 
 		    water_pos_step =1;
 			LED_WATER_LEVEL_1();
+		
 		    LED_WATER_INDICATOR_2();
 		    LED_WATER_INDICATOR_3();
 			LED_WATER_INDICATOR_4();
 			gpro_t.water_pos_warning_flag= 0;
+			ntc_temperature_compare_handler();
 
 		}
 		else{
@@ -86,12 +88,29 @@ void Water_System_Process(void)
 		
 		if(gpro_t.water_pos_2_flag > WATER_TOUCH_THRESHOLD_MV){
 
-		    water_pos_step =2;
-			LED_WATER_LEVEL_2();
+            gpro_t.water_pos_1_flag  = adc_water_1_value();
+
+	       if(gpro_t.water_pos_1_flag > WATER_TOUCH_THRESHOLD_MV){
 		    
-		    LED_WATER_INDICATOR_3();
-			LED_WATER_INDICATOR_4();
-			gpro_t.water_pos_warning_flag= 0;
+
+			    water_pos_step =2;
+				LED_WATER_LEVEL_1();
+				LED_WATER_LEVEL_2();
+			    
+			    LED_WATER_INDICATOR_3();
+				LED_WATER_INDICATOR_4();
+				gpro_t.water_pos_warning_flag= 0;
+				ntc_temperature_compare_handler();
+	       	}
+		    else{
+
+			     water_pos_step =0;
+				LED_WATER_INDICATOR_1();
+				LED_WATER_INDICATOR_2();
+			    LED_WATER_INDICATOR_3();
+				LED_WATER_INDICATOR_4();
+
+			}
 
 		}
 		else{
@@ -108,10 +127,13 @@ void Water_System_Process(void)
 	   if(gpro_t.water_pos_3_flag > WATER_TOUCH_THRESHOLD_MV){
 
 		    water_pos_step =3;
+			LED_WATER_LEVEL_1();
+			LED_WATER_LEVEL_2();
 			LED_WATER_LEVEL_3();
 	
 			LED_WATER_INDICATOR_4();
 			 gpro_t.water_pos_warning_flag= 0;
+			 ntc_temperature_compare_handler();
 
 		}
 		else{
@@ -124,8 +146,8 @@ void Water_System_Process(void)
          gpro_t.water_pos_warning_value  = adc_water_warning_value();
 		 if(gpro_t.water_pos_warning_value> WATER_TOUCH_THRESHOLD_MV){
 
-		    //water_pos_step =2;
 		    gpro_t.water_pos_warning_flag= 1;
+			TEC_CTRL_OFF();
 			LED_WATER_WARNING();
 		    beep_water_warning_sound();
 

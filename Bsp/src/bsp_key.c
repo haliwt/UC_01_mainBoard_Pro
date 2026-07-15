@@ -139,8 +139,7 @@ void ai_module_hanlder(void)
      fan_speed_adjust_handler(gpro_t.g_fan_speed);
 
    }
-   TEC_CTRL_ON();
-
+  
 }
 
 

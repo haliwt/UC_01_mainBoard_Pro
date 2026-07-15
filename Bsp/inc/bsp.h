@@ -79,6 +79,8 @@ typedef struct _main_ref{
  int16_t temperature;
  int16_t humidity;
 
+ uint8_t ntc_temperature_value;
+
  uint8_t fan_warning_f;
  bool dma_dong_flag ;
  bool tec_control_flag;

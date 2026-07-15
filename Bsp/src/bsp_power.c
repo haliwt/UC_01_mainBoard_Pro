@@ -56,12 +56,12 @@ static void handler_tec_adc_value(void);
 // 2. 任务注册表：将标志位地址与函数关联
 static Task_Config_t g_tasks[] = {
     // last_tick,  period(ms),  task_handler
-    {0,            10,         handler_AI_module_action},//10ms*10
-    {0,            200,        handler_read_water_level_state},//1.5s
+    {0,            30,         handler_AI_module_action},//10ms*30=300ms
+    {0,            120,        handler_read_water_level_state},//10ms * 120 = 1.2s
     {0,            300,        handler_works_hours},
     {0,            450,        handler_read_gxht40ad},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
-    {0,            400,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
+    {0,            100,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
     {0,            550,        handler_fan_adc_value},
     {0,            420,        handler_tec_adc_value},
     
@@ -272,7 +272,7 @@ static void handler_read_gxht40ad(void)
 
 static void handler_AI_module_action(void)
 {
-
+   ai_module_hanlder();
 }
 
 
@@ -280,6 +280,7 @@ static void handler_AI_module_action(void)
 static void handler_read_6_channels_adc_value(void)
 {
   adc_counter++;
+  fan_adjust_high_speed();
   water_pwm_on();
   adc_read_6channels_value();
  // water_pwm_off();
@@ -325,10 +326,27 @@ static void handler_tec_adc_value(void)
 {
    if(gl_ref.adc_6_channels_done_flag ==1 || gl_ref.adc_6_channels_done_flag ==2){
    	   gl_ref.adc_6_channels_done_flag++;
-	gpro_t.ntc_adc_value =adc_ntc_mv_value();
+	   gpro_t.ntc_adc_value =adc_ntc_mv_value();
+       Get_Ntc_Resistance_Temperature_Handler(gpro_t.ntc_adc_value);
+
+	    ntc_temperature_compare_handler();
 
    	}
 
+
+}
+
+void ntc_temperature_compare_handler(void)
+{
+   if(gpro_t.ntc_temperature_value > 60 || gpro_t.water_pos_warning_flag ==1){
+ 
+         TEC_CTRL_OFF();
+
+   }
+   else if(works_interval_f == 0 && gpro_t.water_pos_warning_flag ==0){
+
+        TEC_CTRL_ON();
+	}
 
 }
 
