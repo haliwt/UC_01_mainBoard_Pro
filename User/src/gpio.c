@@ -199,10 +199,10 @@ void GPIO_Configuration(void)
   LL_GPIO_Init(LED_PLASMA_GPIO_Port, &GPIO_InitStruct);
 
   // GPIO_Output
-  LL_GPIO_ResetOutputPin(LED_WATER_G_GPIO_Port, LL_LED_WATER_G_Pin);
-  LL_GPIO_ResetOutputPin(LED_WATER_B_GPIO_Port, LL_LED_WATER_B_Pin);
-  LL_GPIO_ResetOutputPin(LED_WATER_R_GPIO_Port, LL_LED_WATER_R_Pin);
-  LL_GPIO_ResetOutputPin(LED_WATER_RB_GPIO_Port, LL_LED_WATER_RB_Pin);
+  LL_GPIO_SetOutputPin(LED_WATER_G_GPIO_Port, LL_LED_WATER_G_Pin);
+  LL_GPIO_SetOutputPin(LED_WATER_B_GPIO_Port, LL_LED_WATER_B_Pin);
+  LL_GPIO_SetOutputPin(LED_WATER_R_GPIO_Port, LL_LED_WATER_R_Pin);
+  LL_GPIO_SetOutputPin(LED_WATER_RB_GPIO_Port, LL_LED_WATER_RB_Pin);
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_LED_WATER_G_Pin | LL_LED_WATER_B_Pin | LL_LED_WATER_R_Pin | LL_LED_WATER_RB_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;

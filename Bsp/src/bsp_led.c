@@ -29,7 +29,12 @@ void power_off_led_handler(void)
 	 LED_FAN_OFF();
 	 LED_PLASMA_OFF();
 	 LED_KEY_AI_OFF();
-
+   //water pos led 
+   LED_WATER_INDICATOR_1();
+   LED_WATER_INDICATOR_2();
+	LED_WATER_INDICATOR_3();
+	LED_WATER_INDICATOR_4();
+ 
 }
 
 /**
