@@ -11,6 +11,9 @@
 
 #define KEY_PLASMA_VALUE()            ((GPIOB->IDR & LL_KEY_PLASMA_Pin) ? 1 : 0 )
 
+//WATER KEY 
+#define KEY_WATER_VALUE()      ((GPIOB->IDR & LL_KEY_WATER_Pin) ? 1 : 0 )
+
 
 
 typedef enum{

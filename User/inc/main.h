@@ -121,6 +121,9 @@ extern "C" {
 #define LED_R_1_GPIO_Port 				GPIOA
 #define LL_LED_R_1_Pin 					LL_GPIO_PIN_11
 
+//WATE KEY 
+#define KEY_WATER_GPIO_Port 		GPIOB
+#define LL_KEY_WATER_Pin 			LL_GPIO_PIN_7
 
 
 

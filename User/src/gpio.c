@@ -110,7 +110,8 @@ void GPIO_Configuration(void)
 
   // GPIO_Input
   LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Pin = LL_WATER_POS_Pin | LL_KEY_POWER_Pin | LL_KEY_AI_Pin | LL_KEY_FAN_Pin | LL_KEY_PLASMA_Pin;
+  GPIO_InitStruct.Pin = LL_WATER_POS_Pin | LL_KEY_POWER_Pin | LL_KEY_AI_Pin | LL_KEY_FAN_Pin 
+  	           | LL_KEY_PLASMA_Pin | LL_KEY_WATER_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(WATER_POS_GPIO_Port, &GPIO_InitStruct);
