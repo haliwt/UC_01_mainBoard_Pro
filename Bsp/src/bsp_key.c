@@ -23,7 +23,7 @@ void key_power_short_handler(void)
 	    // 最新状态为 true，说明刚刚执行了“开机”翻转
 	    gpro_t.g_power_flag  = true;
 	    power_on_led_handler();
-	    power_on_ctrl_handler();
+	    power_on_ctrl_init_handler();
 	}
 	else 
 	{ 
@@ -121,11 +121,27 @@ void key_ai_short_handler(void)
 *@param
 *
 **/
+
+void key_water_long_handler(void)
+{
+
+
+}
+
+
+
+/**
+*
+*@brief 
+*@notice
+*@param
+*
+**/
 void ai_module_hanlder(void)
 {
    if(gpro_t.g_ai_flag == 1){
-      if(works_interval_f ==0){
-         power_on_ctrl_handler();
+      if(works_interval_f ==0 && gpro_t.fan_warning_f ==0 && gpro_t.water_pos_warning_flag ==0){
+         power_on_run_handler();
    	  }
 	  
 	  LED_FAN_ON();

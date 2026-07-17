@@ -11,6 +11,8 @@
 
 #define ANGLE_SENSOR_VALUE()     LL_GPIO_IsInputPinSet(ANGLE_SENSOR_GPIO_Port,LL_ANGLE_SENSOR_Pin)
 
+#define WATER_PUMP_ON()
+#define WATER_PUMP_OFF()   
 
 void plasma_set_status(bool idata); // 1-开启，0-关闭
 
@@ -21,7 +23,9 @@ void Heat_Process(void);
 
 void Fan_Current_Det(void);
 
-void power_on_ctrl_handler(void);
+void power_on_run_handler(void);
+
+void poower_on_init_handler(void);
 void power_off_ctrl_handler(void);
 
 

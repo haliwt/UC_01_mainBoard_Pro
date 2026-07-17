@@ -32,6 +32,7 @@ typedef struct {
 typedef struct{
 
   uint8_t adc_6_channels_done_flag;
+  uint8_t fan_adc_daone_flag;
 
 }Run_Ref_t;
 
@@ -279,7 +280,7 @@ static void handler_read_6_channels_adc_value(void)
   adc_read_6channels_value();
 
   gl_ref.adc_6_channels_done_flag = 1;
-
+  gl_ref.fan_adc_daone_flag = 1;
 
   
   water_pwm_off();
@@ -290,8 +291,8 @@ static void handler_read_6_channels_adc_value(void)
 static void handler_fan_adc_value(void)
 {
     static uint8_t adc_fan_counter;
-	if(gl_ref.adc_6_channels_done_flag ==1 || gl_ref.adc_6_channels_done_flag ==2){
-	   gl_ref.adc_6_channels_done_flag++;
+	if(gl_ref.fan_adc_daone_flag==1){
+	   gl_ref.fan_adc_daone_flag++;
 	   gpro_t.fan_adc_value =adc_fan_mv_value();
 	   
 	   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
@@ -321,7 +322,7 @@ static void handler_fan_adc_value(void)
 }
 static void handler_tec_adc_value(void)
 {
-   if(gl_ref.adc_6_channels_done_flag ==1 || gl_ref.adc_6_channels_done_flag ==2){
+   if(gl_ref.adc_6_channels_done_flag ==1){
    	   gl_ref.adc_6_channels_done_flag++;
 	   gpro_t.ntc_adc_value =adc_ntc_mv_value();
        Get_Ntc_Resistance_Temperature_Handler(gpro_t.ntc_adc_value);
@@ -476,10 +477,12 @@ static void power_off_handler(void)
   * @param: 
   *
 **/
+
+uint8_t fan_run_one_minute_flag ;
+
 static void works_two_hours_times_handler(void)
 {
-    
-    static uint8_t fan_run_one_minute_flag ;
+  
 	 switch(works_interval_f){
 
 	  case 0:

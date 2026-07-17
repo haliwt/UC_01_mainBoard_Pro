@@ -10,11 +10,23 @@
 *@param
 *
 **/
-void power_on_ctrl_handler(void)
+void power_on_ctrl_init_handler(void)
 {
     fan_adjust_high_speed();
 	PLASMA_CTRL_ON();
-	if(gpro_t.water_pos_warning_flag==0){
+	if(gpro_t.water_pos_warning_flag==0 ){
+		TEC_CTRL_ON() ;
+	}
+}
+
+
+
+
+void power_on_run_handler(void)
+{
+    fan_adjust_high_speed();
+	PLASMA_CTRL_ON();
+	if(gpro_t.water_pos_warning_flag==0 && gpro_t.fan_warning_f ==0 && works_interval_f ==0){
 		TEC_CTRL_ON() ;
 	}
 }
@@ -41,14 +53,14 @@ void plasma_set_status(bool idata) // 1-开启，0-关闭
 	   if(gpro_t.g_ai_flag==true){
 
           
-         if(works_interval_f ==0) PLASMA_CTRL_ON() ;
+         if(works_interval_f ==0 ) PLASMA_CTRL_ON() ;
 		  LED_PLASMA_ON();
 				
 	  }
 	  else{
 
         if(idata == 1){
-		    if(works_interval_f ==0)PLASMA_CTRL_ON() ;
+		    if(works_interval_f ==0 )PLASMA_CTRL_ON() ;
 			LED_PLASMA_ON();
          }
 		 else{
@@ -73,7 +85,7 @@ void ai_set_status(bool idata)    // 1--开启, 0- 关闭
     if(idata == true){
 
       LED_KEY_AI_ON();
-	  if(works_interval_f ==0) power_on_ctrl_handler();
+	  if(works_interval_f ==0 && gpro_t.fan_warning_f ==0 && gpro_t.water_pos_warning_flag ==0) power_on_run_handler();
 	  LED_FAN_ON();
       LED_PLASMA_ON();
       
@@ -129,26 +141,7 @@ void workd_interval_turn_off_handle(void)
 *@param
 *
 **/
-void peripheral_fun_handler(void)
-{
-   if(gpro_t.g_power_flag==1){
 
-    switch(works_interval_f){
-
-	case 0:
-      
-    break;
-
-	case 1: //have a rest 10 minutes 
-	   
-
-	break;
-	  
-    }
-
-	}
-
-}
 
 /**
 *

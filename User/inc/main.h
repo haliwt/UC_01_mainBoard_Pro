@@ -125,6 +125,9 @@ extern "C" {
 #define KEY_WATER_GPIO_Port 		GPIOB
 #define LL_KEY_WATER_Pin 			LL_GPIO_PIN_7
 
+//WATE PUMP CONTROL
+
+
 
 
 //KEY GPIO

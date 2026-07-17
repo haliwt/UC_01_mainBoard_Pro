@@ -44,6 +44,7 @@ void key_plasma_short_handler(void);
 
 void ai_module_hanlder(void);
 
+void key_water_long_handler(void);
 
 #endif 
 
