@@ -39,6 +39,11 @@ void DMA_ADC_Init(void)
     DMA_InitStruct.MemoryOrM2MDstDataSize = LL_DMA_MDATAALIGN_HALFWORD;
     DMA_InitStruct.NbData                 = ADC_CH_COUNT;
     DMA_InitStruct.Priority               = LL_DMA_PRIORITY_MEDIUM;
+
+	// 3. 为了应对水位传感器的高阻抗，将所有使能通道的采样时间调至最大
+	LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_3, 6);
+	LL_DMA_SetMode(DMA,LL_DMA_CHANNEL_3, LL_DMA_MODE_NORMAL);
+
     LL_DMA_Init(DMA, LL_DMA_CHANNEL_3, &DMA_InitStruct);
     LL_SYSCFG_SetDMARemap_CH3(LL_SYSCFG_DMA_MAP_ADC);
 }

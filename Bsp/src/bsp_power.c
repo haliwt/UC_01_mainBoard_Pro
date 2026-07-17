@@ -32,7 +32,6 @@ typedef struct {
 typedef struct{
 
   uint8_t adc_6_channels_done_flag;
-  uint8_t adc_channels_done_flag;
 
 }Run_Ref_t;
 
@@ -43,7 +42,6 @@ Run_Ref_t gl_ref;
 
 // --- 任务函数声明 ---
 static void handler_read_6_channels_adc_value(void);
-static void handler_read_water_level_state(void);
 static void handler_wifi_update_data(void);
 static void handler_works_hours(void);
 static void handler_read_gxht40ad(void);
@@ -56,12 +54,11 @@ static void handler_tec_adc_value(void);
 // 2. 任务注册表：将标志位地址与函数关联
 static Task_Config_t g_tasks[] = {
     // last_tick,  period(ms),  task_handler
-    {0,            30,         handler_AI_module_action},//10ms*30=300ms
-    {0,            120,        handler_read_water_level_state},//10ms * 120 = 1.2s
+    {0,            50,         handler_AI_module_action},//10ms*30=300ms
     {0,            300,        handler_works_hours},
     {0,            450,        handler_read_gxht40ad},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
-    {0,            100,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
+    {0,            200,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
     {0,            550,        handler_fan_adc_value},
     {0,            420,        handler_tec_adc_value},
     
@@ -108,7 +105,7 @@ static void power_on_initial(void)
       gpro_t.g_fan_speed =3;
       gpro_t.g_plasma_flag = true;
 	  gpro_t.g_ai_flag = true;
-
+      //two hours ref
 	  gpro_t.time_base_1s_counter=0;
 	  gpro_t.gTimer_one_minute=0;
 	  works_interval_f=0;
@@ -226,13 +223,6 @@ void power_on_cycle_handler(void)
  * 返回值:无
  *
  ************************************************************************/
-static void handler_read_water_level_state(void)
-{
-   if(gl_ref.adc_channels_done_flag  ==1){
-  	    gl_ref.adc_channels_done_flag++; 
-	     Water_System_Process();
-   	}
-}
 static void handler_wifi_update_data(void)
 {
 	 if(gpro_t.g_is_net_flag==1){
@@ -267,6 +257,8 @@ static void handler_read_gxht40ad(void)
 	   counter_test++;
 	}
 
+	humidity_indicate_led_handler();
+
 
 }
 
@@ -282,11 +274,16 @@ static void handler_read_6_channels_adc_value(void)
   adc_counter++;
   fan_adjust_high_speed();
   water_pwm_on();
+
+  Water_System_Process();
   adc_read_6channels_value();
- // water_pwm_off();
+
   gl_ref.adc_6_channels_done_flag = 1;
-  gl_ref.adc_channels_done_flag = 1;
+
+
+  
   water_pwm_off();
+  
 
 }
 
@@ -297,13 +294,13 @@ static void handler_fan_adc_value(void)
 	   gl_ref.adc_6_channels_done_flag++;
 	   gpro_t.fan_adc_value =adc_fan_mv_value();
 	   
-	   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD){
+	   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
 	   	
 	        adc_fan_counter =0;
        }
 	   else if(gpro_t.fan_adc_value < FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
 	       adc_fan_counter ++;
-           if(adc_fan_counter > 6){
+           if(adc_fan_counter > 9){
 			  adc_fan_counter=0;
 			  gpro_t.fan_warning_f =1;
 		      gpro_t.tec_control_flag = 0;
@@ -338,12 +335,12 @@ static void handler_tec_adc_value(void)
 
 void ntc_temperature_compare_handler(void)
 {
-   if(gpro_t.ntc_temperature_value > 60 || gpro_t.water_pos_warning_flag ==1){
+   if(gpro_t.ntc_temperature_value > 60 || gpro_t.water_pos_warning_flag ==1 ||  gpro_t.fan_warning_f ==1){
  
          TEC_CTRL_OFF();
 
    }
-   else if(works_interval_f == 0 && gpro_t.water_pos_warning_flag ==0){
+   else if(works_interval_f == 0 && gpro_t.water_pos_warning_flag ==0 &&  gpro_t.fan_warning_f ==0){
 
         TEC_CTRL_ON();
 	}
@@ -482,13 +479,13 @@ static void power_off_handler(void)
 static void works_two_hours_times_handler(void)
 {
     
-
+    static uint8_t fan_run_one_minute_flag ;
 	 switch(works_interval_f){
 
 	  case 0:
 	 
-		#if  0 //DEBUG_ENABLE 
-			if(gpro_t.gTimer_one_minute >11 && works_interval_f==0){
+		#if  1 //DEBUG_ENABLE 
+			if(gpro_t.gTimer_one_minute >6 && works_interval_f==0){
 		#else 
 			if(gpro_t.gTimer_one_minute > 119 && works_interval_f==0){
 
@@ -497,6 +494,7 @@ static void works_two_hours_times_handler(void)
 			gpro_t.gTimer_one_minute = 0;
 		    gpro_t.time_base_1s_counter=0;
 			works_interval_f=1;
+			fan_run_one_minute_flag =1;
 			gpro_t.gTimer_one_minute_cuonter =0;
 
 			
@@ -513,9 +511,13 @@ static void works_two_hours_times_handler(void)
 
 	  case 1:
 
+        if(fan_run_one_minute_flag==1 && gpro_t.gTimer_one_minute_cuonter > 60){
+		    fan_run_one_minute_flag ++;
+            fan_stop();
+        }
 			
-        #if 0
-		   if(works_interval_f==1 && gpro_t.gTimer_one_minute >9){
+        #if 1
+		   if(works_interval_f==1 && gpro_t.gTimer_one_minute >4){
 		#else 
 		  if(works_interval_f==1 && gpro_t.gTimer_one_minute >10){
 
@@ -525,6 +527,7 @@ static void works_two_hours_times_handler(void)
 		        gpro_t.time_base_1s_counter=0;
 				
 				ai_module_hanlder();
+				ntc_temperature_compare_handler();
 				
 		#if DEBUG_ENABLE 
 			printf("works_interval_f = %d \n\r",works_interval_f);

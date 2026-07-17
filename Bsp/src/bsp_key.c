@@ -93,9 +93,8 @@ void key_plasma_short_handler(void)
 	
    beep_key_click();
    gpro_t.g_plasma_flag = !gpro_t.g_plasma_flag;
-   if(works_interval_f ==0){
-      plasma_set_status(gpro_t.g_plasma_flag);
-   }
+   plasma_set_status(gpro_t.g_plasma_flag);
+   
 	
 	
 
@@ -125,8 +124,10 @@ void key_ai_short_handler(void)
 void ai_module_hanlder(void)
 {
    if(gpro_t.g_ai_flag == 1){
-
-      power_on_ctrl_handler();
+      if(works_interval_f ==0){
+         power_on_ctrl_handler();
+   	  }
+	  
 	  LED_FAN_ON();
       LED_PLASMA_ON();
       LED_KEY_AI_ON();
@@ -135,8 +136,10 @@ void ai_module_hanlder(void)
    else{
 
      LED_KEY_AI_OFF();
-     plasma_set_status(gpro_t.g_plasma_flag);
-     fan_speed_adjust_handler(gpro_t.g_fan_speed);
+	 if(works_interval_f ==0){
+        plasma_set_status(gpro_t.g_plasma_flag);
+        fan_speed_adjust_handler(gpro_t.g_fan_speed);
+     }
 
    }
   

@@ -83,7 +83,7 @@ void TIM16_Configuration(void)
 	 // Overflow time = ((Auto-reload 39 + 1) * (Prescaler 63 + 1)) / 64000000 = 40 μs, frequency= 25 kHz
 	 LL_TIM_StructInit(&TIM_InitStruct);
 	 TIM_InitStruct.Prescaler = 63;
-	 TIM_InitStruct.Autoreload = 39; // TIM_ARR
+	 TIM_InitStruct.Autoreload = 39; // 25KHZ TIM_ARR//39
 	 TIM_InitStruct.ClockDivision = 0;
 	 TIM_InitStruct.RepetitionCounter = 0;
 	 LL_TIM_Init(TIM16, &TIM_InitStruct);

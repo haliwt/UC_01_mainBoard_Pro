@@ -81,7 +81,7 @@ typedef struct _main_ref{
 
  uint8_t ntc_temperature_value;
 
- uint8_t fan_warning_f;
+ bool fan_warning_f;
  bool dma_dong_flag ;
  bool tec_control_flag;
 

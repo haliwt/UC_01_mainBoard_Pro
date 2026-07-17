@@ -37,19 +37,18 @@ void power_off_ctrl_handler(void)
 void plasma_set_status(bool idata) // 1-开启，0-关闭
 {
   
-    if(works_interval_f ==1) return ;
-
-	if(gpro_t.g_power_flag){
+    if(gpro_t.g_power_flag){
 	   if(gpro_t.g_ai_flag==true){
 
-	      PLASMA_CTRL_ON() ;
+          
+         if(works_interval_f ==0) PLASMA_CTRL_ON() ;
 		  LED_PLASMA_ON();
 				
 	  }
 	  else{
 
         if(idata == 1){
-		    PLASMA_CTRL_ON() ;
+		    if(works_interval_f ==0)PLASMA_CTRL_ON() ;
 			LED_PLASMA_ON();
          }
 		 else{
@@ -74,7 +73,7 @@ void ai_set_status(bool idata)    // 1--开启, 0- 关闭
     if(idata == true){
 
       LED_KEY_AI_ON();
-	  power_on_ctrl_handler();
+	  if(works_interval_f ==0) power_on_ctrl_handler();
 	  LED_FAN_ON();
       LED_PLASMA_ON();
       

@@ -1,9 +1,7 @@
 #include "bsp.h"
 
 
-#define FAN_SPEED_HIGH       0//2560-2560//40   100%
-#define FAN_SPEED_MIDDLE     512//2048//2560-2048 80%
-#define FAN_SPEED_LOW        1280//2560-1280=   50%
+
 
 
 /**

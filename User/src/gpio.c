@@ -10,14 +10,18 @@ void GPIO_Configuration(void)
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOC);
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOF);
 
+
+
   // GPIO_Output
   //LL_GPIO_ResetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin);
  // LL_GPIO_SetOutputPin(LED_AI_GPIO_Port,LL_LED_AI_Pin);
   
   LL_GPIO_ResetOutputPin(PLASMA_CTL_GPIO_Port, LL_PLASMA_CTL_Pin);
   LL_GPIO_ResetOutputPin(COOLER_CTL_GPIO_Port, LL_COOLER_CTL_Pin);
+  LL_GPIO_ResetOutputPin(LED_R_1_GPIO_Port,LL_LED_R_1_Pin);
+  
   LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Pin = LL_LED_AI_Pin | LL_PLASMA_CTL_Pin | LL_COOLER_CTL_Pin;
+  GPIO_InitStruct.Pin = LL_LED_AI_Pin | LL_PLASMA_CTL_Pin | LL_COOLER_CTL_Pin|LL_LED_R_1_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
@@ -42,25 +46,17 @@ void GPIO_Configuration(void)
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_ADC_WATER_2_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(ADC_WATER_2_GPIO_Port, &GPIO_InitStruct);
 
   // ADC_IN9
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_ADC_WATER_3_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(ADC_WATER_3_GPIO_Port, &GPIO_InitStruct);
 
- #if 0
-  // COMP1_OUT
-  LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_7;
-  GPIO_InitStruct.Pin = LL_LED_R_1_Pin;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  LL_GPIO_Init(LED_R_1_GPIO_Port, &GPIO_InitStruct);
-  #endif 
+
 
   // TIM1_CH1
   LL_GPIO_StructInit(&GPIO_InitStruct);
@@ -138,19 +134,20 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(LED_B_3_GPIO_Port, &GPIO_InitStruct);
+  
 
   // ADC_IN12
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_ADC_WATER_4_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(ADC_WATER_4_GPIO_Port, &GPIO_InitStruct);
 
   // ADC_IN13
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_ADC_WATER_1_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(ADC_WATER_1_GPIO_Port, &GPIO_InitStruct);
 
   // TIM3_CH4
@@ -211,27 +208,6 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(LED_WATER_G_GPIO_Port, &GPIO_InitStruct);
 
-  #if 0
-  // I2C2_SCL
-  LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  GPIO_InitStruct.Pin = LL_I2C_SCL_Pin;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
-  LL_GPIO_Init(I2C_SCL_GPIO_Port, &GPIO_InitStruct);
-
-  // I2C2_SDA
-  LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  GPIO_InitStruct.Pin = LL_I2C_SDA_Pin;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
-  LL_GPIO_Init(I2C_SDA_GPIO_Port, &GPIO_InitStruct);
-  #endif 
   LL_GPIO_SetOutputPin(I2C_SCL_GPIO_Port, LL_I2C_SCL_Pin);
   LL_GPIO_SetOutputPin(I2C_SDA_GPIO_Port, LL_I2C_SDA_Pin);
   LL_GPIO_StructInit(&GPIO_InitStruct);

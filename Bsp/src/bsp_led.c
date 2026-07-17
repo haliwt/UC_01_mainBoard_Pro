@@ -99,6 +99,29 @@ void wifi_led_state_handler(void)
 *@param:
 *@notice
 **/
+void humidity_indicate_led_handler(void)
+{
+    if(gpro_t.humidity >= 40 &&  gpro_t.humidity<= 70){
+
+        LED_HUMIDITY_OFF_HIGH();
+		LED_HUMIDITY_ON_MIDDLE();
+	    LED_HUMIDIY_OFF_LOW();
+	}
+	else if(gpro_t.humidity <= 40){
+
+       LED_HUMIDITY_OFF_HIGH();
+	   LED_HUMIDITY_OFF_MIDDLE();
+	   LED_HUMIDIY_ON_LOW();    
+	}
+	else{
+
+        LED_HUMIDITY_ON_HIGH();
+		LED_HUMIDITY_OFF_MIDDLE();
+	    LED_HUMIDIY_OFF_LOW();
+	}
+
+
+}
 
 
 

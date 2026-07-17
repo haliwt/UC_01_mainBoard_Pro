@@ -96,12 +96,6 @@ extern "C" {
 #define WATER_POS_GPIO_Port GPIOB
 #define LL_WATER_POS_Pin LL_GPIO_PIN_0
 
-#define LED_B_3_GPIO_Port GPIOB
-#define LL_LED_B_3_Pin LL_GPIO_PIN_14
-
-#define LED_G_2_GPIO_Port 				GPIOB
-#define LL_LED_G_2_Pin 					LL_GPIO_PIN_15
-
 
 #define LED_WATER_G_GPIO_Port GPIOF
 #define LL_LED_WATER_G_Pin LL_GPIO_PIN_0
@@ -114,6 +108,20 @@ extern "C" {
 
 #define LED_WATER_RB_GPIO_Port GPIOF
 #define LL_LED_WATER_RB_Pin LL_GPIO_PIN_4
+
+
+//LED HUMIDITY 
+
+#define LED_B_3_GPIO_Port 				GPIOB
+#define LL_LED_B_3_Pin 					LL_GPIO_PIN_14
+
+#define LED_G_2_GPIO_Port 				GPIOB
+#define LL_LED_G_2_Pin 					LL_GPIO_PIN_15
+
+#define LED_R_1_GPIO_Port 				GPIOA
+#define LL_LED_R_1_Pin 					LL_GPIO_PIN_11
+
+
 
 
 //KEY GPIO
@@ -130,8 +138,7 @@ extern "C" {
 #define KEY_PLASMA_GPIO_Port GPIOB
 #define LL_KEY_PLASMA_Pin LL_GPIO_PIN_3
 
-#define LED_R_1_GPIO_Port GPIOA
-#define LL_LED_R_1_Pin LL_GPIO_PIN_11
+
 
 
 

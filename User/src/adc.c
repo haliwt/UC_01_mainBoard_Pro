@@ -83,7 +83,7 @@ void ADC_Configuration(void)
 		LL_VREFBUF_Enable(VREFBUF);
 		//LL_ADC_EnableTempSensor();
 	
-    LL_ADC_SetSampleTime(LL_ADC_SAMPLE_TIME_10_5_CYCLES);
+    LL_ADC_SetSampleTime(LL_ADC_SAMPLE_TIME_255_5_CYCLES);
     LL_ADC_REG_SetSequencerLength(LL_ADC_REG_SEQ_SCAN_RANKS_6);  
 //    for(i=0; i<ADC_CH_COUNT; i++)
 //    {
@@ -100,6 +100,7 @@ void ADC_Configuration(void)
     LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
     LL_ADC_ClearFlag_EOC();
     LL_ADC_Enable();
+	
 
 
   #endif 
