@@ -152,6 +152,11 @@ extern "C" {
 #define PLASMA_CTL_GPIO_Port GPIOA
 #define LL_PLASMA_CTL_Pin LL_GPIO_PIN_8
 
+//CONTROL PUMP GPIO
+#define WATER_PUMP_CTRL_GPIO_Port    GPIOB
+#define LL_WATER_PUMP_CTRL_Pin       LL_GPIO_PIN_9
+
+
 
 
 //FAN CONTROL GPIO

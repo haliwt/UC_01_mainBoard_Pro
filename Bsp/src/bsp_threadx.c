@@ -9,10 +9,11 @@
 #define KEY_PLASMA_SHORT   (1 << 4)
 #define KEY_PLASMA_LONG     (1 << 5)
 
-
-
 #define KEY_AI_SHORT   (1 << 6)
 #define KEY_AI_LONG    (1 << 7)
+
+#define  KEY_WATER_LONG    (1<<8)
+
 
 
 #define STACK_SIZE_KEY  512//256//512//1792//3072//2048//1024//896//768
@@ -228,7 +229,8 @@ void tx_application_define(void *first_unused_memory)
     static uint16_t fan_cnt = 0;
     static uint16_t plasma_cnt = 0;
     static uint16_t power_cnt = 0;
-
+	static uint16_t  water_cnt  =0 ;
+    static uint8_t  water_pump_on_f;
     const uint16_t LONG_PRESS_TIME = 40;   // 300 * 10ms = 3000ms
   
   
@@ -295,6 +297,29 @@ void tx_application_define(void *first_unused_memory)
           plasma_cnt =0;
 
 	}
+	else if(KEY_WATER_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){
+          water_cnt ++ ;
+
+	      if(water_cnt == LONG_PRESS_TIME){
+            
+                water_pump_on_f = 1;
+				gpro_t.g_water_pump_flag = 0;
+		  }
+		  if(water_pump_on_f == 1){
+
+             WATER_PUMP_CTRL_ON() ;               
+		  }
+
+	}
+	else if(KEY_WATER_VALUE() == KEY_UP && water_cnt > 0){
+
+	     water_cnt =0;
+	     water_pump_on_f = 0;
+	     gpro_t.g_water_pump_flag = 1;
+	     WATER_PUMP_CTRL_OFF() ;
+
+
+	}
 	
    	
 	
@@ -352,6 +377,10 @@ void tx_application_define(void *first_unused_memory)
 		}
 	    else if(flags & KEY_PLASMA_SHORT  && gpro_t.fan_warning_f ==0){
              key_plasma_short_handler();
+		}
+		else if(flags & KEY_WATER_LONG){
+           key_water_long_handler();
+
 		}
 		
 		

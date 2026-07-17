@@ -125,11 +125,12 @@ void GPIO_Configuration(void)
 
   
 
-  // GPIO_Output
+  // GPIO_Output GPIOB
   LL_GPIO_ResetOutputPin(LED_B_3_GPIO_Port, LL_LED_B_3_Pin);
   LL_GPIO_ResetOutputPin(LED_G_2_GPIO_Port, LL_LED_G_2_Pin);
+  LL_GPIO_ResetOutputPin(WATER_PUMP_CTRL_GPIO_Port, LL_WATER_PUMP_CTRL_Pin);
   LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Pin = LL_LED_B_3_Pin | LL_LED_G_2_Pin;
+  GPIO_InitStruct.Pin = LL_LED_B_3_Pin | LL_LED_G_2_Pin |LL_WATER_PUMP_CTRL_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;

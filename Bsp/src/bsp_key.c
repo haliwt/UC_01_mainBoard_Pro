@@ -124,7 +124,7 @@ void key_ai_short_handler(void)
 
 void key_water_long_handler(void)
 {
-
+    WATER_PUMP_CTRL_ON() ;
 
 }
 
@@ -158,6 +158,11 @@ void ai_module_hanlder(void)
      }
 
    }
+
+   if(gpro_t.g_water_pump_flag == 1){
+	    WATER_PUMP_CTRL_OFF() ;
+
+ 	}
   
 }
 

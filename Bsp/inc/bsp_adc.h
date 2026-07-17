@@ -6,7 +6,7 @@
 
 #define  ADC_ENABLE    0
 
-#define  FAN_ADC_THRESHOLD     320
+#define  FAN_ADC_THRESHOLD     400
 
 
 extern uint16_t ADC_ConvertedValues[ADC_CH_COUNT];

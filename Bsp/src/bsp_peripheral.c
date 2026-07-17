@@ -17,6 +17,7 @@ void power_on_ctrl_init_handler(void)
 	if(gpro_t.water_pos_warning_flag==0 ){
 		TEC_CTRL_ON() ;
 	}
+	WATER_PUMP_CTRL_OFF();
 }
 
 
@@ -35,7 +36,8 @@ void power_off_ctrl_handler(void)
 {
 
 	PLASMA_CTRL_OFF();
-	TEC_CTRL_OFF(); 
+	TEC_CTRL_OFF();
+	WATER_PUMP_CTRL_OFF();
 
 }
 
@@ -126,7 +128,7 @@ void workd_interval_turn_off_handle(void)
 
 /**
 *
-*@brief environment temperature value compare set temperater value
+*@brief 
 *@notice
 *@param
 *@retrval 

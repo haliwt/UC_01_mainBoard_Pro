@@ -357,16 +357,18 @@ uint16_t adc_ntc_mv_value(void)
 **************************************************************************************/
 uint16_t adc_fan_mv_value(void)
 {
-	/* 2. 转换成电压（单位：毫伏 mV）
+    uint16_t fan_voltage_mv;
+    /* 2. 转换成电压（单位：毫伏 mV）
 		   假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
-	 ptc_voltage_mv = (ADC_ConvertedValues[0] * 3300) / 4095;
-	  ADC_ConvertedValues[0]=0;
+	 //ptc_voltage_mv = (ADC_ConvertedValues[0] * 3300) / 4095;
+	 fan_voltage_mv = ADC_ConvertedValues[0];
+	
 
 	 #if ADC_ENABLE
       printf("fan_adc = %d\r\n",ptc_voltage_mv);
 	#endif
 	
-	 return ptc_voltage_mv;
+	 return fan_voltage_mv;
 
 }
 

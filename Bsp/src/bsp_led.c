@@ -14,6 +14,7 @@ void power_on_led_handler(void)
    LED_FAN_ON();
    LED_PLASMA_ON();
    LED_KEY_AI_ON();
+   humidity_indicate_led_handler();
 
 }
 
@@ -34,6 +35,10 @@ void power_off_led_handler(void)
    LED_WATER_INDICATOR_2();
 	LED_WATER_INDICATOR_3();
 	LED_WATER_INDICATOR_4();
+
+	 LED_HUMIDITY_OFF_HIGH();
+	 LED_HUMIDITY_OFF_MIDDLE();
+	 LED_HUMIDIY_OFF_LOW();
  
 }
 

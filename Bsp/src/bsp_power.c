@@ -273,7 +273,6 @@ static void handler_AI_module_action(void)
 static void handler_read_6_channels_adc_value(void)
 {
   adc_counter++;
-  fan_adjust_high_speed();
   water_pwm_on();
 
   Water_System_Process();
@@ -293,25 +292,26 @@ static void handler_fan_adc_value(void)
     static uint8_t adc_fan_counter;
 	if(gl_ref.fan_adc_daone_flag==1){
 	   gl_ref.fan_adc_daone_flag++;
-	   gpro_t.fan_adc_value =adc_fan_mv_value();
-	   
-	   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
-	   	
-	        adc_fan_counter =0;
-       }
-	   else if(gpro_t.fan_adc_value < FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
-	       adc_fan_counter ++;
-           if(adc_fan_counter > 9){
-			  adc_fan_counter=0;
-			  gpro_t.fan_warning_f =1;
-		      gpro_t.tec_control_flag = 0;
-		      TEC_CTRL_OFF();
+	  if(gpro_t.g_fan_speed ==3 && works_interval_f == 0){
+		   gpro_t.fan_adc_value =adc_fan_mv_value();
+		   
+		   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
+		   	
+		        adc_fan_counter =0;
+	       }
+		   else if(gpro_t.fan_adc_value < FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
+		       adc_fan_counter ++;
+	           if(adc_fan_counter > 9){
+				  adc_fan_counter=0;
+				  gpro_t.fan_warning_f =1;
+			      gpro_t.tec_control_flag = 0;
+			      TEC_CTRL_OFF();
+			   }
+
 		   }
 
-	   }
-
-    }
-
+	    }
+	}
 	if(gpro_t.fan_warning_f ==1){
          TEC_CTRL_OFF();
          beep_fan_default_sound(); 
@@ -377,6 +377,7 @@ static void power_off_handler(void)
 			gpro_t.time_base_1s_counter=0;
 			gpro_t.gTimer_one_minute=0;
 			works_interval_f=0;
+			gpro_t.g_water_pump_flag = 1; //关闭的.water _pump 
 			
 	        gon_t.off_step = 1;
 	
@@ -430,6 +431,12 @@ static void power_off_handler(void)
 
 		 case 3:
 
+		    if(gpro_t.gTime_link_net_counter >3){
+				gpro_t.gTime_link_net_counter=0;
+
+                GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+
+			}
 
 		    if(gpro_t.wifi_connected_success_flag ==1  ){//10ms*800 =8000ms =8s
       
