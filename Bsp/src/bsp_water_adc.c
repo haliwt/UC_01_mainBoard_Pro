@@ -6,10 +6,10 @@
 
 // 传感器“有水”的电压阈值（单位：mV，根据实际传感器微调）
 #define WATER_TOUCH_THRESHOLD_MV     1536//280//400
-#define WATER_TOUCH_THRESHOLD_1      1
-#define WATER_TOUCH_THRESHOLD_2      1
-#define WATER_TOUCH_THRESHOLD_3      1
-#define WATER_TOUCH_WARNING          1
+#define WATER_TOUCH_THRESHOLD_1      0
+#define WATER_TOUCH_THRESHOLD_2      0
+#define WATER_TOUCH_THRESHOLD_3      0
+#define WATER_TOUCH_WARNING          0
 
 
 // 定义水位等级枚举

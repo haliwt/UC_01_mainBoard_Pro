@@ -13,12 +13,13 @@ void beep_off(void);
 
 void beep_high_temperature_sound(void);
 
-void beep_fan_default_sound(void);
+
 
 void beep_water_warning_sound(void);
 
 void beep_fan_default_sound(void);
 
+void beep_angle_thresdhold_sound(void);
 
 
 

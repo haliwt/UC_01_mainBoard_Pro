@@ -242,7 +242,7 @@ uint8_t counter_test,adc_counter;
 
 static void handler_read_gxht40ad(void)
 {
-    
+    if(gpro_t.g_water_pump_flag == 1){
      gxht4_rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
 	if(gxht4_rec==0){
       #if 1
@@ -260,6 +260,8 @@ static void handler_read_gxht40ad(void)
 
 	humidity_indicate_led_handler();
 
+    }
+
 
 }
 
@@ -273,36 +275,40 @@ static void handler_AI_module_action(void)
 static void handler_read_6_channels_adc_value(void)
 {
   adc_counter++;
-  water_pwm_on();
+  if(gpro_t.g_water_pump_flag == 1){
+	  water_pwm_on();
 
-  Water_System_Process();
-  adc_read_6channels_value();
+	  Water_System_Process();
+	  adc_read_6channels_value();
 
-  gl_ref.adc_6_channels_done_flag = 1;
-  gl_ref.fan_adc_daone_flag = 1;
+	  gl_ref.adc_6_channels_done_flag = 1;
+	  gl_ref.fan_adc_daone_flag = 1;
 
-  
-  water_pwm_off();
+	  
+	  water_pwm_off();
+
+  }
   
 
 }
+uint8_t fan_adn_error_counter;
 
 static void handler_fan_adc_value(void)
 {
-    static uint8_t adc_fan_counter;
-	if(gl_ref.fan_adc_daone_flag==1){
+   // static uint8_t adc_fan_counter;
+	if(gl_ref.fan_adc_daone_flag==1 && gpro_t.g_water_pump_flag == 1){
 	   gl_ref.fan_adc_daone_flag++;
 	  if(gpro_t.g_fan_speed ==3 && works_interval_f == 0){
 		   gpro_t.fan_adc_value =adc_fan_mv_value();
 		   
 		   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
 		   	
-		        adc_fan_counter =0;
+		        fan_adn_error_counter =0;
 	       }
 		   else if(gpro_t.fan_adc_value < FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
-		       adc_fan_counter ++;
-	           if(adc_fan_counter > 9){
-				  adc_fan_counter=0;
+		      fan_adn_error_counter ++;
+	           if(fan_adn_error_counter > 15){
+				  fan_adn_error_counter=0;
 				  gpro_t.fan_warning_f =1;
 			      gpro_t.tec_control_flag = 0;
 			      TEC_CTRL_OFF();
@@ -322,7 +328,7 @@ static void handler_fan_adc_value(void)
 }
 static void handler_tec_adc_value(void)
 {
-   if(gl_ref.adc_6_channels_done_flag ==1){
+   if(gl_ref.adc_6_channels_done_flag ==1 && gpro_t.g_water_pump_flag == 1){
    	   gl_ref.adc_6_channels_done_flag++;
 	   gpro_t.ntc_adc_value =adc_ntc_mv_value();
        Get_Ntc_Resistance_Temperature_Handler(gpro_t.ntc_adc_value);
