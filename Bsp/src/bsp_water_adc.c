@@ -172,10 +172,10 @@ void Water_System_Process(void)
 					LED_WATER_LEVEL_1();
 				    LED_WATER_LEVEL_2();
 				    LED_WATER_LEVEL_3();
-					beep_sound_counter= 100;
+					beep_sound_counter= 254;
 					if(gpro_t.g_out_display_flag==1){
 			           SendData_Set_Command(0x0C,0X01);//高水位报警
-					    tx_thread_sleep(2);//10ms *2 = 20ms.
+					    //tx_thread_sleep(2);//10ms *2 = 20ms.
 			        }
                 
 			  
@@ -223,7 +223,7 @@ void Water_System_Process(void)
 
 	if(gpro_t.water_pos_warning_flag== 1){
 		beep_sound_counter++;
-        if(beep_sound_counter > 50){
+        if(beep_sound_counter > 100){
 		beep_sound_counter=0;	
 	    beep_water_warning_sound();
 

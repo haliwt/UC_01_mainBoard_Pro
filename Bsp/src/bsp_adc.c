@@ -131,8 +131,7 @@ uint16_t adc_water_3_value(void)//adc_water_2_value
 	#else 
 
 	uint16_t raw_value;
-    uint16_t water_1_mv;
-	uint16_t water_1_value;
+
 	static uint32_t water_3_filtered = 0;
 
     // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
@@ -184,8 +183,7 @@ uint16_t adc_water_2_value(void)//adc_water_3_value
 	return water_2_value;
 	#else 
 	uint16_t raw_value;
-    uint16_t water_1_mv;
-	uint16_t water_1_value;
+   
 	static uint32_t water_2_filtered = 0;
 
     // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
@@ -239,8 +237,7 @@ uint16_t adc_water_1_value(void)//adc_water_4_value
 	return water_1_value;
 	#else 
 	uint16_t raw_value;
-    uint16_t water_1_mv;
-	uint16_t water_1_value;
+
 	static uint32_t water_1_filtered = 0;
 
     // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
@@ -270,7 +267,7 @@ uint16_t adc_water_1_value(void)//adc_water_4_value
 uint16_t adc_water_warning_value(void)//adc_water_1_value
 {
 
-   #if 0
+#if 0
 	uint16_t water_4_value;
 
 
@@ -289,10 +286,9 @@ uint16_t adc_water_warning_value(void)//adc_water_1_value
 	
 
 	return water_4_value;
-	#else
+#else
 	uint16_t raw_value;
-    uint16_t water_1_mv;
-	uint16_t water_1_value;
+  
 	static uint32_t water_warning_filtered = 0;
 
     // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
@@ -320,7 +316,7 @@ uint16_t adc_water_warning_value(void)//adc_water_1_value
 
 
 
-	#endif 
+#endif 
 }
 
 /**************************************************************************************

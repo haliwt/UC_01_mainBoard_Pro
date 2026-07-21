@@ -183,7 +183,30 @@ void UART2_IRQHandler(void)
   /* USER CODE END UART2_IRQHandler */
 }
 
+/**
+  * @brief  This function handles DMA CHANNEL1 interrupt request.
+  * @param  None
+  * @retval None
+  */
+#if 0
+void DMA_CHANNEL1_IRQHandler(void)
+{
+	if((LL_DMA_IsEnabledIT_TC(DMA, LL_DMA_CHANNEL_1) == SET) && (LL_DMA_IsActiveFlag_TC1(DMA) == SET))
+  {
+    LL_DMA_ClearFlag_TC1(DMA);  //clear interrupt
+		//gpro_t.dma_dong_flag = 1;           //notice CUP transmiter is complete
+		return;
+  }
 
+  /* 2. (建议补充) 处理 DMA 传输错误中断，避免程序死锁 */
+    if (LL_DMA_IsEnabledIT_TE(DMA, LL_DMA_CHANNEL_1) && LL_DMA_IsActiveFlag_TE1(DMA))
+    {
+        LL_DMA_ClearFlag_TE1(DMA);
+        /* 可在此处加入错误处理逻辑 */
+    }
+}
+
+#endif 
 /* USER CODE BEGIN 1 */
 
 

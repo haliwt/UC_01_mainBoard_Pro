@@ -182,7 +182,7 @@ void UART1_TX_RX_DMA_Init(void)
     LL_DMA_Init(DMA, LL_DMA_CHANNEL_2, &DMA_InitStructure);                            //配置DMA通道1
     #endif 
 
-	LL_DMA_EnableIT_TC(DMA, LL_DMA_CHANNEL_1);        //WT.EDIT 2026.07.21
+	//LL_DMA_EnableIT_TC(DMA, LL_DMA_CHANNEL_1);        //WT.EDIT 2026.07.21
     LL_SYSCFG_SetDMARemap_CH1(LL_SYSCFG_DMA_MAP_UART1_TX);                          //映射DMA通道2作为串口1的发送功能
    // LL_SYSCFG_SetDMARemap_CH(LL_SYSCFG_DMA_MAP_UART1_RX);                          //映射DMA通道3作为串口1的接收功能
     
@@ -190,4 +190,35 @@ void UART1_TX_RX_DMA_Init(void)
     LL_DMA_EnableChannel(DMA,LL_DMA_CHANNEL_1);
 }
 
+
+/**
+  * @brief  UART1 DMA 发送函数（非阻塞）--display board
+  * @param  pData: 待发送的数据缓冲区指针
+  * @param  Size:  发送数据长度
+  */
+void UART1_DMA_Disp_Send(const uint8_t *pData, uint16_t Size)
+{
+
+  /* 1. 安全边界检查：指针为空或长度为0时直接退出，拒绝非法非法操作 */
+  if (pData == NULL || Size == 0) return ;
+  
+
+  /* 1. 硬件轮询：等上一包 DMA 搬完 + 串口硬件把最后一个字节从 TX 引脚发完 */
+
+  while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_1) && (LL_DMA_GetDataLength(DMA, LL_DMA_CHANNEL_1) > 0));
+
+	/* 3. 必须先关闭通道，才能重新配置数据长度 */
+  LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_1);
+
+
+  /* 2. 清除通道 1 的传输完成标志位 */
+  LL_DMA_ClearFlag_TC1(DMA);
+
+  /* 3. 动态重新配置内存地址和数据长度 */
+  LL_DMA_SetMemoryAddress(DMA, LL_DMA_CHANNEL_1, (uint32_t)pData);
+  LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_1, Size);
+
+  /* 4. 使能 DMA 通道，立刻启动硬件级发送 */
+  LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_1);
+}
 

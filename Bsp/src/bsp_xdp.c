@@ -206,7 +206,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 				if(ANGLE_SENSOR_VALUE() == 0){
 			        beep_key_click();//buzzer_sound_fun();
 	                SendWifiData_Answer_Cmd(0x01,0x01);
-		            tx_thread_sleep(2);
+		           /// tx_thread_sleep(2);
 					 gpro_t.g_power_flag  = true;
 			         power_on_led_handler();
 			         power_on_ctrl_init_handler();
@@ -223,7 +223,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 			 beep_key_click();
 			 SendWifiData_Answer_Cmd(0x01,0x0); //power off .
-             tx_thread_sleep(2); 
+            // tx_thread_sleep(2); 
 		     gon_t.off_step=0;
              gpro_t.g_power_flag = false;
 	         power_off_led_handler();
@@ -232,7 +232,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			  gpro_t.g_out_display_flag= 1;
              
 			  SendWifiData_Answer_Cmd(0x01,0x02); //compatible older version 
-	          tx_thread_sleep(2);
+	         // tx_thread_sleep(2);
            
 		}
       
@@ -245,14 +245,14 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 	     beep_key_click();
 	     SendWifiData_Answer_Cmd(0x02,0x01); //
-           tx_thread_sleep(2); 
+          // tx_thread_sleep(2); 
 		
        }
        else if(pdata[3]== 0){
 	   
 		  beep_key_click();
 	      SendWifiData_Answer_Cmd(0x02,0x0); //
-          tx_thread_sleep(2); 
+          //tx_thread_sleep(2); 
      
        }
     
@@ -271,7 +271,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
    
 			  }
 			 SendWifiData_Answer_Cmd(0x03,0x01); //
-			tx_thread_sleep(2); 
+			///tx_thread_sleep(2); 
 			 
 		  }
 		  else if(pdata[3]  == 0x0){
@@ -282,7 +282,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			 LED_PLASMA_OFF();
 
 			SendWifiData_Answer_Cmd(0x03,0x0); //
-			tx_thread_sleep(2); 
+			//tx_thread_sleep(2); 
 			  
 		  
 		  }
@@ -303,7 +303,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			}
 			
 			SendWifiData_Answer_Cmd(0x04,0x01); //
-			tx_thread_sleep(2); 
+			//tx_thread_sleep(2); 
    
 		  }
 		  else if(pdata[3] == 0x0){ //close 
@@ -331,7 +331,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
          
 		
           SendWifiData_Answer_Cmd(0x05,0x01); //WT.EDIT 2024.12.28
-          tx_thread_sleep(2);
+          //tx_thread_sleep(2);
          
       
         }
@@ -376,7 +376,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
         beep_key_click();
         
          SendWifiData_Answer_Cmd(0x16,0x01); //WT.EDIT 2025.07.28
-	     tx_thread_sleep(2); 
+	     //tx_thread_sleep(2); 
 
 	  break;
 

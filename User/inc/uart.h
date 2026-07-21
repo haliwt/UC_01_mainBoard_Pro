@@ -28,7 +28,7 @@ void UART1_Configuration(void);
 
 void UART2_Configuration(void);
 
-void UART1_DMA_Disp_Send(const uint8_t *pData, uint16_t Size);
+
 
 void UART2_DMA_Wifi_Send(const uint8_t *pData, uint16_t Size);
 

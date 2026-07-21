@@ -198,38 +198,6 @@ void UART2_Int_Call(void)
 
 
 
-/**
-  * @brief  UART1 DMA 发送函数（非阻塞）--display board
-  * @param  pData: 待发送的数据缓冲区指针
-  * @param  Size:  发送数据长度
-  */
-void UART1_DMA_Disp_Send(const uint8_t *pData, uint16_t Size)
-{
-
-  /* 1. 安全边界检查：指针为空或长度为0时直接退出，拒绝非法非法操作 */
-  if (pData == NULL || Size == 0) return ;
-  /* 1. 等待上一次 DMA 发送完成（如果通道还开启着，说明还没发完） */
- // while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_1));
- /* 【安全修改 1】通过检查 TC 标志位或剩余数据量来判断是否发送完成，而不是仅看 Enable 状态 */
-    // 如果通道开着，且传输计数器不为 0，说明还在发，等待它发完
- /* 2. 判断上一次是否发完：如果通道开着，且【剩余传输计数不为0】，说明还在发，等待它发完 */
-  // LL_DMA_GetDataLength 读取的是剩余要发送的字节数（递减计数器）
-  while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_1) && (LL_DMA_GetDataLength(DMA, LL_DMA_CHANNEL_1) > 0));
-
-	/* 3. 必须先关闭通道，才能重新配置数据长度 */
-  LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_1);
-
-
-  /* 2. 清除通道 1 的传输完成标志位 */
-  LL_DMA_ClearFlag_TC1(DMA);
-
-  /* 3. 动态重新配置内存地址和数据长度 */
-  LL_DMA_SetMemoryAddress(DMA, LL_DMA_CHANNEL_1, (uint32_t)pData);
-  LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_1, Size);
-
-  /* 4. 使能 DMA 通道，立刻启动硬件级发送 */
-  LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_1);
-}
 
 
 /**

@@ -314,7 +314,7 @@ static void handler_fan_adc_value(void)
 			      TEC_CTRL_OFF();
 				  if(gpro_t.g_out_display_flag==1){
 			           SendData_Set_Command(0x09,0X01);//风扇报警
-					   tx_thread_sleep(2);//10ms *2 = 20ms.
+					   //tx_thread_sleep(2);//10ms *2 = 20ms.
 			       }
 			   }
 
@@ -327,7 +327,7 @@ static void handler_fan_adc_value(void)
          beep_fan_default_sound(); 
 	     if(gpro_t.g_out_display_flag==1){
 			SendData_Set_Command(0x09,0X01);//风扇报警
-			tx_thread_sleep(2);//10ms *2 = 20ms.
+			//tx_thread_sleep(2);//10ms *2 = 20ms.
 			}
 		 
 	   }
