@@ -162,7 +162,7 @@ void TIM17_IRQHandler(void)
   */
 void UART1_IRQHandler(void)
 {
-  extern void UART1_Int_Call(void);
+  //extern void UART1_Int_Call(void);
   UART1_Int_Call();
   /* USER CODE BEGIN UART1_IRQHandler */
  

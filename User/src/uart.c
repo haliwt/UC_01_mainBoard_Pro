@@ -14,11 +14,71 @@
 
 /*接收数据中断（RXNE - Receive Data Register Not Empty*/
 
+static uint32_t HCLK,PCLK;
+#define  Freq_M    (1000000U) 
+
+
+/**
+* @brief  UART1 displayBoard
+ * @param  String: 
+ * @retval None
+ */
+// UART1 初始化配置,Display Board bpd = 9600
+void UART1_Configuration(void)
+{
+  LL_UART_InitTypeDef UART_InitStructure= {0};
+
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_UART1);
+
+  LL_UART_DeInit(UART1);
+  LL_UART_StructInit(&UART_InitStructure);
+  UART_InitStructure.BaudRate = 9600;
+  UART_InitStructure.DataWidth = LL_UART_DATAWIDTH_8B;
+  UART_InitStructure.StopBits = LL_UART_STOPBITS_1;
+  UART_InitStructure.Parity = LL_UART_PARITY_NONE;
+  UART_InitStructure.TransferDirection = LL_UART_DIRECTION_TX_RX;
+  LL_UART_Init(UART1, &UART_InitStructure);
+
+  LL_UART_EnableDMAReq_TX(UART1);
+  
+  LL_UART_EnableIT_RXNE(UART1);
+  LL_UART_EnableIT_TC(UART1);
+  // LL_UART_EnableIT_IDLE(UART1); //Ê¹ÄÜUART1µÄ¿ÕÏÐÖÐ¶Ï
+
+  LL_UART_Enable(UART1);
+
+ 
+}
+// UART2 初始化配置
+void UART2_Configuration(void)
+{
+  LL_UART_InitTypeDef UART_InitStructure= {0};
+
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_UART2);
+
+  LL_UART_DeInit(UART2);
+  LL_UART_StructInit(&UART_InitStructure);
+  UART_InitStructure.BaudRate = 115200;
+  UART_InitStructure.DataWidth = LL_UART_DATAWIDTH_8B;
+  UART_InitStructure.StopBits = LL_UART_STOPBITS_1;
+  UART_InitStructure.Parity = LL_UART_PARITY_NONE;
+  UART_InitStructure.TransferDirection = LL_UART_DIRECTION_TX_RX;
+  LL_UART_Init(UART2, &UART_InitStructure);
+
+  LL_UART_EnableIT_RXNE(UART2);
+  LL_UART_EnableIT_TC(UART2);
+
+  LL_UART_Enable(UART2);
+}
+
+
 
 //Display Board TX and RX 
 void UART1_Int_Call(void)
 {
   uint8_t res ;
+   //uint8_t ch = 0 ;
+  
   if(LL_UART_IsActiveFlag_RXNE(UART1)&& LL_UART_IsEnabledIT_RXNE(UART1))
   {
     /* USER CODE BEGIN Code_UART1_Int_Call_UART_FLAG_RXNE */
@@ -64,32 +124,24 @@ void UART1_Int_Call(void)
 }
 
 
-/**
-* @brief  UART1 displayBoard
- * @param  String: 
- * @retval None
- */
-// UART1 初始化配置,Display Board bpd = 9600
-void UART1_Configuration(void)
-{
-  LL_UART_InitTypeDef UART_InitStructure= {0};
 
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_UART1);
+//  #else 
+//	 if(LL_UART_IsActiveFlag_IDLE(UART1) && LL_UART_IsEnabledIT_IDLE(UART1))
+//    {
+//        LL_UART_ClearFlag_IDLE(UART1);
+//        LL_UART_ClearFlag_RTO(UART1);
 
-  LL_UART_DeInit(UART1);
-  LL_UART_StructInit(&UART_InitStructure);
-  UART_InitStructure.BaudRate = 9600;
-  UART_InitStructure.DataWidth = LL_UART_DATAWIDTH_8B;
-  UART_InitStructure.StopBits = LL_UART_STOPBITS_1;
-  UART_InitStructure.Parity = LL_UART_PARITY_NONE;
-  UART_InitStructure.TransferDirection = LL_UART_DIRECTION_TX_RX;
-  LL_UART_Init(UART1, &UART_InitStructure);
+//        ch =  LL_UART_ReceiveData8(UART1);
+//	    usart1_isr_callback_handler(ch);
+        
+     
+//    }
 
-  LL_UART_EnableIT_RXNE(UART1);
-  LL_UART_EnableIT_TC(UART1);
+//  #endif 
 
-  LL_UART_Enable(UART1);
-}
+
+
+
 /**
 * @brief  UART2  wifi 
  * @param  String: �ַ���
@@ -140,27 +192,6 @@ void UART2_Int_Call(void)
   UART2->ICR = 0xFF;//ICR：Interrupt Clear Register 的缩写，即 “中断清除寄存器”。
 }
 
-// UART2 初始化配置
-void UART2_Configuration(void)
-{
-  LL_UART_InitTypeDef UART_InitStructure= {0};
-
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_UART2);
-
-  LL_UART_DeInit(UART2);
-  LL_UART_StructInit(&UART_InitStructure);
-  UART_InitStructure.BaudRate = 115200;
-  UART_InitStructure.DataWidth = LL_UART_DATAWIDTH_8B;
-  UART_InitStructure.StopBits = LL_UART_STOPBITS_1;
-  UART_InitStructure.Parity = LL_UART_PARITY_NONE;
-  UART_InitStructure.TransferDirection = LL_UART_DIRECTION_TX_RX;
-  LL_UART_Init(UART2, &UART_InitStructure);
-
-  LL_UART_EnableIT_RXNE(UART2);
-  LL_UART_EnableIT_TC(UART2);
-
-  LL_UART_Enable(UART2);
-}
 
 
 
@@ -168,7 +199,7 @@ void UART2_Configuration(void)
 
 
 /**
-  * @brief  UART1 DMA 发送函数（非阻塞）
+  * @brief  UART1 DMA 发送函数（非阻塞）--display board
   * @param  pData: 待发送的数据缓冲区指针
   * @param  Size:  发送数据长度
   */
@@ -178,7 +209,16 @@ void UART1_DMA_Disp_Send(const uint8_t *pData, uint16_t Size)
   /* 1. 安全边界检查：指针为空或长度为0时直接退出，拒绝非法非法操作 */
   if (pData == NULL || Size == 0) return ;
   /* 1. 等待上一次 DMA 发送完成（如果通道还开启着，说明还没发完） */
-  while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_1));
+ // while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_1));
+ /* 【安全修改 1】通过检查 TC 标志位或剩余数据量来判断是否发送完成，而不是仅看 Enable 状态 */
+    // 如果通道开着，且传输计数器不为 0，说明还在发，等待它发完
+ /* 2. 判断上一次是否发完：如果通道开着，且【剩余传输计数不为0】，说明还在发，等待它发完 */
+  // LL_DMA_GetDataLength 读取的是剩余要发送的字节数（递减计数器）
+  while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_1) && (LL_DMA_GetDataLength(DMA, LL_DMA_CHANNEL_1) > 0));
+
+	/* 3. 必须先关闭通道，才能重新配置数据长度 */
+  LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_1);
+
 
   /* 2. 清除通道 1 的传输完成标志位 */
   LL_DMA_ClearFlag_TC1(DMA);
@@ -218,30 +258,13 @@ void UART2_DMA_Wifi_Send(const uint8_t *pData, uint16_t Size)
 //#if defined ( __CC_ARM )
 int fputc(int ch, FILE *f)
 {
-  uint32_t timeout = 50000; // 根据波特率设定合理的超时计数
-  LL_UART_TransmitData8(UART1, ch);
-// while(LL_UART_IsActiveFlag_TC(UART1) == RESET){//增加超时跳出，防止串口硬件异常时卡死全系统
-   
-//        if (--timeout == 0) {
-//            return ch; // 超时了，直接退出，不陪它死等
-//        }
-//    }
-  while (!LL_UART_IsActiveFlag_TXE(UART1));
+
+  LL_UART_TransmitData8(UART2, ch);
+  while (!LL_UART_IsActiveFlag_TXE(UART2));
 
   return ch;
 }
-////#elif defined ( __GNUC__ )
-//int _write(int file, char *ptr, int len)
-//{
-//  for (int i = 0; i < len; ++i)
-//  {
-//    LL_UART_TransmitData8(UART1, ptr[i]);
-//    while(LL_UART_IsActiveFlag_TC(UART1) == RESET);
-//  }
-//  return len;
-//}
-//#endif
-/* USER CODE END fputc */
+
 
 
 // 自己写一个安全的、绝对不依赖 C 库的字符发送函数

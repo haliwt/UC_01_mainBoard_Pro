@@ -114,9 +114,10 @@ int main(void)
   IWDG_Configuration();
 
   
-  
+   
   DMA_Configuration();
   DMA_ADC_Init();
+  UART1_TX_RX_DMA_Init();
   ADC_Configuration();
   LL_DMA_Configuration_Channel3((uint32_t)ADC_ConvertedValues,
                               (uint32_t)&ADC->DR,

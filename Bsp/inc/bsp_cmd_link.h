@@ -2,9 +2,11 @@
 #define __BSP_CMD_LINK_H_
 #include "main.h"
 
+#define MAX_BUFFER_SIZE  12
 
 
 
+extern uint8_t outputBuf[MAX_BUFFER_SIZE];
 
 
 extern uint8_t  inputCmd[30];

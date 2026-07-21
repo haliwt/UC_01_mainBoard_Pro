@@ -248,7 +248,7 @@ static void handler_read_gxht40ad(void)
       #if 1
       printf("temp = %d , humidity = %d \r\n",gpro_t.temperature,gpro_t.humidity);
 	  #endif 
-	
+	  sendData_Real_TimeHum(gpro_t.humidity, gpro_t.temperature);
 
 	}
 	else{
@@ -312,6 +312,10 @@ static void handler_fan_adc_value(void)
 				  gpro_t.fan_warning_f =1;
 			      gpro_t.tec_control_flag = 0;
 			      TEC_CTRL_OFF();
+				  if(gpro_t.g_out_display_flag==1){
+			           SendData_Set_Command(0x09,0X01);//风扇报警
+					   tx_thread_sleep(2);//10ms *2 = 20ms.
+			       }
 			   }
 
 		   }
@@ -321,8 +325,12 @@ static void handler_fan_adc_value(void)
 	if(gpro_t.fan_warning_f ==1){
          TEC_CTRL_OFF();
          beep_fan_default_sound(); 
+	     if(gpro_t.g_out_display_flag==1){
+			SendData_Set_Command(0x09,0X01);//风扇报警
+			tx_thread_sleep(2);//10ms *2 = 20ms.
+			}
 		 
-	}
+	   }
 
 
 }

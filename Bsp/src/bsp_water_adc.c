@@ -173,6 +173,10 @@ void Water_System_Process(void)
 				    LED_WATER_LEVEL_2();
 				    LED_WATER_LEVEL_3();
 					beep_sound_counter= 100;
+					if(gpro_t.g_out_display_flag==1){
+			           SendData_Set_Command(0x0C,0X01);//高水位报警
+					    tx_thread_sleep(2);//10ms *2 = 20ms.
+			        }
                 
 			  
 	         }
@@ -180,6 +184,10 @@ void Water_System_Process(void)
 			 	water_pos_step =2;
 			    gpro_t.water_pos_warning_flag= 0;
 			    ntc_temperature_compare_handler();
+				if(gpro_t.g_out_display_flag==1){
+	               SendData_Set_Command(0x0C,0);//高水位报警
+			    //tx_thread_sleep(2);//10ms *2 = 20ms.
+	            }
 				LED_WATER_LEVEL_1();
 			    LED_WATER_LEVEL_2();
 			    LED_WATER_LEVEL_3();
@@ -193,6 +201,11 @@ void Water_System_Process(void)
 		   water_pos_step =2;
 		   gpro_t.water_pos_warning_flag= 0;
 		   ntc_temperature_compare_handler();
+		   
+			if(gpro_t.g_out_display_flag==1){
+	           SendData_Set_Command(0x0C,0);//高水位报警
+			    //tx_thread_sleep(2);//10ms *2 = 20ms.
+	        }
 		   
 			LED_WATER_LEVEL_1();
 			LED_WATER_LEVEL_2();
@@ -215,6 +228,11 @@ void Water_System_Process(void)
 	    beep_water_warning_sound();
 
         }
+
+		if(gpro_t.g_out_display_flag==1){
+           SendData_Set_Command(0x0C,0X01);//高水位报警
+		    tx_thread_sleep(2);//10ms *2 = 20ms.
+        }
 		
 	     gpro_t.water_pos_2_flag  = adc_water_1_value();
 	     gpro_t.water_pos_1_flag  = adc_water_1_value();
@@ -227,6 +245,10 @@ void Water_System_Process(void)
 		            water_pos_step =0;
 					gpro_t.water_pos_warning_flag= 0;
 		            ntc_temperature_compare_handler();
+					if(gpro_t.g_out_display_flag==1){
+	                   SendData_Set_Command(0x0C,0);//高水位报警
+			          //tx_thread_sleep(2);//10ms *2 = 20ms.
+	                }
 					LED_WATER_INDICATOR_1();
 					LED_WATER_INDICATOR_2();
 					LED_WATER_INDICATOR_3();

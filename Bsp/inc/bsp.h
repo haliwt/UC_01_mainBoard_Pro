@@ -85,6 +85,7 @@ typedef struct _main_ref{
  bool dma_dong_flag ;
  bool tec_control_flag;
  bool g_water_pump_flag;
+ bool g_out_display_flag;
 	    
 
  uint16_t fan_adc_value;
