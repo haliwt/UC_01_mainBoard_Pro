@@ -11,9 +11,10 @@
 void power_on_led_handler(void)
 {
    LED_POWER_ON();
-   LED_FAN_ON();
-   LED_PLASMA_ON();
-   LED_KEY_AI_ON();
+   LED_TIME_ON();
+   
+   
+   
    humidity_indicate_led_handler();
 
 }
@@ -27,9 +28,8 @@ void power_on_led_handler(void)
 void power_off_led_handler(void)
 {
 	 LED_POWER_OFF();
-	 LED_FAN_OFF();
-	 LED_PLASMA_OFF();
-	 LED_KEY_AI_OFF();
+	LED_TIME_OFF();
+	 
    //water pos led 
    LED_WATER_INDICATOR_1();
    LED_WATER_INDICATOR_2();

@@ -25,7 +25,9 @@ main_ref gpro_t;
  void bsp_init(void)
  {
   gpro_t.g_power_flag=0;
-  GXHT40_Init();
+  //GXHT40_Init();
+  TIM17_Delay_Init();
+   AHT30_GPIO_Init();
 
 
 	

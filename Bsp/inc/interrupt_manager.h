@@ -3,7 +3,7 @@
 #include "main.h"
 
 
-void tim17_10ms_tick_handler(void);
+void tim6_10ms_tick_handler(void);
 
 
 

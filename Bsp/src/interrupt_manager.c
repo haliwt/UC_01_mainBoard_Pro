@@ -7,7 +7,7 @@
   * @param	 None
   * @retval  None
 **/
-void tim17_10ms_tick_handler(void)
+void tim6_10ms_tick_handler(void)
 {
 
   volatile static uint8_t cnt100 =0,cnt1000,cnt1m=0,cnt20ms=0;

@@ -18,6 +18,7 @@
 #include "tim.h"
 #include "iwdg.h"
 #include "adc.h"
+#include "gpio.h"
 
 //
 
@@ -38,11 +39,16 @@
 #include "bsp_buzzer.h"
 #include "bsp_adc.h"
 #include "bsp_water_adc.h"
+#include "bsp_water_pump.h"
+#include "bsp_plasma.h"
+#include "bsp_angle_sensor.h"
+#include "bsp_tec.h"
 
 
-#include "bsp_gxht40.h"
+//#include "bsp_gxht40.h"
 #include "bsp_threadx.h"
 #include "bsp_ntc.h"
+#include "bsp_aht30.h"
 
 
 #include "interrupt_manager.h"

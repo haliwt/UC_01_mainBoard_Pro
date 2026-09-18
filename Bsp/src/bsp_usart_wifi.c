@@ -619,7 +619,7 @@ static void evt_timer_mode(void)
         beep_key_click();
        // AI_led_open_f = 0;
 
-        LED_KEY_AI_OFF();
+        ;
         ///disp_set_hours_time_f = 1;
         //time_set_hours_counter = 0;
 

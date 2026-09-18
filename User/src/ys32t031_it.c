@@ -136,18 +136,18 @@ void SysTick_Handler(void)
   * @param  None
   * @retval None
   */
-void TIM17_IRQHandler(void)
+void TIM6_LPTIM_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM17_IRQHandler */
   // 1. 检查是否是由定时器更新（溢出）产生的中断
-	if (LL_TIM_IsActiveFlag_UPDATE(TIM17) == 1)
+	if (LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1)
 	{
 	  // 2. 必须立刻手动清除更新中断标志位，防止重复进入中断
-	  LL_TIM_ClearFlag_UPDATE(TIM17);
+	  LL_TIM_ClearFlag_UPDATE(TIM6);
   
 	  // 3. 执行你的 10ms 周期性任务
 	  // 示例：可以用来累加系统滴答时间，或者递减某些超时计数器
-	   tim17_10ms_tick_handler(); 
+	   tim6_10ms_tick_handler(); 
   
 	}
 

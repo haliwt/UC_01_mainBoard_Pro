@@ -7,15 +7,9 @@
 #define LED_POWER_OFF()     LL_GPIO_SetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 #define LED_POWER_TOGGLE()   LL_GPIO_TogglePin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 
+#define  LED_TIME_ON()       do{LED_TIME_GPIO_Port -> BSRR = LL_LED_TIME_Pin;}while(0)
+#define  LED_TIME_OFF()      do{LED_TIME_GPIO_Port -> BSRR =(uint32_t)LL_LED_TIME_Pin<<16;}while(0)
 
-#define LED_FAN_ON()       LL_GPIO_ResetOutputPin(LED_FAN_GPIO_Port, LL_LED_FAN_Pin)
-#define LED_FAN_OFF()      LL_GPIO_SetOutputPin(LED_FAN_GPIO_Port, LL_LED_FAN_Pin)
-
-#define LED_PLASMA_ON()    LL_GPIO_ResetOutputPin(LED_PLASMA_GPIO_Port, LL_LED_PLASMA_Pin)
-#define LED_PLASMA_OFF()   LL_GPIO_SetOutputPin(LED_PLASMA_GPIO_Port, LL_LED_PLASMA_Pin)
-
-#define LED_KEY_AI_ON()        LL_GPIO_ResetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
-#define LED_KEY_AI_OFF()       LL_GPIO_SetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
 
 
 //水位指示灯

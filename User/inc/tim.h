@@ -26,7 +26,10 @@ void TIM3_Configuration(void);
 void TIM16_Configuration(void);
 
 
-void TIM17_Configuration(void);
+//void TIM17_Configuration(void);
+
+void TIM6_Configuration(void);
+
 
 
 #ifdef __cplusplus

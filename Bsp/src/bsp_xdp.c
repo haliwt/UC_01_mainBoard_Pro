@@ -265,7 +265,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			 
 			 beep_key_click();
 			 gpro_t.g_plasma_flag = 1;//plasma_open_f = 1;
-			 LED_PLASMA_ON();
+			 ;
 			 if(works_interval_f==0){
 				 PLASMA_CTRL_ON(); 
    
@@ -279,7 +279,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			
 			 gpro_t.g_plasma_flag = 0;
 			 PLASMA_CTRL_OFF();
-			 LED_PLASMA_OFF();
+			 ;
 
 			SendWifiData_Answer_Cmd(0x03,0x0); //
 			//tx_thread_sleep(2); 
@@ -348,13 +348,13 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
       if(pdata[3]== 0x01 || pdata[3]==0x02){
 	  	 beep_key_click();
          gpro_t.g_ai_flag = 1;
-		 LED_KEY_AI_ON();
-	     LED_PLASMA_ON();
+		 ;
+	     ;
 	  }
 	  else if(pdata[3]== 0){
 	  	  beep_key_click();
           gpro_t.g_ai_flag = 0; 
-		  LED_KEY_AI_OFF();
+		  ;
 
 	  }
 

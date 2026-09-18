@@ -117,6 +117,22 @@ void TIM17_Configuration(void)
   LL_TIM_EnableCounter(TIM17);
 }
 
+// TIM6 初始化配置
+void TIM6_Configuration(void)
+{
+  LL_TIM_InitTypeDef TIM_InitStruct = {0};
+
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_TIM6);
+
+  // Overflow time = ((Auto-reload 9999 + 1) * (Prescaler 63 + 1)) / 64000000 = 10 ms, frequency= 100 Hz
+  LL_TIM_StructInit(&TIM_InitStruct);
+  TIM_InitStruct.Prescaler = 63;
+  TIM_InitStruct.Autoreload = 9999; // TIM_ARR
+  LL_TIM_Init(TIM6, &TIM_InitStruct);
+
+  LL_TIM_EnableIT_UPDATE(TIM6);
+  LL_TIM_EnableCounter(TIM6);
+}
 
 
 

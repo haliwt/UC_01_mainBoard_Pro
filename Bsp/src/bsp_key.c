@@ -165,14 +165,14 @@ void ai_module_hanlder(void)
          power_on_run_handler();
    	  }
 	  
-	  LED_FAN_ON();
-      LED_PLASMA_ON();
-      LED_KEY_AI_ON();
+	  ;
+      ;
+      ;
 
    }
    else{
 
-     LED_KEY_AI_OFF();
+     ;
 	 if(works_interval_f ==0){
         plasma_set_status(gpro_t.g_plasma_flag);
         fan_speed_adjust_handler(gpro_t.g_fan_speed);

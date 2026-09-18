@@ -243,7 +243,8 @@ uint8_t counter_test,adc_counter;
 static void handler_read_gxht40ad(void)
 {
     if(gpro_t.g_water_pump_flag == 0){
-     gxht4_rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+    // gxht4_rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+  gxht4_rec  =  AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
 	if(gxht4_rec==0){
       #if 1
       printf("temp = %d , humidity = %d \r\n",gpro_t.temperature,gpro_t.humidity);
@@ -422,7 +423,8 @@ static void power_off_handler(void)
 				gpro_t.gTime_link_net_counter=0;
 				counter ++;
                 if(counter == 1)
-                   GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+                   //GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+                    AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
                 else{
 				   counter = 0;
 				   SendData_Set_Command(0x11,1);
