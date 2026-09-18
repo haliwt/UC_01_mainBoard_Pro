@@ -7,6 +7,7 @@
 #define FAN_SPEED_LOW        1280//2560-1280=   50%
 
 
+extern uint8_t fan_adn_error_counter;
 
 
 void fan_stop(void);
@@ -19,12 +20,15 @@ void fan_adjust_middle_speed(void);
 void fan_adjust_low_speed(void);
 
 
-//void wifiFan_Ctrl_Process(void);
+void fan_adc_detected_value(void);
+
 
 
 void fan_speed_adjust_handler(uint8_t speed_value);
 
 
+
+void fan_warning_sound_handler(void);
 
 
 #endif 

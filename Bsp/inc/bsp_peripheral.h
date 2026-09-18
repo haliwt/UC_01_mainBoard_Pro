@@ -36,13 +36,7 @@ void power_off_ctrl_handler(void);
 
 
 
-
-void workd_interval_time_peripheral_handle(void);
-void workd_interval_turn_off_handle(void);
-
-
-
-
-
-
 #endif 
+
+
+

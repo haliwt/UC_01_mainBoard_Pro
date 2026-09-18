@@ -23,12 +23,8 @@ void key_power_short_handler(void)
 		    gpro_t.g_power_flag  = true;
 		    power_on_led_handler();
 		    power_on_ctrl_init_handler();
-			if(gpro_t.g_out_display_flag==1){
-               SendData_Set_Command(0x01,0x01);
-			  // tx_thread_sleep(2);//10ms *2 = 20ms.
-
-			}
-	    }
+			SendData_Set_Command(0x01,0x01);
+		}
 		else{
            beep_angle_thresdhold_sound();
 
@@ -40,10 +36,9 @@ void key_power_short_handler(void)
         gpro_t.g_power_flag = false;
 	    power_off_led_handler();
 	    power_off_ctrl_handler();
-		if(gpro_t.g_out_display_flag==1){
-              SendData_Set_Command(0x01,0);
+		SendData_Set_Command(0x01,0);
 			 // tx_thread_sleep(2);//10ms *2 = 20ms.
-        }
+         
 	}
 
 }
@@ -82,7 +77,7 @@ void key_fan_short_handler(void)
 	  if(works_interval_f ==0){
 	  	
         fan_speed_adjust_handler(gpro_t.g_fan_speed);
-	   }
+	  }
 	  if(gpro_t.g_out_display_flag==1){
             SendWifiData_To_PanelWindSpeed(gpro_t.g_fan_speed);
 			//tx_thread_sleep(2);//10ms *2 = 20ms.
@@ -109,12 +104,10 @@ void key_plasma_short_handler(void)
    gpro_t.g_plasma_flag = !gpro_t.g_plasma_flag;
    plasma_set_status(gpro_t.g_plasma_flag);
    if(gpro_t.g_out_display_flag==1){
-           SendData_Set_Command(0x03,gpro_t.g_plasma_flag);
+         SendData_Set_Command(0x03,gpro_t.g_plasma_flag);
 		    //tx_thread_sleep(2);//10ms *2 = 20ms.
     }
 	
-	
-
 }
 /**
 *
@@ -129,9 +122,8 @@ void key_ai_short_handler(void)
    gpro_t.g_ai_flag = !gpro_t.g_ai_flag;
    ai_set_status(gpro_t.g_ai_flag);
    if(gpro_t.g_out_display_flag==1){
-           SendData_Set_Command(0x07,gpro_t.g_ai_flag);
-		   // tx_thread_sleep(2);//10ms *2 = 20ms.
-    }
+        SendData_Set_Command(0x07,gpro_t.g_ai_flag);
+   	}	  
 
 }
 
@@ -145,7 +137,15 @@ void key_ai_short_handler(void)
 
 void key_water_long_handler(void)
 {
-    WATER_PUMP_CTRL_ON() ;
+	if(gpro_t.g_water_pump_flag ==1){
+		
+       WATER_PUMP_CTRL_ON() ;
+
+	}
+	else{
+       WATER_PUMP_CTRL_OFF();
+
+	}
 
 }
 
@@ -180,7 +180,7 @@ void ai_module_hanlder(void)
 
    }
 
-   if(gpro_t.g_water_pump_flag == 1){
+   if(gpro_t.g_water_pump_flag == 0){
 	    WATER_PUMP_CTRL_OFF() ;
 
  	}

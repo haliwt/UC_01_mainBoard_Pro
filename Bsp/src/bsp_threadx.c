@@ -16,10 +16,10 @@
 
 
 
-#define STACK_SIZE_KEY  512//256//512//1792//3072//2048//1024//896//768
-#define STACK_SIZE_DECODER  256//512//512//256
-#define STACK_SIZE_UI    1536//1536//1024//256
-#define STACK_SIZE_EVENT  512
+#define STACK_SIZE_KEY          256//
+#define STACK_SIZE_DECODER  	512//512//256
+#define STACK_SIZE_UI     		1152//1536//1024//256
+#define STACK_SIZE_EVENT  		512
 //#define  TX_TIMER_THREAD_STACK_SIZE   128
 
 static TX_THREAD s_decoder_thread;
@@ -52,7 +52,7 @@ static void key_event_thread_entry(ULONG thread_input);
 //void my_timer_callback(ULONG input);
 
 
-uint8_t entry_ui_counter,entry_key_counter,entry_key_event_counter;
+uint8_t entry_ui_counter,entry_key_counter,entry_key_event_counter,entry_decoder_counter;
 
 
 #if DEBUG_ENABLE
@@ -145,9 +145,9 @@ void tx_application_define(void *first_unused_memory)
                        0,                           /* 传递给任务的参数 */
                        s_key_event_stack,                /* 堆栈基地址 */
                        STACK_SIZE_EVENT,            /* 堆栈空间大小 */  
-                       1,                           /* 任务优先级*/
-                       1,                           /* 任务抢占阀值 */
-                       TX_NO_TIME_SLICE,            /* 不开启时间片 */
+                       3,                           /* 任务优先级*/
+                       3,                           /* 任务抢占阀值 */
+                       1,//TX_NO_TIME_SLICE,            /* 不开启时间片 */
                        TX_AUTO_START);              /* 创建后立即启动 */
 
 	    /* 创建一个 20ms 周期的软件定时器 */
@@ -178,14 +178,11 @@ void tx_application_define(void *first_unused_memory)
        // 阻塞等待 ISR 投递
       if(tx_semaphore_get(&wifi_semaphore, TX_WAIT_FOREVER) == TX_SUCCESS)
       {
-          
+          entry_decoder_counter++;
 		  decoder_handler() ;
 		    
        }
-	   else{
-
-         tx_thread_sleep(10);
-	   }
+	  
 	}
       
  }
@@ -230,7 +227,7 @@ void tx_application_define(void *first_unused_memory)
     static uint16_t plasma_cnt = 0;
     static uint16_t power_cnt = 0;
 	static uint16_t  water_cnt  =0 ;
-    static uint8_t  water_pump_on_f;
+ 
     const uint16_t LONG_PRESS_TIME = 40;   // 300 * 10ms = 3000ms
   
   
@@ -251,7 +248,7 @@ void tx_application_define(void *first_unused_memory)
             power_cnt = 0;
 
 	}
-	else if(KEY_AI_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){// == 1 && gpro_t.g_power_flag ==1){ //key mode
+    else if(KEY_AI_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){// == 1 && gpro_t.g_power_flag ==1){ //key mode
 
 	   ai_cnt++;
             if(ai_cnt == LONG_PRESS_TIME  ){
@@ -280,7 +277,7 @@ void tx_application_define(void *first_unused_memory)
 
           fan_cnt = 0;
 	}
-	else if (KEY_PLASMA_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){ //dwon key
+    else if (KEY_PLASMA_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){ //dwon key
 		
 		  plasma_cnt++;
           if(plasma_cnt == LONG_PRESS_TIME ){
@@ -297,39 +294,34 @@ void tx_application_define(void *first_unused_memory)
           plasma_cnt =0;
 
 	}
-	else if(KEY_WATER_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){
+	else if(KEY_WATER_VALUE() == KEY_DOWN){
           water_cnt ++ ;
 
-	      if(water_cnt == LONG_PRESS_TIME){
+	      if(water_cnt == LONG_PRESS_TIME ){
             
-                water_pump_on_f = 1;
-				gpro_t.g_water_pump_flag = 0;
+               gpro_t.g_water_pump_flag = 1;//turn on water pump
 		  }
-		  if(water_pump_on_f == 1){
+		  if(gpro_t.g_water_pump_flag == 1){
 
              WATER_PUMP_CTRL_ON() ;               
 		  }
 
 	}
-	else if(KEY_WATER_VALUE() == KEY_UP && water_cnt > 0){
+	else if(KEY_WATER_VALUE() == KEY_UP && water_cnt >0){
 
 	     water_cnt =0;
-	     water_pump_on_f = 0;
-	     gpro_t.g_water_pump_flag = 1;
+	   
+	     gpro_t.g_water_pump_flag = 0;
 	     WATER_PUMP_CTRL_OFF() ;
 
 
 	}
 	
-   	
-	
-  
-	
 #if DEBUG_ENABLE
 	 debug_stack_key_check();
 #endif 
     entry_key_counter++;
-    tx_thread_sleep(6);//10ms*6=60 
+    tx_thread_sleep(5);//10ms*6=60 
 	
     } 
 }
@@ -378,10 +370,10 @@ void tx_application_define(void *first_unused_memory)
 	    else if(flags & KEY_PLASMA_SHORT  && gpro_t.fan_warning_f ==0){
              key_plasma_short_handler();
 		}
-		else if(flags & KEY_WATER_LONG){
-           key_water_long_handler();
+//		else if(flags & KEY_WATER_LONG){
+//           key_water_long_handler();
 
-		}
+//		}
 		
 		
 	   
@@ -390,11 +382,7 @@ void tx_application_define(void *first_unused_memory)
 		  debug_stack_key_event_check();
 #endif 
      }
-	 else{
-
-	    tx_thread_sleep(10);//WT.EDIT 2026-05-26
-
-	 }
+	
      
 	   
 

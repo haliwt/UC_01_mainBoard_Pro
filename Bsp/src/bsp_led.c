@@ -128,7 +128,22 @@ void humidity_indicate_led_handler(void)
 
 }
 
+/**
+*@brief:  power off led is blink 
+*@param:
+*@notice
+**/
 
+void power_off_led_blink_handler(void)
+{
 
+    if(gpro_t.gTimer_led_blink_counter > 1){
+
+	    gpro_t.gTimer_led_blink_counter  =0;
+		LED_POWER_TOGGLE();
+
+	}
+
+}
 
 

@@ -5,6 +5,8 @@
 
 #define LED_POWER_ON()      LL_GPIO_ResetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 #define LED_POWER_OFF()     LL_GPIO_SetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
+#define LED_POWER_TOGGLE()   LL_GPIO_TogglePin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
+
 
 #define LED_FAN_ON()       LL_GPIO_ResetOutputPin(LED_FAN_GPIO_Port, LL_LED_FAN_Pin)
 #define LED_FAN_OFF()      LL_GPIO_SetOutputPin(LED_FAN_GPIO_Port, LL_LED_FAN_Pin)
@@ -54,6 +56,7 @@ void power_off_led_handler(void);
 
 void humidity_indicate_led_handler(void);
 
+void power_off_led_blink_handler(void);
 
 
 

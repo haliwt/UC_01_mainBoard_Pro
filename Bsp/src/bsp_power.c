@@ -32,7 +32,7 @@ typedef struct {
 typedef struct{
 
   uint8_t adc_6_channels_done_flag;
-  uint8_t fan_adc_daone_flag;
+  bool adc_fan_channel_flag ;
 
 }Run_Ref_t;
 
@@ -47,7 +47,7 @@ static void handler_wifi_update_data(void);
 static void handler_works_hours(void);
 static void handler_read_gxht40ad(void);
 static void handler_AI_module_action(void);
-static void handler_fan_adc_value(void);
+static void handler_fan_adc_detected(void);
 static void handler_tec_adc_value(void);
 
 
@@ -59,9 +59,9 @@ static Task_Config_t g_tasks[] = {
     {0,            300,        handler_works_hours},
     {0,            450,        handler_read_gxht40ad},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
-    {0,            200,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
-    {0,            550,        handler_fan_adc_value},
-    {0,            420,        handler_tec_adc_value},
+    {0,            100,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
+    {0,            500,        handler_fan_adc_detected}, //12000 *10ms = 
+    {0,            260,        handler_tec_adc_value},
     
     
 };
@@ -99,9 +99,9 @@ static void power_on_initial(void)
    uint32_t boot_tick;
    uint8_t i;
 
-   switch(gon_t.on_step){
+ //  switch(gon_t.on_step){
 
-   case 0:
+  // case 0:
    	  gon_t.off_step = 0;
       gpro_t.g_fan_speed =3;
       gpro_t.g_plasma_flag = true;
@@ -118,17 +118,17 @@ static void power_on_initial(void)
       gon_t.on_step =1;
 	
 
-   break;
+  /// break;
 
-   case 1:
+  /// case 1:
     
 
-    gon_t.on_step =2;
+   /// gon_t.on_step =2;
 
 
-   break;
+  // break;
 
-   case 2:
+   //case 2:
    	    boot_tick = tx_time_get();
 		for(i=0;i <TASK_COUNT;i ++){
 
@@ -136,9 +136,9 @@ static void power_on_initial(void)
 		}
 	   gon_t.on_step =0xfe;
 
-   break;
+  // break;
 
-   	}
+   	
 }
 /************************************************************************
 *
@@ -242,7 +242,7 @@ uint8_t counter_test,adc_counter;
 
 static void handler_read_gxht40ad(void)
 {
-    if(gpro_t.g_water_pump_flag == 1){
+    if(gpro_t.g_water_pump_flag == 0){
      gxht4_rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
 	if(gxht4_rec==0){
       #if 1
@@ -275,73 +275,43 @@ static void handler_AI_module_action(void)
 static void handler_read_6_channels_adc_value(void)
 {
   adc_counter++;
-  if(gpro_t.g_water_pump_flag == 1){
+  if(gpro_t.g_water_pump_flag == 0){
 	  water_pwm_on();
 
 	  Water_System_Process();
 	  adc_read_6channels_value();
-
+      gl_ref.adc_fan_channel_flag = 1;
 	  gl_ref.adc_6_channels_done_flag = 1;
-	  gl_ref.fan_adc_daone_flag = 1;
-
-	  
-	  water_pwm_off();
+	
+      water_pwm_off();
 
   }
   
 
 }
-uint8_t fan_adn_error_counter;
 
-static void handler_fan_adc_value(void)
+
+static void handler_fan_adc_detected(void)
 {
-   // static uint8_t adc_fan_counter;
-	if(gl_ref.fan_adc_daone_flag==1 && gpro_t.g_water_pump_flag == 1){
-	   gl_ref.fan_adc_daone_flag++;
-	  if(gpro_t.g_fan_speed ==3 && works_interval_f == 0){
-		   gpro_t.fan_adc_value =adc_fan_mv_value();
-		   
-		   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
-		   	
-		        fan_adn_error_counter =0;
-	       }
-		   else if(gpro_t.fan_adc_value < FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
-		      fan_adn_error_counter ++;
-	           if(fan_adn_error_counter > 15){
-				  fan_adn_error_counter=0;
-				  gpro_t.fan_warning_f =1;
-			      gpro_t.tec_control_flag = 0;
-			      TEC_CTRL_OFF();
-				  if(gpro_t.g_out_display_flag==1){
-			           SendData_Set_Command(0x09,0X01);//风扇报警
-					   //tx_thread_sleep(2);//10ms *2 = 20ms.
-			       }
-			   }
+    if(gl_ref.adc_fan_channel_flag == 1){
+        gl_ref.adc_fan_channel_flag = 0;
+	
+	  fan_adc_detected_value();
 
-		   }
-
-	    }
-	}
-	if(gpro_t.fan_warning_f ==1){
-         TEC_CTRL_OFF();
-         beep_fan_default_sound(); 
-	     if(gpro_t.g_out_display_flag==1){
-			SendData_Set_Command(0x09,0X01);//风扇报警
-			//tx_thread_sleep(2);//10ms *2 = 20ms.
-			}
-		 
-	   }
-
+	
+      fan_warning_sound_handler();
+    }
 
 }
 static void handler_tec_adc_value(void)
 {
-   if(gl_ref.adc_6_channels_done_flag ==1 && gpro_t.g_water_pump_flag == 1){
-   	   gl_ref.adc_6_channels_done_flag++;
+   if(gl_ref.adc_6_channels_done_flag ==1 && gpro_t.g_water_pump_flag == 0){
+   	   
 	   gpro_t.ntc_adc_value =adc_ntc_mv_value();
        Get_Ntc_Resistance_Temperature_Handler(gpro_t.ntc_adc_value);
 
 	    ntc_temperature_compare_handler();
+		gl_ref.adc_6_channels_done_flag++;
 
    	}
 
@@ -374,7 +344,7 @@ void ntc_temperature_compare_handler(void)
  uint8_t fan_one_f;
 static void power_off_handler(void)
 {
-    static uint8_t  dc_power_f;
+    static uint8_t  dc_power_f,counter;
 	
 	switch(gon_t.off_step){
 	
@@ -382,16 +352,18 @@ static void power_off_handler(void)
 			gon_t.on_step =0;
 	       
 		    fan_one_f =1;
-		
+		    gpro_t.fan_warning_f =0;
+			gpro_t.water_pos_warning_flag =0;
 			
 			power_off_led_handler();
 		
 			power_off_ctrl_handler();
-	        gpro_t.gTimer_one_minute_cuonter =0;
+	        gpro_t.gTimer_one_minute_counter =0;
 			gpro_t.time_base_1s_counter=0;
 			gpro_t.gTimer_one_minute=0;
 			works_interval_f=0;
-			gpro_t.g_water_pump_flag = 1; //关闭的.water _pump 
+			gpro_t.g_water_pump_flag = 0; //关闭的.water _pump 
+            fan_adn_error_counter =0;
 			
 	        gon_t.off_step = 1;
 	
@@ -405,12 +377,13 @@ static void power_off_handler(void)
 			 	beep_key_click();
 			    fan_stop();
 		        fan_one_f =0;
+				
 			 
 			  }
 			  else{
 
                   fan_adjust_high_speed();
-				  	gpro_t.gTimer_one_minute_cuonter =0;
+				  	gpro_t.gTimer_one_minute_counter =0;
 			  }
 
 			if(gpro_t.wifi_connected_success_flag ==1 ){
@@ -426,7 +399,7 @@ static void power_off_handler(void)
 		case 2:
 
 
-		   if(fan_one_f == 1  && gpro_t.gTimer_one_minute_cuonter>59){
+		   if(fan_one_f == 1  && gpro_t.gTimer_one_minute_counter>59){
 				     fan_one_f ++;
 	                 fan_stop();
 
@@ -444,11 +417,16 @@ static void power_off_handler(void)
 		break;
 
 		 case 3:
-
+            
 		    if(gpro_t.gTime_link_net_counter >3){
 				gpro_t.gTime_link_net_counter=0;
-
-                GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+				counter ++;
+                if(counter == 1)
+                   GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+                else{
+				   counter = 0;
+				   SendData_Set_Command(0x11,1);
+                }
 
 			}
 
@@ -475,6 +453,7 @@ static void power_off_handler(void)
 				
 		    }
             #endif 
+		    power_off_led_blink_handler();
 		    gon_t.off_step = 5;
 
 		break;
@@ -508,7 +487,7 @@ static void works_two_hours_times_handler(void)
 
 	  case 0:
 	 
-		#if  1 //DEBUG_ENABLE 
+		#if  0 //DEBUG_ENABLE 
 			if(gpro_t.gTimer_one_minute >6 && works_interval_f==0){
 		#else 
 			if(gpro_t.gTimer_one_minute > 119 && works_interval_f==0){
@@ -519,7 +498,7 @@ static void works_two_hours_times_handler(void)
 		    gpro_t.time_base_1s_counter=0;
 			works_interval_f=1;
 			fan_run_one_minute_flag =1;
-			gpro_t.gTimer_one_minute_cuonter =0;
+			gpro_t.gTimer_one_minute_counter =0;
 
 			
 			PLASMA_CTRL_OFF();
@@ -535,12 +514,12 @@ static void works_two_hours_times_handler(void)
 
 	  case 1:
 
-        if(fan_run_one_minute_flag==1 && gpro_t.gTimer_one_minute_cuonter > 60){
+        if(fan_run_one_minute_flag==1 && gpro_t.gTimer_one_minute_counter > 60){
 		    fan_run_one_minute_flag ++;
             fan_stop();
         }
 			
-        #if 1
+        #if 0
 		   if(works_interval_f==1 && gpro_t.gTimer_one_minute >4){
 		#else 
 		  if(works_interval_f==1 && gpro_t.gTimer_one_minute >10){
@@ -585,7 +564,7 @@ static void works_two_hours_times_handler(void)
   * @param: 
   *
 **/
-uint8_t power_counter;
+
 void power_on_off_handler(void)
 {
 
@@ -593,7 +572,7 @@ void power_on_off_handler(void)
 	 switch(gpro_t.g_power_flag){
 
       case 1:
-	  	   power_counter ++;
+	 
            power_on_handler();
 	    
 	  break;

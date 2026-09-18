@@ -48,7 +48,7 @@ void adc_read_6channels_value(void)
     
     /* 3. 清除 DMA 传输完成标志位，为下一轮做准备 */
     LL_DMA_ClearFlag_TC3(DMA);
-    #if 1
+    #if 0
     /* 4. 此时数据 100% 已经是最新准确的了，开始顺次输出 */
     for(i = 0; i < ADC_CH_COUNT; i++)
     {
@@ -147,6 +147,8 @@ uint16_t adc_water_3_value(void)//adc_water_2_value
         // 针对 2 秒采样周期优化的一阶滤波算法
         // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
         water_3_filtered = (raw_value * 12 + water_3_filtered * 8) / 20;
+         // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
+       // water_3_filtered = (raw_value * 12 + water_3_filtered * 18) / 30;
     }
 
     // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
@@ -199,6 +201,8 @@ uint16_t adc_water_2_value(void)//adc_water_3_value
         // 针对 2 秒采样周期优化的一阶滤波算法
         // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
         water_2_filtered = (raw_value * 12 + water_2_filtered * 8) / 20;
+         // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
+       // water_2_filtered = (raw_value * 12 + water_2_filtered * 18) / 30;
     }
 
     // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
@@ -253,13 +257,10 @@ uint16_t adc_water_1_value(void)//adc_water_4_value
         // 针对 2 秒采样周期优化的一阶滤波算法
         // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
         water_1_filtered = (raw_value * 12 + water_1_filtered * 8) / 20;
+        // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
+        //water_1_filtered = (raw_value * 12 + water_1_filtered * 18) / 30;
     }
 
-    // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
-    // 12位 ADC：最大值 4095，基准电压 3300mV
-    // 注意：water_1_filtered * 3300 最大约为 13,513,500，未超出 uint32_t 的 4,294,967,295，安全
-   // water_1_mv = ((uint32_t)water_1_filtered * 3300) / 4095;
-   // ADC_ConvertedValues[4]=0;
     return water_1_filtered;
 	#endif 
 }
@@ -304,6 +305,8 @@ uint16_t adc_water_warning_value(void)//adc_water_1_value
         // 针对 2 秒采样周期优化的一阶滤波算法
         // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
         water_warning_filtered = (raw_value * 12 + water_warning_filtered * 8) / 20;
+		 // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
+       // water_warning_filtered = (raw_value * 12 +water_warning_filtered * 18) / 30;
     }
 
     // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
@@ -353,18 +356,48 @@ uint16_t adc_ntc_mv_value(void)
 **************************************************************************************/
 uint16_t adc_fan_mv_value(void)
 {
-    uint16_t fan_voltage_mv;
+   
     /* 2. 转换成电压（单位：毫伏 mV）
 		   假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
 	 //ptc_voltage_mv = (ADC_ConvertedValues[0] * 3300) / 4095;
-	 fan_voltage_mv = ADC_ConvertedValues[0];
-	
+	 uint16_t raw_value;
+   
+	static uint32_t fan_filtered = 0;
 
-	 #if ADC_ENABLE
-      printf("fan_adc = %d\r\n",ptc_voltage_mv);
-	#endif
-	
-	 return fan_voltage_mv;
+    // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
+    raw_value = ADC_ConvertedValues[0];
 
+    // 2. 一阶低通滤波
+    if (fan_filtered == 0) {
+        // 首次运行或复位后，直接用当前值作为初始值，避免从0开始缓慢爬升
+        fan_filtered = raw_value;
+    } else {
+        // 新值权重占 2/20 (10%)，历史值权重占 18/20 (90%)
+        // 如果想让滤波更灵敏，可以改成 (raw_value * 5 + water_1_filtered * 15) / 20
+        // 针对 2 秒采样周期优化的一阶滤波算法
+        // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/20 (60%)
+        fan_filtered = (raw_value * 12 + fan_filtered * 18) / 30;
+    }
+
+
+
+
+   return  fan_filtered ;
 }
+
+
+
+
+
+	
+//	 fan_voltage_mv = ADC_ConvertedValues[0];
+	
+
+//	 #if ADC_ENABLE
+//      printf("fan_adc = %d\r\n",ptc_voltage_mv);
+//	#endif
+	
+	
+
+
 

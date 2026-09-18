@@ -101,3 +101,66 @@ void fan_speed_adjust_handler(uint8_t fan_value)
 
 
 
+/**
+ * @brief  风扇挡位调节处理函数
+ * @note   每次调用该函数，根据当前的按键计数切换风扇速度
+ * @param  None
+ * @retval None
+ */
+uint8_t fan_adn_error_counter;
+
+void fan_adc_detected_value(void)
+{ 
+     
+	if(gpro_t.g_water_pump_flag == 0 && gpro_t.g_fan_speed ==3 && works_interval_f == 0){
+	  
+	
+		   gpro_t.fan_adc_value =adc_fan_mv_value();
+		   
+		   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
+		   	
+		        fan_adn_error_counter =0;
+	       }
+		   else if(gpro_t.fan_adc_value < FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
+		      fan_adn_error_counter ++;
+	           if(fan_adn_error_counter > 15){
+				  //fan_adn_error_counter=0;
+				  if(gpro_t.fan_warning_f==0){
+                      beep_fan_default_sound(); 
+				  }
+				  gpro_t.fan_warning_f =1;
+			      gpro_t.tec_control_flag = 0;
+			      TEC_CTRL_OFF();
+				  if(gpro_t.g_out_display_flag==1){
+			           SendData_Set_Command(0x09,0X01);//风扇报警
+					   //tx_thread_sleep(2);//10ms *2 = 20ms.
+			       }
+			   }
+
+		   }
+
+	    
+	}
+}
+
+
+void fan_warning_sound_handler(void)
+{
+	if(gpro_t.fan_warning_f ==1){
+         TEC_CTRL_OFF();
+         beep_fan_default_sound(); 
+	     if(gpro_t.g_out_display_flag==1){
+			SendData_Set_Command(0x09,0X01);//风扇报警
+			//tx_thread_sleep(2);//10ms *2 = 20ms.
+			}
+		 
+	   }
+
+
+}
+
+
+
+
+
+

@@ -213,7 +213,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 				     gpro_t.g_out_display_flag= 1;
 				}
 				else{
-					
+					gpro_t.g_out_display_flag= 1;
 				    beep_angle_thresdhold_sound();
 				}
 		         
@@ -346,11 +346,13 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	 case 0x07://AI comm turn on or turn off
 
       if(pdata[3]== 0x01 || pdata[3]==0x02){
+	  	 beep_key_click();
          gpro_t.g_ai_flag = 1;
 		 LED_KEY_AI_ON();
 	     LED_PLASMA_ON();
 	  }
 	  else if(pdata[3]== 0){
+	  	  beep_key_click();
           gpro_t.g_ai_flag = 0; 
 		  LED_KEY_AI_OFF();
 
@@ -381,22 +383,12 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	  break;
 
 	  case 0x1E: //风扇速度大小,指令
+	  
 	    if(pdata[4]==1){
 			beep_key_click();
-			if( pdata[5] == 1){
-			
-		      gpro_t.g_fan_speed = 1;     
+		    gpro_t.g_fan_speed = pdata[5];     
 
-			}
-			else if( pdata[5] ==2){
-			
-			   gpro_t.g_fan_speed = 2; 	
-
-			}
-			else if(pdata[5] ==3){
-			  gpro_t.g_fan_speed = 3;     
-			}
-	    }
+		}
 
 	  break;
 
@@ -517,17 +509,26 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
 	     if(pddata[4] == 0x01){ //open
 
-		   gon_t.on_step=0;
-	       gpro_t.g_power_flag = 1;
+		   //gon_t.on_step=0;
+	       //gpro_t.g_power_flag = 1;
+	        gpro_t.g_out_display_flag= 1;
 
 		 }
         else if(pddata[4] == 0x0){ //close 
 
-		   gon_t.off_step=1;
-          gpro_t.g_power_flag =0;
+		   //gon_t.off_step=1;
+           //gpro_t.g_power_flag =0;
+		   gpro_t.g_out_display_flag= 1;
+		   
 			 
 		}
 	   
+
+	   break;
+
+	   case 0x11:
+	   	
+	     if(pddata[4] == 0x01) gpro_t.g_out_display_flag =1;
 
 	   break;
 

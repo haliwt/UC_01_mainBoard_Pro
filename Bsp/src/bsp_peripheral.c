@@ -87,9 +87,14 @@ void ai_set_status(bool idata)    // 1--开启, 0- 关闭
     if(idata == true){
 
       LED_KEY_AI_ON();
-	  if(works_interval_f ==0 && gpro_t.fan_warning_f ==0 && gpro_t.water_pos_warning_flag ==0) power_on_run_handler();
+	   gpro_t.g_fan_speed = 3;
+	  if(works_interval_f ==0 && gpro_t.fan_warning_f ==0 && gpro_t.water_pos_warning_flag ==0){
+	     fan_adjust_high_speed(); 	
+	  }
 	  LED_FAN_ON();
       LED_PLASMA_ON();
+	 
+	  
       
 	}
 	else{
@@ -108,20 +113,8 @@ void ai_set_status(bool idata)    // 1--开启, 0- 关闭
 *@retrval 
 *
 **/
-void workd_interval_time_peripheral_handle(void)
-{
-	
- 
-}
 
 
-
-void workd_interval_turn_off_handle(void)
-{
-	
-	PLASMA_CTRL_OFF();
-		
-}
 
 
 
