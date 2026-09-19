@@ -103,9 +103,9 @@ typedef struct _main_ref{
 	uint8_t wifi_linking_tencent_f;
 	uint8_t wifi_read_net_data_f;
 
-	uint16_t water_pos_1_flag ;
-	uint16_t water_pos_2_flag ;
-	uint16_t water_pos_3_flag ;
+	uint16_t water_level_low_value ;
+	uint16_t water_level_middle_value ;
+	uint16_t water_level_high_value ;
 	uint16_t water_pos_warning_value;
 	bool water_pos_warning_flag ;
 

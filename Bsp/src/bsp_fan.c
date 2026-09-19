@@ -13,7 +13,7 @@
 **/
 void fan_stop(void)
 {
-  LL_TIM_OC_SetCompareCH1(TIM1, 2560);
+  LL_TIM_OC_SetCompareCH1(TIM1, 0);
 
  // LL_TIM_DisableAllOutputs(TIM1); // 关闭主输出
   LL_TIM_DisableCounter(TIM1);    // 关闭计数器
@@ -148,10 +148,10 @@ void fan_warning_sound_handler(void)
 {
 	if(gpro_t.fan_warning_f ==1){
          TEC_CTRL_OFF();
-         beep_fan_default_sound(); 
+        // beep_fan_default_sound(); 
 	     if(gpro_t.g_out_display_flag==1){
 			SendData_Set_Command(0x09,0X01);//风扇报警
-			//tx_thread_sleep(2);//10ms *2 = 20ms.
+			tx_thread_sleep(1);//10ms *2 = 20ms.
 			}
 		 
 	   }

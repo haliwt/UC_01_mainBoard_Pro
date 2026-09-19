@@ -64,7 +64,7 @@ void ADC_Configuration(void)
 
   #else
   LL_ADC_InitTypeDef ADC_InitStruct;
-    uint32_t i;
+   // uint32_t i;
   
     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC);
     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);

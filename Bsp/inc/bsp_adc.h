@@ -14,11 +14,11 @@ extern uint16_t ADC_ConvertedValues[ADC_CH_COUNT];
 
 void adc_read_6channels_value(void);
 
-uint16_t adc_water_1_value(void);
+uint16_t adc_water_level_low(void);
 
-uint16_t adc_water_2_value(void);
+uint16_t adc_water_level_middle(void);
 
-uint16_t adc_water_3_value(void);
+uint16_t adc_water_level_high(void);
 
 
 uint16_t adc_water_warning_value(void);

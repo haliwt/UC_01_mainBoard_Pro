@@ -60,7 +60,7 @@ static Task_Config_t g_tasks[] = {
     {0,            450,        handler_read_gxht40ad},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
     {0,            100,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
-    {0,            500,        handler_fan_adc_detected}, //12000 *10ms = 
+    {0,            500,        handler_fan_adc_detected},                  //500 *10ms =5000ms = 5s 
     {0,            260,        handler_tec_adc_value},
     
     
@@ -99,9 +99,7 @@ static void power_on_initial(void)
    uint32_t boot_tick;
    uint8_t i;
 
- //  switch(gon_t.on_step){
 
-  // case 0:
    	  gon_t.off_step = 0;
       gpro_t.g_fan_speed =3;
       gpro_t.g_plasma_flag = true;
@@ -117,18 +115,9 @@ static void power_on_initial(void)
   
       gon_t.on_step =1;
 	
+	  fan_adjust_high_speed();   // 切换到高速档
 
-  /// break;
-
-  /// case 1:
-    
-
-   /// gon_t.on_step =2;
-
-
-  // break;
-
-   //case 2:
+  
    	    boot_tick = tx_time_get();
 		for(i=0;i <TASK_COUNT;i ++){
 
@@ -136,7 +125,7 @@ static void power_on_initial(void)
 		}
 	   gon_t.on_step =0xfe;
 
-  // break;
+
 
    	
 }

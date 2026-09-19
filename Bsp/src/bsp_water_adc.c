@@ -5,11 +5,10 @@
 #define ALARM_OFF()   Platform_Buzzer_Set(0)  // 关闭报警
 
 // 传感器“有水”的电压阈值（单位：mV，根据实际传感器微调）
-#define WATER_TOUCH_THRESHOLD_MV     1536//280//400
-#define WATER_TOUCH_THRESHOLD_1      3
-#define WATER_TOUCH_THRESHOLD_2      0
-#define WATER_TOUCH_THRESHOLD_3      0
-#define WATER_TOUCH_WARNING          0
+#define WATER_TOUCH_THRESHOLD_1      700
+#define WATER_TOUCH_THRESHOLD_2      700
+#define WATER_TOUCH_THRESHOLD_3      700
+#define WATER_TOUCH_WARNING          700
 
 
 // 定义水位等级枚举
@@ -61,16 +60,16 @@ void Water_System_Process(void)
     switch(water_pos_step){
 
 	case 0:
-	    gpro_t.water_pos_1_flag  = adc_water_1_value();
+	    gpro_t.water_level_low_value  = adc_water_level_low();
 
-	    if(gpro_t.water_pos_1_flag > WATER_TOUCH_THRESHOLD_1){
+	    if(gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
             confirm_counter=0;
 		    water_pos_step =1;
-			LED_WATER_LEVEL_1();
+			LED_WATER_LEVEL_LOW_ON();//LED_WATER_LEVEL_1();
 		
-		    LED_WATER_INDICATOR_2();
-		    LED_WATER_INDICATOR_3();
-			LED_WATER_INDICATOR_4();
+		    LED_WATER_LEVEL_MIDDLE_OFF();//LED_WATER_INDICATOR_2();
+		    LED_WATER_LEVEL_HIGH_OFF();//LED_WATER_INDICATOR_3();
+			LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
 			gpro_t.water_pos_warning_flag= 0;
 			ntc_temperature_compare_handler();
 
@@ -84,10 +83,12 @@ void Water_System_Process(void)
 	            water_pos_step =0;
 	            gpro_t.water_pos_warning_flag= 0;
 			    ntc_temperature_compare_handler();
-				LED_WATER_INDICATOR_1();
-				LED_WATER_INDICATOR_2();
-			    LED_WATER_INDICATOR_3();
-				LED_WATER_INDICATOR_4();
+				
+				LED_WATER_LEVEL_LOW_OFF();
+				LED_WATER_LEVEL_MIDDLE_OFF();//LED_WATER_INDICATOR_2();
+		        LED_WATER_LEVEL_HIGH_OFF();//LED_WATER_INDICATOR_3();
+			    LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
+				
 			 }
 
 		}
@@ -96,17 +97,17 @@ void Water_System_Process(void)
 	    
 
 	case 1:
-	    gpro_t.water_pos_2_flag  = adc_water_2_value();
-		gpro_t.water_pos_1_flag  = adc_water_1_value();
+	    gpro_t.water_level_middle_value  = adc_water_level_middle();
+		gpro_t.water_level_low_value  = adc_water_level_low();
 		
-		if(gpro_t.water_pos_2_flag > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_pos_1_flag > WATER_TOUCH_THRESHOLD_1){
+		if(gpro_t.water_level_middle_value > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
                  confirm_counter=0;
                 water_pos_step =2;
-				LED_WATER_LEVEL_1();
-				LED_WATER_LEVEL_2();
-			    
-			    LED_WATER_INDICATOR_3();
-				LED_WATER_INDICATOR_4();
+				LED_WATER_LEVEL_LOW_ON();//LED_WATER_LEVEL_1();
+				LED_WATER_LEVEL_MIDDLE_ON();//LED_WATER_LEVEL_2();
+			    //
+			    LED_WATER_LEVEL_HIGH_OFF();//LED_WATER_INDICATOR_3();
+				LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
 				gpro_t.water_pos_warning_flag= 0;
 				ntc_temperature_compare_handler();
 	       	}
@@ -117,10 +118,11 @@ void Water_System_Process(void)
 				   confirm_counter =0;
 
 			    water_pos_step =0;
-				LED_WATER_LEVEL_1();
-				LED_WATER_INDICATOR_2();
-			    LED_WATER_INDICATOR_3();
-				LED_WATER_INDICATOR_4();
+				LED_WATER_LEVEL_LOW_ON();
+				
+				LED_WATER_LEVEL_MIDDLE_OFF();//LED_WATER_INDICATOR_2();
+			    LED_WATER_LEVEL_HIGH_OFF();//LED_WATER_INDICATOR_3();
+				LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
 
 			    }
 
@@ -134,18 +136,18 @@ void Water_System_Process(void)
 
 	case 2:
 	
-       gpro_t.water_pos_3_flag  = adc_water_3_value();
-	   gpro_t.water_pos_2_flag  = adc_water_2_value();
-	   gpro_t.water_pos_1_flag  = adc_water_1_value();
-	   if(gpro_t.water_pos_3_flag > WATER_TOUCH_THRESHOLD_3 && gpro_t.water_pos_2_flag > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_pos_1_flag > WATER_TOUCH_THRESHOLD_1){
+       gpro_t.water_level_high_value  = adc_water_level_high();
+	   gpro_t.water_level_middle_value  = adc_water_level_middle();
+	   gpro_t.water_level_low_value  = adc_water_level_low();
+	   if(gpro_t.water_level_high_value > WATER_TOUCH_THRESHOLD_3 && gpro_t.water_level_middle_value > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
             
         confirm_counter =0;
  	   water_pos_step =3;
- 		LED_WATER_LEVEL_1();
- 		LED_WATER_LEVEL_2();
- 		LED_WATER_LEVEL_3();
+ 		LED_WATER_LEVEL_LOW_ON();//LED_WATER_LEVEL_1();
+		LED_WATER_LEVEL_MIDDLE_ON();//LED_WATER_LEVEL_2();
+		LED_WATER_LEVEL_HIGH_ON();
  
- 		LED_WATER_INDICATOR_4();
+ 		LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
  		 gpro_t.water_pos_warning_flag= 0;
  		 ntc_temperature_compare_handler();
       }
@@ -158,11 +160,11 @@ void Water_System_Process(void)
        
         water_pos_step =1;
 		gpro_t.water_pos_warning_flag= 0;
-		LED_WATER_LEVEL_1();
-		LED_WATER_LEVEL_2();
+		LED_WATER_LEVEL_LOW_ON();//LED_WATER_LEVEL_1();
+		LED_WATER_LEVEL_MIDDLE_ON();//LED_WATER_LEVEL_2();
 			    
-		LED_WATER_INDICATOR_3();
-	    LED_WATER_INDICATOR_4();
+		LED_WATER_LEVEL_HIGH_OFF();//LED_WATER_INDICATOR_3();
+	    LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
 			
 		ntc_temperature_compare_handler();
          }
@@ -176,20 +178,22 @@ void Water_System_Process(void)
 		 if(gpro_t.water_pos_warning_value > WATER_TOUCH_THRESHOLD_3){
 		 	confirm_counter =0;
 		 
-	         gpro_t.water_pos_3_flag  = adc_water_3_value();
-			 gpro_t.water_pos_2_flag  = adc_water_2_value();
+	         gpro_t.water_level_high_value  = adc_water_level_high();
+			 gpro_t.water_level_middle_value  = adc_water_level_middle();
 		 
-			 gpro_t.water_pos_1_flag  = adc_water_1_value();
+			 gpro_t.water_level_low_value  = adc_water_level_low();
 			 
-	         if(gpro_t.water_pos_3_flag > WATER_TOUCH_THRESHOLD_3 && gpro_t.water_pos_2_flag > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_pos_1_flag > WATER_TOUCH_THRESHOLD_1){
+	         if(gpro_t.water_level_high_value > WATER_TOUCH_THRESHOLD_3 && gpro_t.water_level_middle_value > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
 		        
                     if(gpro_t.water_pos_warning_flag==0)beep_water_warning_sound();
 				    gpro_t.water_pos_warning_flag= 1;
 					TEC_CTRL_OFF();
-					LED_WATER_WARNING();
-					LED_WATER_LEVEL_1();
-				    LED_WATER_LEVEL_2();
-				    LED_WATER_LEVEL_3();
+					LED_WATER_WARNING_ON();
+
+					
+					LED_WATER_LEVEL_LOW_OFF();
+				    LED_WATER_LEVEL_MIDDLE_OFF();
+				    LED_WATER_LEVEL_HIGH_OFF();
 					
 					if(gpro_t.g_out_display_flag==1){
 			           SendData_Set_Command(0x0C,0X01);//高水位报警
@@ -203,13 +207,14 @@ void Water_System_Process(void)
 			    gpro_t.water_pos_warning_flag= 0;
 			    ntc_temperature_compare_handler();
 				if(gpro_t.g_out_display_flag==1){
-	               SendData_Set_Command(0x0C,0);//高水位报警
+	               SendData_Set_Command(0x0C,0);//高水位报警取消
 			    //tx_thread_sleep(2);//10ms *2 = 20ms.
 	            }
-				LED_WATER_LEVEL_1();
-			    LED_WATER_LEVEL_2();
-			    LED_WATER_LEVEL_3();
-	            LED_WATER_INDICATOR_4();
+				LED_WATER_LEVEL_LOW_ON();//LED_WATER_LEVEL_1();
+		        LED_WATER_LEVEL_MIDDLE_ON();//LED_WATER_LEVEL_2();
+		        LED_WATER_LEVEL_HIGH_ON();
+				
+	            LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
 
 
 			 }
@@ -228,11 +233,12 @@ void Water_System_Process(void)
 	           SendData_Set_Command(0x0C,0);//高水位报警
 			    //tx_thread_sleep(2);//10ms *2 = 20ms.
 	        }
-		   
-			LED_WATER_LEVEL_1();
-			LED_WATER_LEVEL_2();
-		    LED_WATER_LEVEL_3();
-			LED_WATER_INDICATOR_4();
+		        LED_WATER_LEVEL_LOW_ON();//LED_WATER_LEVEL_1();
+		        LED_WATER_LEVEL_MIDDLE_ON();//LED_WATER_LEVEL_2();
+		        LED_WATER_LEVEL_HIGH_ON();
+				
+	            LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
+			
             }
 		   
         }
@@ -257,9 +263,9 @@ void Water_System_Process(void)
 		    //tx_thread_sleep(2);//10ms *2 = 20ms.
         }
 		
-	     gpro_t.water_pos_2_flag  = adc_water_1_value();
-	     gpro_t.water_pos_1_flag  = adc_water_1_value();
-		 if(gpro_t.water_pos_2_flag > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_pos_1_flag > WATER_TOUCH_THRESHOLD_1){
+	     gpro_t.water_level_middle_value  = adc_water_level_low();
+	     gpro_t.water_level_low_value  = adc_water_level_low();
+		 if(gpro_t.water_level_middle_value > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
 
 			   water_pos_step =3;
 	      }
@@ -272,10 +278,10 @@ void Water_System_Process(void)
 	                   SendData_Set_Command(0x0C,0);//高水位报警
 			          //tx_thread_sleep(2);//10ms *2 = 20ms.
 	                }
-					LED_WATER_INDICATOR_1();
-					LED_WATER_INDICATOR_2();
-					LED_WATER_INDICATOR_3();
-					LED_WATER_INDICATOR_4();
+					LED_WATER_LEVEL_LOW_OFF();//LED_WATER_INDICATOR_1();
+					LED_WATER_LEVEL_MIDDLE_OFF();//LED_WATER_INDICATOR_2();
+					LED_WATER_LEVEL_HIGH_OFF();//LED_WATER_INDICATOR_3();
+					LED_WATER_WARNING_ON();//LED_WATER_INDICATOR_4();
 
 		 }
 	    

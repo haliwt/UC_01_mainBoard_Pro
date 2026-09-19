@@ -33,8 +33,8 @@ void TIM1_Configuration(void)
   TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
   TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
   TIM_OC_InitStruct.CompareValue = 0; // TIM_CCR, Duty = TIM_CCR/(TIM_ARR+1)
-  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_LOW;
-  TIM_OC_InitStruct.OCIdleState = LL_TIM_OCIDLESTATE_LOW;
+  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;//LOW;
+  TIM_OC_InitStruct.OCIdleState = LL_TIM_OCIDLESTATE_HIGH;//LOW;
   LL_TIM_OC_Init(TIM1,LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
 
   LL_TIM_EnableCounter(TIM1);

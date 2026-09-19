@@ -13,17 +13,23 @@
 
 
 //水位指示灯
-#define LED_WATER_INDICATOR_1()      LL_GPIO_SetOutputPin(LED_WATER_RB_GPIO_Port,LL_LED_WATER_RB_Pin)     
-#define LED_WATER_LEVEL_1()          LL_GPIO_ResetOutputPin(LED_WATER_RB_GPIO_Port,LL_LED_WATER_RB_Pin)     
+//#define LED_WATER_INDICATOR_1()         LL_GPIO_SetOutputPin(LED_WATER_RB_GPIO_Port,LL_LED_WATER_RB_Pin)     
+#define LED_WATER_LEVEL_LOW_ON()          do{LED_WATER_RB_GPIO_Port->BSRR = (uint32_t)LL_LED_WATER_RB_Pin << 16;}while(0)//LL_GPIO_ResetOutputPin(LED_WATER_RB_GPIO_Port,LL_LED_WATER_RB_Pin)  
+#define LED_WATER_LEVEL_LOW_OFF()         do{LED_WATER_RB_GPIO_Port->BSRR = LL_LED_WATER_RB_Pin ;}while(0)
 
-#define LED_WATER_INDICATOR_2()     LL_GPIO_SetOutputPin(LED_WATER_R_GPIO_Port,LL_LED_WATER_R_Pin)     
-#define LED_WATER_LEVEL_2()         LL_GPIO_ResetOutputPin(LED_WATER_R_GPIO_Port,LL_LED_WATER_R_Pin)    
+//#define LED_WATER_INDICATOR_2()     LL_GPIO_SetOutputPin(LED_WATER_R_GPIO_Port,LL_LED_WATER_R_Pin)     
+#define LED_WATER_LEVEL_MIDDLE_ON()         LL_GPIO_ResetOutputPin(LED_WATER_R_GPIO_Port,LL_LED_WATER_R_Pin)    
+#define LED_WATER_LEVEL_MIDDLE_OFF()         LL_GPIO_SetOutputPin(LED_WATER_R_GPIO_Port,LL_LED_WATER_R_Pin) 
 
-#define LED_WATER_INDICATOR_3()     LL_GPIO_SetOutputPin(LED_WATER_G_GPIO_Port,LL_LED_WATER_G_Pin)    
-#define LED_WATER_LEVEL_3()         LL_GPIO_ResetOutputPin(LED_WATER_G_GPIO_Port,LL_LED_WATER_G_Pin)    
+//#define LED_WATER_INDICATOR_3()     LL_GPIO_SetOutputPin(LED_WATER_G_GPIO_Port,LL_LED_WATER_G_Pin)    
+#define LED_WATER_LEVEL_HIGH_ON()         LL_GPIO_ResetOutputPin(LED_WATER_G_GPIO_Port,LL_LED_WATER_G_Pin)    
+#define LED_WATER_LEVEL_HIGH_OFF()         LL_GPIO_SetOutputPin(LED_WATER_G_GPIO_Port,LL_LED_WATER_G_Pin)  
 
-#define LED_WATER_INDICATOR_4()    LL_GPIO_SetOutputPin(LED_WATER_B_GPIO_Port,LL_LED_WATER_B_Pin)    
-#define LED_WATER_WARNING()              LL_GPIO_ResetOutputPin(LED_WATER_B_GPIO_Port,LL_LED_WATER_B_Pin)
+//#define LED_WATER_INDICATOR_4()    LL_GPIO_SetOutputPin(LED_WATER_B_GPIO_Port,LL_LED_WATER_B_Pin)    
+
+
+#define LED_WATER_WARNING_ON()        do{LED_WATER_B_GPIO_Port -> BSRR = (uint32_t)LL_LED_WATER_B_Pin<<16;}while(0)    //LL_GPIO_ResetOutputPin(LED_WATER_B_GPIO_Port,LL_LED_WATER_B_Pin)
+#define LED_WATER_WARNING_OFF()       do{LED_WATER_B_GPIO_Port -> BSRR =LL_LED_WATER_B_Pin;}while(0) 
 
 //湿度指示灯
 #define  LED_HUMIDITY_ON_HIGH()     LL_GPIO_SetOutputPin(LED_B_3_GPIO_Port,LL_LED_B_3_Pin)
