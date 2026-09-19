@@ -13,7 +13,7 @@
 **/
 void fan_stop(void)
 {
-  LL_TIM_OC_SetCompareCH1(TIM1, 0);
+  LL_TIM_OC_SetCompareCH1(TIM1, 2560);
 
  // LL_TIM_DisableAllOutputs(TIM1); // 关闭主输出
   LL_TIM_DisableCounter(TIM1);    // 关闭计数器
