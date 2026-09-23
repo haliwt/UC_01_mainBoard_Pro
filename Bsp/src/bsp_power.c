@@ -257,7 +257,7 @@ static void handler_read_gxht40ad(void)
 
 static void handler_AI_module_action(void)
 {
-   ai_module_hanlder();
+   ai_model_handler();
 }
 
 
@@ -268,8 +268,9 @@ static void handler_read_6_channels_adc_value(void)
   if(gpro_t.g_water_pump_flag == 0){
 	  water_pwm_on();
 
-	  Water_System_Process();
-	  adc_read_6channels_value();
+	
+	   adc_read_6channels_value();
+       Water_System_Process();
       gl_ref.adc_fan_channel_flag = 1;
 	  gl_ref.adc_6_channels_done_flag = 1;
 	
@@ -487,7 +488,7 @@ static void works_two_hours_times_handler(void)
 
 			gpro_t.gTimer_one_minute = 0;
 		    gpro_t.time_base_1s_counter=0;
-			works_interval_f=1;
+			works_interval_f=true;
 			fan_run_one_minute_flag =1;
 			gpro_t.gTimer_one_minute_counter =0;
 
@@ -513,14 +514,14 @@ static void works_two_hours_times_handler(void)
         #if 0
 		   if(works_interval_f==1 && gpro_t.gTimer_one_minute >4){
 		#else 
-		  if(works_interval_f==1 && gpro_t.gTimer_one_minute >10){
+		  if(works_interval_f==true && gpro_t.gTimer_one_minute >10){
 
 		#endif 
 				gpro_t.gTimer_one_minute = 0;  
 				works_interval_f =0;
 		        gpro_t.time_base_1s_counter=0;
 				
-				ai_module_hanlder();
+				ai_model_handler();
 				ntc_temperature_compare_handler();
 				
 		#if DEBUG_ENABLE 

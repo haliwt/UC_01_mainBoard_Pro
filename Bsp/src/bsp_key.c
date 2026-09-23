@@ -24,6 +24,7 @@ void key_power_short_handler(void)
 		    power_on_led_handler();
 		    power_on_ctrl_init_handler();
 			SendData_Set_Command(0x01,0x01);
+			tx_thread_sleep(1);
 		}
 		else{
            beep_angle_thresdhold_sound();
@@ -37,7 +38,7 @@ void key_power_short_handler(void)
 	    power_off_led_handler();
 	    power_off_ctrl_handler();
 		SendData_Set_Command(0x01,0);
-			 // tx_thread_sleep(2);//10ms *2 = 20ms.
+	     tx_thread_sleep(1);//10ms *2 = 20ms.
          
 	}
 
@@ -49,7 +50,6 @@ void key_power_short_handler(void)
 *@param
 *
 **/
-
 void key_power_long_handler(void)
 {
 
@@ -66,7 +66,7 @@ void key_power_long_handler(void)
 void key_fan_short_handler(void)
 {
    
-   if(gpro_t.g_ai_flag == true ) return;
+   //if(gpro_t.g_ai_flag == true ) return;
    
  
       beep_key_click();
@@ -80,7 +80,7 @@ void key_fan_short_handler(void)
 	  }
 	  if(gpro_t.g_out_display_flag==1){
             SendWifiData_To_PanelWindSpeed(gpro_t.g_fan_speed);
-			//tx_thread_sleep(2);//10ms *2 = 20ms.
+			tx_thread_sleep(1);//10ms *2 = 20ms.
 
 	 }
 
@@ -97,7 +97,8 @@ void key_fan_short_handler(void)
 void key_plasma_short_handler(void)
 { 
    static uint8_t plasma_key_cnt = 0;
-   if(gpro_t.g_ai_flag == true) return;
+   
+  // if(gpro_t.g_ai_flag == true) return;
    
 	
    beep_key_click();
@@ -105,7 +106,7 @@ void key_plasma_short_handler(void)
    plasma_set_status(gpro_t.g_plasma_flag);
    if(gpro_t.g_out_display_flag==1){
          SendData_Set_Command(0x03,gpro_t.g_plasma_flag);
-		    //tx_thread_sleep(2);//10ms *2 = 20ms.
+		 tx_thread_sleep(1);//10ms *2 = 20ms.
     }
 	
 }
@@ -158,29 +159,24 @@ void key_water_long_handler(void)
 *@param
 *
 **/
-void ai_module_hanlder(void)
+void ai_model_handler(void)
 {
-   if(gpro_t.g_ai_flag == 1){
-      if(works_interval_f ==0 && gpro_t.fan_warning_f ==0 && gpro_t.water_pos_warning_flag ==0){
+   if(gpro_t.g_ai_flag == true){
+      if(works_interval_f ==false && gpro_t.fan_warning_f ==false && gpro_t.water_pos_warning_flag == false){
          power_on_run_handler();
    	  }
 	  
-	  ;
-      ;
-      ;
-
    }
    else{
 
-     ;
-	 if(works_interval_f ==0){
+	 if(works_interval_f ==false){
         plasma_set_status(gpro_t.g_plasma_flag);
         fan_speed_adjust_handler(gpro_t.g_fan_speed);
      }
 
    }
 
-   if(gpro_t.g_water_pump_flag == 0){
+   if(gpro_t.g_water_pump_flag == false){
 	    WATER_PUMP_CTRL_OFF() ;
 
  	}

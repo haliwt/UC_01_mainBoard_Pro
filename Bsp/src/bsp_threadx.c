@@ -228,8 +228,7 @@ void tx_application_define(void *first_unused_memory)
     static uint16_t power_cnt = 0;
 	static uint16_t  water_cnt  =0 ;
  
-    const uint16_t LONG_PRESS_TIME = 40;   // 300 * 10ms = 3000ms
-  
+    const uint16_t LONG_PRESS_TIME = 50; //40:2分43秒  
   
  
    while(1){
@@ -321,7 +320,7 @@ void tx_application_define(void *first_unused_memory)
 	 debug_stack_key_check();
 #endif 
     entry_key_counter++;
-    tx_thread_sleep(5);//10ms*6=60 
+    tx_thread_sleep(2);//5//10ms*2=60 
 	
     } 
 }
@@ -370,10 +369,7 @@ void tx_application_define(void *first_unused_memory)
 	    else if(flags & KEY_PLASMA_SHORT  && gpro_t.fan_warning_f ==0){
              key_plasma_short_handler();
 		}
-//		else if(flags & KEY_WATER_LONG){
-//           key_water_long_handler();
 
-//		}
 		
 		
 	   

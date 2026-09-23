@@ -48,14 +48,14 @@ void GPIO_Configuration(void)
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_ADC_WATER_2_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(ADC_WATER_2_GPIO_Port, &GPIO_InitStruct);
 
   // ADC_IN9
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_ADC_WATER_3_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(ADC_WATER_3_GPIO_Port, &GPIO_InitStruct);
 
   // TIM1_CH1
@@ -149,18 +149,18 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(KEY_POWER_GPIO_Port, &GPIO_InitStruct);
 
-  // ADC_IN12
+  // ADC_IN12--- ADC_WATER_LOW PB2
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_ADC_WATER_4_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(ADC_WATER_4_GPIO_Port, &GPIO_InitStruct);
 
-  // ADC_IN13
+  // ADC_IN13--ADC_WATER_HIGH
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_ADC_WATER_1_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
   LL_GPIO_Init(ADC_WATER_1_GPIO_Port, &GPIO_InitStruct);
 
   // TIM3_CH4

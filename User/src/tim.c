@@ -80,7 +80,7 @@ void TIM16_Configuration(void)
   // Overflow time = ((Auto-reload 63999 + 1) * (Prescaler 0 + 1)) / 64000000 = 1000 μs, frequency= 1000 Hz
   LL_TIM_StructInit(&TIM_InitStruct);
   TIM_InitStruct.Prescaler = 0;
-  TIM_InitStruct.Autoreload = 63999; // TIM_ARR
+  TIM_InitStruct.Autoreload = 2559; // TIM_ARR,25KHZ
   TIM_InitStruct.ClockDivision = 0;
   TIM_InitStruct.RepetitionCounter = 0;
   LL_TIM_Init(TIM16, &TIM_InitStruct);
@@ -88,9 +88,9 @@ void TIM16_Configuration(void)
   LL_TIM_OC_StructInit(&TIM_OC_InitStruct);
   TIM_OC_InitStruct.OCMode = LL_TIM_OCMODE_PWM1;
   TIM_OC_InitStruct.OCState = LL_TIM_OCSTATE_ENABLE;
-  TIM_OC_InitStruct.CompareValue = 20; // TIM_CCR, Duty = TIM_CCR/(TIM_ARR+1)
-  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_LOW;
-  TIM_OC_InitStruct.OCIdleState = LL_TIM_OCIDLESTATE_LOW;
+  TIM_OC_InitStruct.CompareValue = 0; // TIM_CCR, Duty = TIM_CCR/(TIM_ARR+1)
+  TIM_OC_InitStruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;//LOW;
+  TIM_OC_InitStruct.OCIdleState = LL_TIM_OCIDLESTATE_HIGH;//LOW;
   LL_TIM_OC_Init(TIM16,LL_TIM_CHANNEL_CH1, &TIM_OC_InitStruct);
 
   LL_TIM_EnableCounter(TIM16);

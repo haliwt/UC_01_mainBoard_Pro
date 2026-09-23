@@ -148,7 +148,7 @@ void fan_warning_sound_handler(void)
 {
 	if(gpro_t.fan_warning_f ==1){
          TEC_CTRL_OFF();
-        // beep_fan_default_sound(); 
+         beep_fan_default_sound(); 
 	     if(gpro_t.g_out_display_flag==1){
 			SendData_Set_Command(0x09,0X01);//风扇报警
 			tx_thread_sleep(1);//10ms *2 = 20ms.

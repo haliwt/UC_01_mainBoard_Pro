@@ -63,8 +63,9 @@ void ADC_Configuration(void)
   LL_ADC_Enable();
 
   #else
+  
   LL_ADC_InitTypeDef ADC_InitStruct;
-   // uint32_t i;
+  
   
     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC);
     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
@@ -87,17 +88,20 @@ void ADC_Configuration(void)
     LL_ADC_REG_SetSequencerLength(LL_ADC_REG_SEQ_SCAN_RANKS_6);  
 //    for(i=0; i<ADC_CH_COUNT; i++)
 //    {
-//        LL_ADC_REG_SetSequencerRanks(i+1, i+1);
+//       LL_ADC_REG_SetSequencerRanks(i+1, i+1);
 //    }
-
+    
 	  LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2);
 	  LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3);
-	  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6);  //第三级水位[2]
-	  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9);  //第二级水位[3]
-	  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12); //第一级数位[4]
-	  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13); // 警告水位[5]
-    
-    LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
+	  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6);  //第三级水位[2]--HIGH
+	  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9);  //第二级水位[3]--MIDDLE
+	  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12); //第一级数位[4]--LOW 
+	  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13); // 警告水位[5]  ---WARNING
+  
+   LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
+   
+
+   
     LL_ADC_ClearFlag_EOC();
     LL_ADC_Enable();
 	

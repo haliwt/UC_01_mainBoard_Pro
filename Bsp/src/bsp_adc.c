@@ -7,8 +7,29 @@
 /* 建立一个 16 位数组，专门用于接收 6 个通道的 ADC 原始值 */
 uint16_t ADC_ConvertedValues[ADC_CH_COUNT];
 
+
 uint16_t ptc_adc_filtered = 0; // 全局或静态变量：滤波后的ADC值
 uint16_t ptc_voltage_mv = 0;   // 全局或静态变量：转换后的电压值（单位：mV）
+
+
+
+ /**
+   * @brief  DMA传输(ADC外设 -> 内存)
+   * @param  
+   *			 PeripheralAddr--- 外设地址
+   *			 MemoryAddr ------ 内存地址
+   *			 BufferSize ------ 长度
+   * @retval None
+   */
+ void DMA_PeripheralToMemory(uint32_t PeripheralAddr, uint32_t MemoryAddr, uint16_t BufferSize)
+ {
+	 LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_3);
+	 LL_DMA_SetMemoryAddress(DMA, LL_DMA_CHANNEL_3, MemoryAddr);
+	 LL_DMA_SetPeriphAddress(DMA, LL_DMA_CHANNEL_3, PeripheralAddr);
+	 LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_3, BufferSize);
+	 LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_3);
+ }
+
 
 #if 0
 
@@ -21,10 +42,11 @@ uint16_t ptc_voltage_mv = 0;   // 全局或静态变量：转换后的电压值�
 
 
 #endif 
+#if 0
 void adc_read_6channels_value(void)
 {
-
   #if 1
+  #if 0
     uint8_t i ;
 
     /* 1. 【核心修改】不要在读取函数里重复初始化 DMA！ 
@@ -61,9 +83,10 @@ void adc_read_6channels_value(void)
     /* 5. 延时 500ms 再次触发 */
     tx_thread_sleep(50); // ThreadX 延时
 
-    LL_DMA_Configuration_Channel3((uint32_t)ADC_ConvertedValues,
-                              (uint32_t)&ADC->DR,
-                              ADC_CH_COUNT);
+//    LL_DMA_Configuration_Channel3((uint32_t)ADC_ConvertedValues,
+//                              (uint32_t)&ADC->DR,
+//                              ADC_CH_COUNT);
+	DMA_PeripheralToMemory((uint32_t)&ADC->DR, (uint32_t)ADC_ConvertedValues, ADC_CH_COUNT);	
     
     // d. 再次软件触发 ADC 开始新一轮 6 通道扫描
      LL_ADC_REG_StartConversionSWStart(); 
@@ -82,22 +105,81 @@ void adc_read_6channels_value(void)
 //    }
 //     LL_DMA_ClearFlag_TC3(DMA);
     /* 3. 此时 6 个数据 100% 是同一批次新鲜出炉的数据 */
-    for(i = 0; i < ADC_CH_COUNT; i++)
+    for(i = 0; i < 7; i++)
     {
         printf("CH[%d]=%d  ", i, ADC_ConvertedValues[i]);
     }
     printf("\n");
+
+	
+	// 5. 【关键】重新装载 DMA 之前，必须先彻底关闭该 DMA 通道，防止指针错乱
+    LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_3); // 假设是 Channel 3
         
     /* 4. 延时让出 CPU */
-    tx_thread_sleep(50);
+   // tx_thread_sleep(50);
+
+
+	LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_3); // 假设是 Channel 3
+
+	LL_ADC_REG_StartConversionSWStart();   
+
 
 
 
   #endif 
 
-
-	
+  #endif 
 }
+#else 
+void adc_read_6channels_value(void)
+{
+    
+	/* ==================== 终极防错位·外设重启版 ==================== */
+	
+	// 1. 等待本轮 DMA 传输完成（配合 ThreadX 休眠，不饿死 UI）
+	while (!LL_DMA_IsActiveFlag_TC3(DMA)) 
+	{
+		tx_thread_sleep(1); 
+	}
+	
+	// 2. 清除 DMA 传输完成标志位
+	LL_DMA_ClearFlag_TC3(DMA);
+	
+	// 3. 【核心防错位步骤 1】：先关闭 DMA 通道，准备重置计数
+	LL_DMA_DisableChannel(DMA, LL_DMA_CHANNEL_3); 
+	
+	// 4. 【核心防错位步骤 2】：强行关闭 ADC！彻底复位 ADC 内部的硬件多通道指针
+	LL_ADC_Disable(); 
+	
+	// --- 此时可以安全读取 ADC_ConvertedValues 进行业务处理 ---
+	
+	// 5. ThreadX 业务延时 500ms
+	tx_thread_sleep(50); 
+	
+	// 6. 【核心防错位步骤 3】：清除所有可能的 ADC 残留标志位（EOC/过载等）
+	LL_ADC_ClearFlag_EOC();
+	// 如果你的库里有 EOS（End of Sequence）或 OVR（Overrun），请在这里一并清除，例如：
+	// LL_ADC_ClearFlag_EOS(ADC);
+	
+	// 7. 重新配置 DMA 计数器（通道关闭时写入才生效），刷回 6
+	DMA_PeripheralToMemory((uint32_t)&ADC->DR, (uint32_t)ADC_ConvertedValues, ADC_CH_COUNT);	
+	
+	// 8. 先使能 DMA 通道，让 DMA 在硬件上“严阵以待”
+	LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_3);
+	
+	// 9. 【核心防错位步骤 4】：重新使能 ADC，此时 ADC 的通道扫描序列 100% 刷新到 Rank 1 (通道2)
+	LL_ADC_Enable();
+	
+	// 10. 软件触发 ADC 开始本轮 6 通道扫描，此时绝无可能串位
+	LL_ADC_REG_StartConversionSWStart(); 
+}
+
+
+
+
+
+
+#endif 
 
 
 /**************************************************************************************
@@ -134,8 +216,8 @@ uint16_t adc_water_level_high(void)
 
 	static uint32_t water_3_filtered = 0;
 
-    // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
-    raw_value = ADC_ConvertedValues[2];
+   
+    raw_value = ADC_ConvertedValues[2];//ADC_CHANNEL_6
 
     // 2. 一阶低通滤波
     if (water_3_filtered == 0) {
@@ -203,8 +285,8 @@ uint16_t adc_water_level_low(void)//adc_water_4_value
 
 	static uint32_t water_1_filtered = 0;
 
-    // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
-    raw_value = ADC_ConvertedValues[4];
+	// 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
+    raw_value = ADC_ConvertedValues[4];//ADC_CHANNE_12
 
     // 2. 一阶低通滤波
     if (water_1_filtered == 0) {
@@ -219,8 +301,8 @@ uint16_t adc_water_level_low(void)//adc_water_4_value
         // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
         //water_1_filtered = (raw_value * 12 + water_1_filtered * 18) / 30;
     }
-	//water_low_mv =(uint16_t) (((uint32_t)water_1_filtered * 3300) / 4095);
-	water_low_mv = (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
+	water_low_mv =(uint16_t) (((uint32_t)water_1_filtered * 3300) / 4095);
+	//water_low_mv = (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
 
     //return water_1_filtered;
     return water_low_mv;
@@ -260,7 +342,7 @@ uint16_t adc_water_level_middle(void)//adc_water_level_high
 	static uint32_t water_2_filtered = 0;
 
     // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
-    raw_value = ADC_ConvertedValues[3];
+    raw_value = ADC_ConvertedValues[3];//ADC_CHANNEL_9
 
     // 2. 一阶低通滤波
     if (water_2_filtered == 0) {
@@ -282,9 +364,9 @@ uint16_t adc_water_level_middle(void)//adc_water_level_high
    // water_1_mv = ((uint32_t)water_1_filtered * 3300) / 4095;
 
 
-  // water_middle_mv  = (uint16_t) (((uint32_t)water_2_filtered * 3300) / 4095);
+   water_middle_mv  = (uint16_t) (((uint32_t)water_2_filtered * 3300) / 4095);
   
-    water_middle_mv = (uint16_t)((ADC_ConvertedValues[3]* 3300) / 4095);
+  //  water_middle_mv = (uint16_t)((ADC_ConvertedValues[3]* 3300) / 4095);
    // return water_2_filtered;
 
    return water_middle_mv;
@@ -333,7 +415,7 @@ uint16_t adc_water_warning_value(void)//adc_water_level_low
 	static uint32_t water_warning_filtered = 0;
 
     // 1. 获取当前最新采样值（12位 ADC 原始值：0 ~ 4095）
-    raw_value = ADC_ConvertedValues[5];
+    raw_value =ADC_ConvertedValues[5]; //ADC_CHANNEL_13
 
     // 2. 一阶低通滤波
     if (water_warning_filtered == 0) {
@@ -353,9 +435,9 @@ uint16_t adc_water_warning_value(void)//adc_water_level_low
     // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
     // 12位 ADC：最大值 4095，基准电压 3300mV
     // 注意：water_1_filtered * 3300 最大约为 13,513,500，未超出 uint32_t 的 4,294,967,295，安全
-    //water_warining_mv =(uint16_t) (((uint32_t) water_warning_filtered* 3300) / 4095);
+    water_warining_mv =(uint16_t) (((uint32_t) water_warning_filtered* 3300) / 4095);
     //ADC_ConvertedValues[5]=0;
-    (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
+      //water_warining_mv=  (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
 	
     //return water_warning_filtered;
     return water_warining_mv;

@@ -45,7 +45,7 @@ void key_fan_short_handler(void);
 
 void key_plasma_short_handler(void);
 
-void ai_module_hanlder(void);
+void ai_model_handler(void);
 
 void key_water_long_handler(void);
 

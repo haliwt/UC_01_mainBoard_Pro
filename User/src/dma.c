@@ -37,7 +37,7 @@ void DMA_ADC_Init(void)
     DMA_InitStruct.PeriphOrM2MSrcAddress  = (uint32_t)&ADC->DR;
     DMA_InitStruct.MemoryOrM2MDstAddress  = (uint32_t)ADC_ConvertedValues;
     DMA_InitStruct.Direction              = LL_DMA_DIRECTION_PERIPH_TO_MEMORY;
-    DMA_InitStruct.Mode                   = LL_DMA_MODE_NORMAL;
+    DMA_InitStruct.Mode                   = LL_DMA_MODE_CIRCULAR ;   //LL_DMA_MODE_NORMAL;
     DMA_InitStruct.PeriphOrM2MSrcIncMode  = LL_DMA_PERIPH_NOINCREMENT;
     DMA_InitStruct.MemoryOrM2MDstIncMode  = LL_DMA_MEMORY_INCREMENT;
     DMA_InitStruct.PeriphOrM2MSrcDataSize = LL_DMA_PDATAALIGN_HALFWORD;
