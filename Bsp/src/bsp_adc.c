@@ -182,71 +182,7 @@ void adc_read_6channels_value(void)
 #endif 
 
 
-/**************************************************************************************
-*
-*Function Name:  uint16_t adc_ntc_mv_value(void)
-*Function: 
-*
-*
-**************************************************************************************/
-uint16_t adc_water_level_high(void)
-{
-   #if 0
 
-   uint16_t water_3_value;
-  /* 1. 一阶低通滤波（理顺原本注释掉的代码）
-          新采样值权重占 2/20，历史滤波值权重占 18/20 */
-   // ptc_adc_filtered = (ad_ptc_value[0] * 2 + ptc_adc_filtered * 18) / 20;
-
-    /* 2. 转换成电压（单位：毫伏 mV）
-          假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
-    //water_3_value= (ADC_ConvertedValues[2] * 3300) / 4095;
-    water_3_value= ADC_ConvertedValues[2];
-    ///tx_thread_sleep(10);//10*10ms =100ms
-	#if ADC_ENABLE
-      printf("water_adc_3 = %d\r\n",ptc_voltage_mv);
-	#endif 
-     ADC_ConvertedValues[2]=0;
-	
-	return water_3_value;
-
-	#else 
-
-	uint16_t raw_value,water_high_mv;
-
-	static uint32_t water_3_filtered = 0;
-
-   
-    raw_value = ADC_ConvertedValues[2];//ADC_CHANNEL_6
-
-    // 2. 一阶低通滤波
-    if (water_3_filtered == 0) {
-        // 首次运行或复位后，直接用当前值作为初始值，避免从0开始缓慢爬升
-        water_3_filtered = raw_value;
-    } else {
-        // 新值权重占 2/20 (10%)，历史值权重占 18/20 (90%)
-        // 如果想让滤波更灵敏，可以改成 (raw_value * 5 + water_1_filtered * 15) / 20
-        // 针对 2 秒采样周期优化的一阶滤波算法
-        // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
-        water_3_filtered = (raw_value * 12 + water_3_filtered * 8) / 20;
-         // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
-       // water_3_filtered = (raw_value * 12 + water_3_filtered * 18) / 30;
-    }
-
-    // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
-    // 12位 ADC：最大值 4095，基准电压 3300mV
-    // 注意：water_1_filtered * 3300 最大约为 13,513,500，未超出 uint32_t 的 4,294,967,295，安全
-   // water_1_mv = ((uint32_t)water_1_filtered * 3300) / 4095;
-	//ADC_ConvertedValues[2]=0;
-
-	water_high_mv  = (uint16_t) (((uint32_t)water_3_filtered * 3300) / 4095);
-
-    //return water_3_filtered;
-	
-    return water_high_mv;
-
-	#endif 
-}
 
 
 /************************************************************************
@@ -375,6 +311,72 @@ uint16_t adc_water_level_middle(void)//adc_water_level_high
 
 	#endif 
 }
+/**************************************************************************************
+*
+*Function Name:  uint16_t adc_ntc_mv_value(void)
+*Function: 
+*
+*
+**************************************************************************************/
+uint16_t adc_water_level_high(void)
+{
+   #if 0
+
+   uint16_t water_3_value;
+  /* 1. 一阶低通滤波（理顺原本注释掉的代码）
+          新采样值权重占 2/20，历史滤波值权重占 18/20 */
+   // ptc_adc_filtered = (ad_ptc_value[0] * 2 + ptc_adc_filtered * 18) / 20;
+
+    /* 2. 转换成电压（单位：毫伏 mV）
+          假设：12位ADC（最大值4095），基准电压 3.3V（3300mV） */
+    //water_3_value= (ADC_ConvertedValues[2] * 3300) / 4095;
+    water_3_value= ADC_ConvertedValues[2];
+    ///tx_thread_sleep(10);//10*10ms =100ms
+	#if ADC_ENABLE
+      printf("water_adc_3 = %d\r\n",ptc_voltage_mv);
+	#endif 
+     ADC_ConvertedValues[2]=0;
+	
+	return water_3_value;
+
+	#else 
+
+	uint16_t raw_value,water_high_mv;
+
+	static uint32_t water_3_filtered = 0;
+
+   
+    raw_value = ADC_ConvertedValues[2];//ADC_CHANNEL_6
+
+    // 2. 一阶低通滤波
+    if (water_3_filtered == 0) {
+        // 首次运行或复位后，直接用当前值作为初始值，避免从0开始缓慢爬升
+        water_3_filtered = raw_value;
+    } else {
+        // 新值权重占 2/20 (10%)，历史值权重占 18/20 (90%)
+        // 如果想让滤波更灵敏，可以改成 (raw_value * 5 + water_1_filtered * 15) / 20
+        // 针对 2 秒采样周期优化的一阶滤波算法
+        // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
+        water_3_filtered = (raw_value * 12 + water_3_filtered * 8) / 20;
+         // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
+       // water_3_filtered = (raw_value * 12 + water_3_filtered * 18) / 30;
+    }
+
+    // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
+    // 12位 ADC：最大值 4095，基准电压 3300mV
+    // 注意：water_1_filtered * 3300 最大约为 13,513,500，未超出 uint32_t 的 4,294,967,295，安全
+   // water_1_mv = ((uint32_t)water_1_filtered * 3300) / 4095;
+	//ADC_ConvertedValues[2]=0;
+
+	water_high_mv  = (uint16_t) (((uint32_t)water_3_filtered * 3300) / 4095);
+
+    //return water_3_filtered;
+	
+    return water_high_mv;
+
+	#endif 
+}
+
 
 /************************************************************************
  *

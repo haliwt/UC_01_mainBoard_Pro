@@ -6,9 +6,9 @@
 
 // 传感器“有水”的电压阈值（单位：mV，根据实际传感器微调）
 #define WATER_TOUCH_THRESHOLD_1      1000
-#define WATER_TOUCH_THRESHOLD_2      500
-#define WATER_TOUCH_THRESHOLD_3      400
-#define WATER_TOUCH_WARNING          500
+#define WATER_TOUCH_THRESHOLD_2      1000
+#define WATER_TOUCH_THRESHOLD_3      600
+#define WATER_TOUCH_WARNING          600
 
 
 // 定义水位等级枚举
@@ -61,6 +61,7 @@ void Water_System_Process(void)
 
 	case 0:
 	    gpro_t.water_level_low_value  = adc_water_level_low();
+		
 
 	    if(first_times ==0){
 
@@ -102,7 +103,7 @@ void Water_System_Process(void)
 
 	case 1:
 	    gpro_t.water_level_middle_value  = adc_water_level_middle();
-		gpro_t.water_level_low_value  = adc_water_level_low();
+		//gpro_t.water_level_low_value  = adc_water_level_low();
 		
 		if(gpro_t.water_level_middle_value > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
                  confirm_counter=0;
@@ -142,8 +143,8 @@ void Water_System_Process(void)
 	case 2:
 	
        gpro_t.water_level_high_value  = adc_water_level_high();
-	  // gpro_t.water_level_middle_value  = adc_water_level_middle();
-	  // gpro_t.water_level_low_value  = adc_water_level_low();
+	   //gpro_t.water_level_middle_value  = adc_water_level_middle();
+	   //gpro_t.water_level_low_value  = adc_water_level_low();
 	   if(gpro_t.water_level_high_value > WATER_TOUCH_THRESHOLD_3 && gpro_t.water_level_middle_value > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
             
         confirm_counter =0;
