@@ -362,6 +362,7 @@ static void power_off_handler(void)
 	
 		 case 1:
             
+			 water_pwm_off();
 		  
              if(dc_power_f ==0){
 			 	dc_power_f ++;
@@ -394,71 +395,69 @@ static void power_off_handler(void)
 				     fan_one_f ++;
 	                 fan_stop();
 
-				 }
+			}
+           if(gpro_t.gTime_link_net_counter >4){
+				gpro_t.gTime_link_net_counter=0;
+							 
+				//GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
+				AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
+							 
+			}
+            water_pwm_off();
+		    power_off_led_blink_handler();
+		  if(gpro_t.wifi_connected_success_flag ==1 ){
+		     gon_t.off_step = 3;
+		  
 
-				 if(gpro_t.wifi_connected_success_flag ==1 ){
+		  }
+		  else
+		    gon_t.off_step = 2;
+
+
+
+		break;
+
+		case 3:
+            if(gpro_t.wifi_connected_success_flag ==1 ){
                     
 				     MqttData_Publish_SetOpen(0);  
 				   	
 			    }
 			
 		
-	       gon_t.off_step = 3;
+	       gon_t.off_step = 4;
             	
 		break;
 
-		 case 3:
+		 case 4:
             
-		    if(gpro_t.gTime_link_net_counter >3){
-				gpro_t.gTime_link_net_counter=0;
-				counter ++;
-                if(counter == 1)
-                   //GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
-                    AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
-                else{
-				   counter = 0;
-				   SendData_Set_Command(0x11,1);
-                }
-
-			}
-
+		    
 		    if(gpro_t.wifi_connected_success_flag ==1  ){//10ms*800 =8000ms =8s
       
-			     
-				   Subscriber_Data_FromCloud_Handler();
+			    Subscriber_Data_FromCloud_Handler();
 		    	
 	    
-			     }
+			   }
 		
-		  gon_t.off_step = 4;
-		break;
-
-		case 4:
-			#if 0
-
-		    if(gpro_t.wifi_connected_success_flag ==1 &&   gpro_t.time_4s_f> 8){
-				gpro_t.time_4s_f=0;
-	
-			    Publish_Data_fan_Warning(0); //fan warning .
-
-				Publish_Data_Ptc_Temp_Warning(0);
-				
-		    }
-            #endif 
-		    power_off_led_blink_handler();
-		    gon_t.off_step = 5;
-
+		  gon_t.off_step = 5;
 		break;
 
 		case 5:
+			
+
 			if(gpro_t.wifi_connected_success_flag ==1 ){
 				
                MqttData_Publish_PowerOff_Ref(); 
 			
 			}
 		
-          gon_t.off_step = 2;
+         
+		
+		     gon_t.off_step = 2;
+
 		break;
+
+	
 
    }
 }

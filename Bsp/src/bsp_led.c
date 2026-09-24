@@ -1,6 +1,37 @@
 #include "bsp.h"
 
 
+void LED_warning_gpio_input(void)
+{
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
+
+
+  LL_GPIO_StructInit(&GPIO_InitStruct);
+  GPIO_InitStruct.Pin = LL_LED_WATER_B_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+
+}
+void LED_warning_gpio_output(void)
+{
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB); 
+  
+  LL_GPIO_StructInit(&GPIO_InitStruct);
+  GPIO_InitStruct.Pin = LL_LED_WATER_B_Pin ;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+
+}
 
 
 /**
@@ -34,7 +65,7 @@ void power_off_led_handler(void)
     LED_WATER_LEVEL_LOW_OFF();//LED_WATER_INDICATOR_1();
     LED_WATER_LEVEL_MIDDLE_OFF();//LED_WATER_INDICATOR_2();
 	LED_WATER_LEVEL_HIGH_OFF();//LED_WATER_INDICATOR_3();
-	LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
+	LED_warning_gpio_input();//LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
 
 	 LED_HUMIDITY_OFF_HIGH();
 	 LED_HUMIDITY_OFF_MIDDLE();

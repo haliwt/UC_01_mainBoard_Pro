@@ -15,6 +15,7 @@ void GPIO_Configuration(void)
   LL_GPIO_SetOutputPin(LED_B_3_GPIO_Port, LL_LED_B_3_Pin);
   LL_GPIO_SetOutputPin(LED_R_1_GPIO_Port, LL_LED_R_1_Pin);
   LL_GPIO_SetOutputPin(LED_G_2_GPIO_Port, LL_LED_G_2_Pin);
+  
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_LED_B_3_Pin | LL_LED_R_1_Pin | LL_LED_G_2_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
@@ -110,12 +111,12 @@ void GPIO_Configuration(void)
 
   // GPIO_Output
   LL_GPIO_SetOutputPin(LED_WATER_G_GPIO_Port, LL_LED_WATER_G_Pin);
-  LL_GPIO_SetOutputPin(LED_WATER_B_GPIO_Port, LL_LED_WATER_B_Pin);
+ // LL_GPIO_SetOutputPin(LED_WATER_B_GPIO_Port, LL_LED_WATER_B_Pin);
   LL_GPIO_SetOutputPin(LED_WATER_RB_GPIO_Port, LL_LED_WATER_RB_Pin);
   LL_GPIO_SetOutputPin(LED_WATER_R_GPIO_Port, LL_LED_WATER_R_Pin);
   
   LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Pin = LL_LED_WATER_G_Pin | LL_LED_WATER_B_Pin | LL_LED_WATER_RB_Pin | LL_LED_WATER_R_Pin;
+  GPIO_InitStruct.Pin = LL_LED_WATER_G_Pin | LL_LED_WATER_RB_Pin | LL_LED_WATER_R_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
@@ -201,6 +202,16 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(KEY_WATER_GPIO_Port, &GPIO_InitStruct);
+
+
+  LL_GPIO_StructInit(&GPIO_InitStruct);
+  GPIO_InitStruct.Pin = LL_LED_WATER_B_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+
+  
 
   // GPIO_Output
   LL_GPIO_ResetOutputPin(WATER_PUMP_GPIO_Port, LL_WATER_PUMP_Pin);

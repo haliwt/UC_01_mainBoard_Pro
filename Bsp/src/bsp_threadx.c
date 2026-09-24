@@ -228,7 +228,7 @@ void tx_application_define(void *first_unused_memory)
     static uint16_t power_cnt = 0;
 	static uint16_t  water_cnt  =0 ;
  
-    const uint16_t LONG_PRESS_TIME = 50; //40:2分43秒  
+    const uint16_t LONG_PRESS_TIME = 60; //40:2分43秒  
   
  
    while(1){
@@ -293,7 +293,7 @@ void tx_application_define(void *first_unused_memory)
           plasma_cnt =0;
 
 	}
-	else if(KEY_WATER_VALUE() == KEY_DOWN){
+	else if(KEY_WATER_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true ){
           water_cnt ++ ;
 
 	      if(water_cnt == LONG_PRESS_TIME ){
@@ -371,9 +371,6 @@ void tx_application_define(void *first_unused_memory)
 		}
 
 		
-		
-	   
-	 
 #if DEBUG_ENABLE
 		  debug_stack_key_event_check();
 #endif 
