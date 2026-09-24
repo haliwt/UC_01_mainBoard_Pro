@@ -2,14 +2,20 @@
 #define __BSP_LED_H
 #include "main.h"
 
-
+// LED OF KEY
 #define LED_POWER_ON()      LL_GPIO_ResetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 #define LED_POWER_OFF()     LL_GPIO_SetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 #define LED_POWER_TOGGLE()   LL_GPIO_TogglePin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 
-#define  LED_TIME_ON()       do{LED_TIME_GPIO_Port -> BSRR = LL_LED_TIME_Pin;}while(0)
-#define  LED_TIME_OFF()      do{LED_TIME_GPIO_Port -> BSRR =(uint32_t)LL_LED_TIME_Pin<<16;}while(0)
+#define  LED_TIME_ON()       do{LED_TIME_GPIO_Port -> BSRR =(uint32_t)LL_LED_TIME_Pin<<16;}while(0)
+#define  LED_TIME_OFF()      do{LED_TIME_GPIO_Port -> BSRR = LL_LED_TIME_Pin;}while(0)
 
+
+#define  LED_PLASMA_ON()      do{LED_PLASMA_GPIO_Port -> BSRR =(uint32_t)LL_LED_PLASMA_Pin<<16;}while(0)  
+#define  LED_PLASMA_OFF()     do{LED_PLASMA_GPIO_Port -> BSRR = LL_LED_PLASMA_Pin;}while(0)
+
+#define  LED_AI_ON()           do{LED_AI_GPIO_Port -> BSRR =(uint32_t)LL_LED_AI_Pin<<16;}while(0) 
+#define  LED_AI_OFF()          do{LED_AI_GPIO_Port -> BSRR = LL_LED_AI_Pin;}while(0) 
 
 
 //水位指示灯

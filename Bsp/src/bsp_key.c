@@ -71,18 +71,24 @@ void key_fan_short_handler(void)
  
       beep_key_click();
 	  gpro_t.g_fan_speed++;
-      if (gpro_t.g_fan_speed > 3) {
+      if (gpro_t.g_fan_speed > 3 ) {
          gpro_t.g_fan_speed= 1; // 确保异常时能正确恢复到 1 档
+         
       }
+	  
+	
 	  if(works_interval_f ==0){
 	  	
         fan_speed_adjust_handler(gpro_t.g_fan_speed);
 	  }
-	  if(gpro_t.g_out_display_flag==1){
-            SendWifiData_To_PanelWindSpeed(gpro_t.g_fan_speed);
-			tx_thread_sleep(1);//10ms *2 = 20ms.
 
-	 }
+	   
+	
+	if(gpro_t.g_out_display_flag==1){
+		  SendWifiData_To_PanelWindSpeed(gpro_t.g_fan_speed);
+		  tx_thread_sleep(1);//10ms *2 = 20ms.
+	
+	}
 
    
 }
@@ -124,6 +130,7 @@ void key_ai_short_handler(void)
    ai_set_status(gpro_t.g_ai_flag);
    if(gpro_t.g_out_display_flag==1){
         SendData_Set_Command(0x07,gpro_t.g_ai_flag);
+		tx_thread_sleep(1);
    	}	  
 
 }

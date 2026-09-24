@@ -43,8 +43,8 @@ void power_on_led_handler(void)
 {
    LED_POWER_ON();
    LED_TIME_ON();
-   
-   
+   LED_PLASMA_ON();
+   LED_AI_ON();
    
    humidity_indicate_led_handler();
 
@@ -58,8 +58,10 @@ void power_on_led_handler(void)
 **/
 void power_off_led_handler(void)
 {
-	 LED_POWER_OFF();
+	LED_POWER_OFF();
 	LED_TIME_OFF();
+	LED_PLASMA_OFF();
+	LED_AI_OFF();
 	 
    //water pos led 
     LED_WATER_LEVEL_LOW_OFF();//LED_WATER_INDICATOR_1();

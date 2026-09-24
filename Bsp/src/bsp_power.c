@@ -113,7 +113,8 @@ static void power_on_initial(void)
 	  //wifi 
 	  gpro_t.g_is_net_flag=0;
   
-      gon_t.on_step =1;
+      gon_t.on_step =0;
+	
 	
 	  fan_adjust_high_speed();   // 切换到高速档
 

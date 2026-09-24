@@ -31,12 +31,21 @@
 
 
 
-//POWER ON LED GPIO 
+
+
+//KEY OF KEY LED GPIO 
 #define LED_POWER_GPIO_Port GPIOC
 #define LL_LED_POWER_Pin LL_GPIO_PIN_13
 
 #define LED_TIME_GPIO_Port GPIOF
 #define LL_LED_TIME_Pin LL_GPIO_PIN_9
+
+#define LED_PLASMA_GPIO_Port  GPIOB
+#define LL_LED_PLASMA_Pin      LL_GPIO_PIN_9
+
+#define LED_AI_GPIO_Port     GPIOB
+#define LL_LED_AI_Pin        LL_GPIO_PIN_7
+
 
 
 //WATER TURN ON WATER PUMP GPIO 

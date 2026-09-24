@@ -263,7 +263,7 @@ void tx_application_define(void *first_unused_memory)
         ai_cnt = 0;
 
 	}
-    else if (KEY_FAN_VALUE() == KEY_DOWN  && gpro_t.g_power_flag == true){ //up key
+    else if (KEY_FAN_VALUE() == KEY_DOWN  && gpro_t.g_power_flag == true && gpro_t.g_ai_flag == false){ //up key
 		  fan_cnt++;
         if(fan_cnt == LONG_PRESS_TIME)
                tx_event_flags_set(&key_event, KEY_FAN_LONG, TX_OR);
@@ -276,7 +276,7 @@ void tx_application_define(void *first_unused_memory)
 
           fan_cnt = 0;
 	}
-    else if (KEY_PLASMA_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){ //dwon key
+    else if (KEY_PLASMA_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true && gpro_t.g_ai_flag ==false){ //dwon key
 		
 		  plasma_cnt++;
           if(plasma_cnt == LONG_PRESS_TIME ){

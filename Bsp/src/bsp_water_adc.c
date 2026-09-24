@@ -61,13 +61,9 @@ void Water_System_Process(void)
 
 	case 0:
 	    gpro_t.water_level_low_value  = adc_water_level_low();
-		
+		first_times=0;
 
-	    if(first_times ==0){
-
-             first_times ++;
-		}
-        else if(gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
+	     if(gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
             confirm_counter=0;
 			beep_sound_counter=0;
 		    water_pos_step =1;
@@ -103,6 +99,7 @@ void Water_System_Process(void)
 	    
 
 	case 1:
+		first_times=0;
 	    gpro_t.water_level_middle_value  = adc_water_level_middle();
 		//gpro_t.water_level_low_value  = adc_water_level_low();
 		
@@ -142,7 +139,7 @@ void Water_System_Process(void)
 	break;
 
 	case 2:
-	
+	   first_times=0;
        gpro_t.water_level_high_value  = adc_water_level_high();
 	   //gpro_t.water_level_middle_value  = adc_water_level_middle();
 	   //gpro_t.water_level_low_value  = adc_water_level_low();
@@ -184,8 +181,8 @@ void Water_System_Process(void)
          gpro_t.water_pos_warning_value  = adc_water_warning_value();
 		 if(gpro_t.water_pos_warning_value > WATER_TOUCH_WARNING){
 		 	confirm_counter =0;
-			 if(beep_sound_counter==0){
-			 	beep_sound_counter++;
+			 if(first_times==0){
+			 	first_times++;
 			 	beep_water_warning_sound();
 			 }
 		     gpro_t.water_pos_warning_flag= 1;
