@@ -14,7 +14,7 @@ void Heat_Process(void);
 
 void Fan_Current_Det(void);
 
-void power_on_run_handler(void);
+
 
 void poower_on_init_handler(void);
 void power_off_ctrl_handler(void);

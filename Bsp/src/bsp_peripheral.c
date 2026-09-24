@@ -23,14 +23,7 @@ void power_on_ctrl_init_handler(void)
 
 
 
-void power_on_run_handler(void)
-{
-    fan_adjust_high_speed();
-	PLASMA_CTRL_ON();
-	if(gpro_t.water_pos_warning_flag==0 && gpro_t.fan_warning_f ==0 && works_interval_f ==0){
-		TEC_CTRL_ON() ;
-	}
-}
+
 
 void power_off_ctrl_handler(void)
 {

@@ -217,6 +217,7 @@ uint16_t adc_water_level_low(void)//adc_water_4_value
 
 	return water_1_value;
 	#else 
+	
 	uint16_t raw_value;
 
 	static uint32_t water_1_filtered = 0;
@@ -229,18 +230,14 @@ uint16_t adc_water_level_low(void)//adc_water_4_value
         // 首次运行或复位后，直接用当前值作为初始值，避免从0开始缓慢爬升
         water_1_filtered = raw_value;
     } else {
-        // 新值权重占 2/20 (10%)，历史值权重占 18/20 (90%)
-        // 如果想让滤波更灵敏，可以改成 (raw_value * 5 + water_1_filtered * 15) / 20
-        // 针对 2 秒采样周期优化的一阶滤波算法
-        // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
-        water_1_filtered = (raw_value * 12 + water_1_filtered * 8) / 20;
-        // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
-        //water_1_filtered = (raw_value * 12 + water_1_filtered * 18) / 30;
+       // 【高灵敏度优化方案】：新采样值权重占 75% (12/16)，历史值占 25% (4/16)
+        // 采用 >> 4 替代除以 16，极大优化 M0 内核的执行效率，响应更灵敏
+       water_1_filtered = (raw_value * 12 + water_1_filtered * 4) >> 4;
     }
-	water_low_mv =(uint16_t) (((uint32_t)water_1_filtered * 3300) / 4095);
+	 //water_low_mv =(uint16_t) (((uint32_t)water_1_filtered * 3300) / 4095);
 	//water_low_mv = (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
-
-    //return water_1_filtered;
+  
+    water_low_mv = water_1_filtered ;
     return water_low_mv;
 	#endif 
 }
@@ -272,7 +269,9 @@ uint16_t adc_water_level_middle(void)//adc_water_level_high
     ADC_ConvertedValues[3]=0;
 
 	return water_2_value;
-	#else 
+	#else
+
+	
 	uint16_t raw_value,water_middle_mv;
    
 	static uint32_t water_2_filtered = 0;
@@ -285,13 +284,9 @@ uint16_t adc_water_level_middle(void)//adc_water_level_high
         // 首次运行或复位后，直接用当前值作为初始值，避免从0开始缓慢爬升
         water_2_filtered = raw_value;
     } else {
-        // 新值权重占 2/20 (10%)，历史值权重占 18/20 (90%)
-        // 如果想让滤波更灵敏，可以改成 (raw_value * 5 + water_1_filtered * 15) / 20
-        // 针对 2 秒采样周期优化的一阶滤波算法
-        // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
-        water_2_filtered = (raw_value * 12 + water_2_filtered * 8) / 20;
-         // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
-       // water_2_filtered = (raw_value * 12 + water_2_filtered * 18) / 30;
+        // 【高灵敏度优化方案】：新采样值权重占 75% (12/16)，历史值占 25% (4/16)
+     // 采用 >> 4 替代除以 16，极大优化 M0 内核的执行效率，响应更灵敏
+       water_2_filtered = (raw_value * 12 + water_2_filtered * 4) >> 4;
     }
 
     // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
@@ -300,12 +295,15 @@ uint16_t adc_water_level_middle(void)//adc_water_level_high
    // water_1_mv = ((uint32_t)water_1_filtered * 3300) / 4095;
 
 
-   water_middle_mv  = (uint16_t) (((uint32_t)water_2_filtered * 3300) / 4095);
+   //water_middle_mv  = (uint16_t) (((uint32_t)water_2_filtered * 3300) / 4095);
   
   //  water_middle_mv = (uint16_t)((ADC_ConvertedValues[3]* 3300) / 4095);
    // return water_2_filtered;
 
-   return water_middle_mv;
+	water_middle_mv = water_2_filtered;
+
+
+    return water_middle_mv;
 
 
 
@@ -340,6 +338,7 @@ uint16_t adc_water_level_high(void)
 	return water_3_value;
 
 	#else 
+	
 
 	uint16_t raw_value,water_high_mv;
 
@@ -353,13 +352,9 @@ uint16_t adc_water_level_high(void)
         // 首次运行或复位后，直接用当前值作为初始值，避免从0开始缓慢爬升
         water_3_filtered = raw_value;
     } else {
-        // 新值权重占 2/20 (10%)，历史值权重占 18/20 (90%)
-        // 如果想让滤波更灵敏，可以改成 (raw_value * 5 + water_1_filtered * 15) / 20
-        // 针对 2 秒采样周期优化的一阶滤波算法
-        // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
-        water_3_filtered = (raw_value * 12 + water_3_filtered * 8) / 20;
-         // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
-       // water_3_filtered = (raw_value * 12 + water_3_filtered * 18) / 30;
+      // 【高灵敏度优化方案】：新采样值权重占 75% (12/16)，历史值占 25% (4/16)
+       // 采用 >> 4 替代除以 16，极大优化 M0 内核的执行效率，响应更灵敏
+        water_3_filtered = (raw_value * 12 + water_3_filtered * 4) >> 4;
     }
 
     // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
@@ -368,10 +363,10 @@ uint16_t adc_water_level_high(void)
    // water_1_mv = ((uint32_t)water_1_filtered * 3300) / 4095;
 	//ADC_ConvertedValues[2]=0;
 
-	water_high_mv  = (uint16_t) (((uint32_t)water_3_filtered * 3300) / 4095);
+	//water_high_mv  = (uint16_t) (((uint32_t)water_3_filtered * 3300) / 4095);
 
-    //return water_3_filtered;
-	
+
+    water_high_mv = water_3_filtered;
     return water_high_mv;
 
 	#endif 
@@ -412,6 +407,8 @@ uint16_t adc_water_warning_value(void)//adc_water_level_low
 
 	return water_4_value;
 #else
+
+
 	uint16_t raw_value;
   
 	static uint32_t water_warning_filtered = 0;
@@ -425,23 +422,21 @@ uint16_t adc_water_warning_value(void)//adc_water_level_low
         water_warning_filtered = raw_value;
     } 
 	else {
-        // 新值权重占 2/20 (10%)，历史值权重占 18/20 (90%)
-        // 如果想让滤波更灵敏，可以改成 (raw_value * 5 + water_1_filtered * 15) / 20
-        // 针对 2 秒采样周期优化的一阶滤波算法
-        // 新采样值权重占 12/20 (60%)，历史滤波值权重占 8/20 (40%)
-        water_warning_filtered = (raw_value * 12 + water_warning_filtered * 8) / 20;
-		 // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/30 (60%)
-       // water_warning_filtered = (raw_value * 12 +water_warning_filtered * 18) / 30;
+       // 【高灵敏度优化方案】：新采样值权重占 75% (12/16)，历史值占 25% (4/16)
+        // 采用 >> 4 替代除以 16，极大优化 M0 内核的执行效率，响应更灵敏
+        water_warning_filtered = (raw_value * 12 + water_warning_filtered * 4) >>4;
+		
+      
     }
 
     // 3. 将滤波后的 ADC 值转换成电压（单位：毫伏 mV）
     // 12位 ADC：最大值 4095，基准电压 3300mV
     // 注意：water_1_filtered * 3300 最大约为 13,513,500，未超出 uint32_t 的 4,294,967,295，安全
-    water_warining_mv =(uint16_t) (((uint32_t) water_warning_filtered* 3300) / 4095);
+    //water_warining_mv =(uint16_t) (((uint32_t) water_warning_filtered* 3300) / 4095);
     //ADC_ConvertedValues[5]=0;
       //water_warining_mv=  (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
-	
-    //return water_warning_filtered;
+
+    water_warining_mv =  water_warning_filtered;
     return water_warining_mv;
 
 

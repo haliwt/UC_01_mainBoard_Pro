@@ -51,8 +51,8 @@ void TIM3_Configuration(void)
 
   // Overflow time = ((Auto-reload 15999 + 1) * (Prescaler 0 + 1)) / 64000000 = 250 μs, frequency= 4 kHz
   LL_TIM_StructInit(&TIM_InitStruct);
-  TIM_InitStruct.Prescaler = 0;
-  TIM_InitStruct.Autoreload = 15999; // TIM_ARR
+  TIM_InitStruct.Prescaler = 63;
+  TIM_InitStruct.Autoreload = 249; // TIM_ARR
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
   TIM_InitStruct.ClockDivision = 0;
   LL_TIM_Init(TIM3, &TIM_InitStruct);
@@ -79,8 +79,8 @@ void TIM16_Configuration(void)
 
   // Overflow time = ((Auto-reload 63999 + 1) * (Prescaler 0 + 1)) / 64000000 = 1000 μs, frequency= 1000 Hz
   LL_TIM_StructInit(&TIM_InitStruct);
-  TIM_InitStruct.Prescaler = 0;
-  TIM_InitStruct.Autoreload = 2559; // TIM_ARR,25KHZ
+  TIM_InitStruct.Prescaler = 63;
+  TIM_InitStruct.Autoreload = 49 ;//20KHZ; // TIM_ARR,25KHZ
   TIM_InitStruct.ClockDivision = 0;
   TIM_InitStruct.RepetitionCounter = 0;
   LL_TIM_Init(TIM16, &TIM_InitStruct);

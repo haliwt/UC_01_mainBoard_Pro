@@ -602,7 +602,7 @@ void power_on_ref_init_handler(void)
 {
   gpro_t.g_ai_flag = 1;
   gpro_t.g_plasma_flag = 1;
-  gpro_t.g_fan_speed = 100 ;
+  gpro_t.g_fan_speed = 3 ;
 
 
 }
@@ -611,7 +611,7 @@ void power_off_ref_init_handler(void)
 {
   gpro_t.g_ai_flag = 0;
   gpro_t.g_plasma_flag = 0;
-  gpro_t.g_fan_speed = 0 ;
+  gpro_t.g_fan_speed = 3 ;
 
 
 }

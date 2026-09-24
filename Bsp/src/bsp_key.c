@@ -104,9 +104,6 @@ void key_plasma_short_handler(void)
 { 
    static uint8_t plasma_key_cnt = 0;
    
-  // if(gpro_t.g_ai_flag == true) return;
-   
-	
    beep_key_click();
    gpro_t.g_plasma_flag = !gpro_t.g_plasma_flag;
    plasma_set_status(gpro_t.g_plasma_flag);
@@ -170,17 +167,14 @@ void ai_model_handler(void)
 {
    if(gpro_t.g_ai_flag == true){
       if(works_interval_f ==false && gpro_t.fan_warning_f ==false && gpro_t.water_pos_warning_flag == false){
-         power_on_run_handler();
+			gpro_t.g_fan_speed = 3;
+			gpro_t.g_plasma_flag = true;
+			fan_adjust_high_speed();
+			PLASMA_CTRL_ON();
+			TEC_CTRL_ON() ;
+			
    	  }
 	  
-   }
-   else{
-
-	 if(works_interval_f ==false){
-        plasma_set_status(gpro_t.g_plasma_flag);
-        fan_speed_adjust_handler(gpro_t.g_fan_speed);
-     }
-
    }
 
    if(gpro_t.g_water_pump_flag == false){
