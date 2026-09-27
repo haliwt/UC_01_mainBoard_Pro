@@ -237,7 +237,7 @@ uint16_t adc_water_level_low(void)//adc_water_4_value
 	 //water_low_mv =(uint16_t) (((uint32_t)water_1_filtered * 3300) / 4095);
 	//water_low_mv = (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
   
-    water_low_mv = water_1_filtered ;
+    water_low_mv = (uint16_t)water_1_filtered ;
     return water_low_mv;
 	#endif 
 }
@@ -300,7 +300,7 @@ uint16_t adc_water_level_middle(void)//adc_water_level_high
   //  water_middle_mv = (uint16_t)((ADC_ConvertedValues[3]* 3300) / 4095);
    // return water_2_filtered;
 
-	water_middle_mv = water_2_filtered;
+	water_middle_mv = (uint16_t)water_2_filtered;
 
 
     return water_middle_mv;
@@ -366,7 +366,7 @@ uint16_t adc_water_level_high(void)
 	//water_high_mv  = (uint16_t) (((uint32_t)water_3_filtered * 3300) / 4095);
 
 
-    water_high_mv = water_3_filtered;
+    water_high_mv = (uint16_t)water_3_filtered;
     return water_high_mv;
 
 	#endif 
@@ -436,7 +436,7 @@ uint16_t adc_water_warning_value(void)//adc_water_level_low
     //ADC_ConvertedValues[5]=0;
       //water_warining_mv=  (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
 
-    water_warining_mv =  water_warning_filtered;
+    water_warining_mv = (uint16_t) water_warning_filtered;
     return water_warining_mv;
 
 

@@ -63,9 +63,9 @@ void Water_System_Process(void)
   
    static uint8_t beep_sound_counter,confirm_counter,first_times;
 
-   static uint8_t dc_power;
+   static uint8_t dc_power,confirm_warning_f;
 
-   if(dc_power < 4){
+   if(dc_power < 2){
        dc_power ++ ;
       gpro_t.water_level_low_value =0;
       gpro_t.water_level_middle_value=0;
@@ -153,12 +153,7 @@ void Water_System_Process(void)
 				LED_warning_gpio_input();//LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
 
 			    }
-			    else{
-
-				  LED_WATER_LEVEL_LOW_ON();//LED_WATER_LEVEL_1();
-				  LED_WATER_LEVEL_MIDDLE_ON();//LED_WATER_LEVEL_2();
-
-				}
+			   
 
 			}
 
@@ -170,10 +165,11 @@ void Water_System_Process(void)
 
 	case 2:
 	   first_times=0;
+	   confirm_warning_f=0;
        gpro_t.water_level_high_value  = adc_water_level_high();
-	   gpro_t.water_level_middle_value  = adc_water_level_middle();
-	   gpro_t.water_level_low_value  = adc_water_level_low();
-	   if(gpro_t.water_level_high_value > WATER_TOUCH_THRESHOLD_3 && gpro_t.water_level_middle_value > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
+	  // gpro_t.water_level_middle_value  = adc_water_level_middle();
+	  // gpro_t.water_level_low_value  = adc_water_level_low();
+	   if(gpro_t.water_level_high_value > WATER_TOUCH_THRESHOLD_3){// && gpro_t.water_level_middle_value > WATER_TOUCH_THRESHOLD_2 && gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
             
         confirm_counter =0;
  	    water_pos_step =3;
@@ -202,13 +198,7 @@ void Water_System_Process(void)
 				
 			ntc_temperature_compare_handler();
          }
-		 else{
-		     LED_WATER_LEVEL_LOW_ON();//LED_WATER_LEVEL_1();
-			 LED_WATER_LEVEL_MIDDLE_ON();//LED_WATER_LEVEL_2();
-			 LED_WATER_LEVEL_HIGH_ON();
-
-
-		 }
+		
 
 	 }
 		
@@ -217,7 +207,13 @@ void Water_System_Process(void)
 	case 3://warning water pos
          gpro_t.water_pos_warning_value  = adc_water_warning_value();
 		 if(gpro_t.water_pos_warning_value > WATER_TOUCH_WARNING){
-		 	confirm_counter =0;
+
+		    confirm_warning_f++ ;
+			confirm_counter =0;
+		  if(confirm_warning_f > 2){
+		  	confirm_warning_f=0;
+		 
+			
 			 if(first_times==0){
 			 	first_times++;
 			 	beep_water_warning_sound();
@@ -236,13 +232,13 @@ void Water_System_Process(void)
 			           SendData_Set_Command(0x0C,0X01);//高水位报警
 					    tx_thread_sleep(1);//10ms *2 = 20ms.
 			        }
-                
+			} 
 			  
 	    }
 		else{
 
-	         confirm_counter++;
-
+	        confirm_counter++;
+            confirm_warning_f=0;
             if(confirm_counter >= 3){
 				 confirm_counter =0;
 				water_pos_step =2;
@@ -273,6 +269,7 @@ void Water_System_Process(void)
 
 	if(gpro_t.water_pos_warning_flag== 1){
 		beep_sound_counter++;
+		
 		TEC_CTRL_OFF();
 	    LED_warning_gpio_output();
 	    LED_WATER_WARNING_ON();
