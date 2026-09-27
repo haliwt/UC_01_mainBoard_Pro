@@ -29,6 +29,14 @@ void beep_key_click(void)
 	LL_TIM_DisableCounter(TIM3);             // 禁止定时器计数器 (对应 TIM_Cmd)
 }
 
+void beep_sound_off(void)
+{
+	LL_TIM_OC_SetCompareCH4(TIM3,0);		 // 设置 0% 占空比
+	LL_TIM_DisableCounter(TIM3);			   // 禁止定时器计数器 (对应 TIM_Cmd)
+
+
+}
+
 /**
   * @brief 
   * @note  

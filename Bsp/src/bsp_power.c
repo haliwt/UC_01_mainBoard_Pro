@@ -77,6 +77,8 @@ static void power_on_initial(void);
 static void power_on_cycle_handler(void);
 
 static void works_two_hours_times_handler(void);
+void mainbaord_hardware_active(void);
+
 
 uint8_t gxht4_rec=0;
 
@@ -285,8 +287,12 @@ static void handler_read_6_channels_adc_value(void)
 
 static void handler_fan_adc_detected(void)
 {
-    if(gl_ref.adc_fan_channel_flag == 1){
+
+    
+	if(gl_ref.adc_fan_channel_flag == 1){
         gl_ref.adc_fan_channel_flag = 0;
+
+	   if(works_interval_f == 1)  return ;
 	
 	  fan_adc_detected_value();
 
@@ -341,6 +347,8 @@ static void power_off_handler(void)
 	switch(gon_t.off_step){
 	
 		 case 0:
+		 	
+            beep_sound_off();
 			gon_t.on_step =0;
 	       
 		    fan_one_f =1;
@@ -356,6 +364,7 @@ static void power_off_handler(void)
 			works_interval_f=0;
 			gpro_t.g_water_pump_flag = 0; //关闭的.water _pump 
             fan_adn_error_counter =0;
+			gpro_t.g_fan_speed =3;
 			
 	        gon_t.off_step = 1;
 	
@@ -471,7 +480,7 @@ static void power_off_handler(void)
 **/
 
 uint8_t fan_run_one_minute_flag ;
-
+#define  DEBUG_HOURS_ENABLE  1
 static void works_two_hours_times_handler(void)
 {
   
@@ -479,8 +488,8 @@ static void works_two_hours_times_handler(void)
 
 	  case 0:
 	 
-		#if  0 //DEBUG_ENABLE 
-			if(gpro_t.gTimer_one_minute >6 && works_interval_f==0){
+		#if  DEBUG_HOURS_ENABLE 
+			if(gpro_t.gTimer_one_minute >4 && works_interval_f==0){
 		#else 
 			if(gpro_t.gTimer_one_minute > 119 && works_interval_f==0){
 
@@ -497,8 +506,8 @@ static void works_two_hours_times_handler(void)
 			TEC_CTRL_OFF();
 			
 			
-		#if DEBUG_ENABLE 
-			printf("works_interval_f = %d \n\r",works_interval_f);
+		#if DEBUG_HOURS_ENABLE
+			//printf("works_interval_f = %d \n\r",works_interval_f);
 		#endif 
 		}
 
@@ -508,11 +517,12 @@ static void works_two_hours_times_handler(void)
 
         if(fan_run_one_minute_flag==1 && gpro_t.gTimer_one_minute_counter > 60){
 		    fan_run_one_minute_flag ++;
+			gpro_t.gTimer_one_minute=0;
             fan_stop();
         }
 			
-        #if 0
-		   if(works_interval_f==1 && gpro_t.gTimer_one_minute >4){
+        #if DEBUG_HOURS_ENABLE 
+		   if(works_interval_f==1 && gpro_t.gTimer_one_minute >3){
 		#else 
 		  if(works_interval_f==true && gpro_t.gTimer_one_minute >10){
 
@@ -521,11 +531,13 @@ static void works_two_hours_times_handler(void)
 				works_interval_f =0;
 		        gpro_t.time_base_1s_counter=0;
 				
-				ai_model_handler();
+			
 				ntc_temperature_compare_handler();
 				
+				mainbaord_hardware_active();
+				
 		#if DEBUG_ENABLE 
-			printf("works_interval_f = %d \n\r",works_interval_f);
+			//printf("works_interval_f = %d \n\r",works_interval_f);
 		#endif 
 
 		  }
@@ -536,27 +548,12 @@ static void works_two_hours_times_handler(void)
 	 }
 
 }
-		
-    
-  
-
-
-
-/**
-	*
-	*@brief 
-	*@notice
-	*@param
-	*
-**/
-
 /**
   * @brief  
   * @note  
   * @param: 
   *
 **/
-
 void power_on_off_handler(void)
 {
 
@@ -606,7 +603,12 @@ void power_on_ref_init_handler(void)
 
 
 }
-
+/**
+  * @brief  
+  * @note  
+  * @param: 
+  *
+**/
 void power_off_ref_init_handler(void)
 {
   gpro_t.g_ai_flag = 0;
@@ -615,5 +617,29 @@ void power_off_ref_init_handler(void)
 
 
 }
+/**
+  * @brief  
+  * @note  
+  * @param: 
+  *
+**/
+static void mainbaord_hardware_active(void)
+{
+   if(gpro_t.g_ai_flag == true){
 
+       ai_model_handler();
+
+   }
+   else{
+
+       plasma_set_status(gpro_t.g_plasma_flag); // 1-开启，0-关闭     
+       fan_speed_adjust_handler(gpro_t.g_fan_speed);
+	    if(gpro_t.g_water_pump_flag == true){
+	        WATER_PUMP_CTRL_ON() ;
+
+ 	    }
+   }
+
+
+}
 

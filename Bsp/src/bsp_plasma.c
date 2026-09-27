@@ -12,7 +12,8 @@ void plasma_set_status(bool idata) // 1-开启，0-关闭
 {
        
  
-	   if(gpro_t.g_plasma_flag==true){
+	   if(idata==true){
+	   	
          LED_PLASMA_ON();
           
          if(works_interval_f ==0 ) PLASMA_CTRL_ON() ;

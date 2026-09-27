@@ -23,6 +23,8 @@ void beep_angle_thresdhold_sound(void);
 
 
 
+void beep_sound_off(void);
+
 
 #endif 
 

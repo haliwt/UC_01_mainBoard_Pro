@@ -228,7 +228,7 @@ void tx_application_define(void *first_unused_memory)
     static uint16_t power_cnt = 0;
 	static uint16_t  water_cnt  =0 ;
  
-    const uint16_t LONG_PRESS_TIME = 60; //40:2分43秒  
+    const uint16_t LONG_PRESS_TIME = 80; //40:2分43秒  
   
  
    while(1){
@@ -299,6 +299,7 @@ void tx_application_define(void *first_unused_memory)
 	      if(water_cnt == LONG_PRESS_TIME ){
             
                gpro_t.g_water_pump_flag = 1;//turn on water pump
+               beep_key_click();
 		  }
 		  if(gpro_t.g_water_pump_flag == 1){
 
@@ -309,7 +310,7 @@ void tx_application_define(void *first_unused_memory)
 	else if(KEY_WATER_VALUE() == KEY_UP && water_cnt >0){
 
 	     water_cnt =0;
-	   
+	     
 	     gpro_t.g_water_pump_flag = 0;
 	     WATER_PUMP_CTRL_OFF() ;
 

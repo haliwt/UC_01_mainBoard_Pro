@@ -111,8 +111,10 @@ uint8_t fan_adn_error_counter;
 
 void fan_adc_detected_value(void)
 { 
-     
-	if(gpro_t.g_water_pump_flag == 0 && gpro_t.g_fan_speed ==3 && works_interval_f == 0){
+
+    if(gpro_t.g_water_pump_flag == 0) return ;
+	
+	
 	  
 	
 		   gpro_t.fan_adc_value =adc_fan_mv_value();
@@ -137,9 +139,6 @@ void fan_adc_detected_value(void)
 			       }
 			   }
 
-		   }
-
-	    
 	}
 }
 

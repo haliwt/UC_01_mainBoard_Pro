@@ -498,13 +498,14 @@ uint16_t adc_fan_mv_value(void)
         // 如果想让滤波更灵敏，可以改成 (raw_value * 5 + water_1_filtered * 15) / 20
         // 针对 2 秒采样周期优化的一阶滤波算法
         // 新采样值权重占 12/30 (40%)，历史滤波值权重占 18/20 (60%)
-        fan_filtered = (raw_value * 12 + fan_filtered * 18) / 30;
+       // fan_filtered = (raw_value * 12 + fan_filtered * 18) / 30;
+		 fan_filtered = (raw_value * 12 + fan_filtered * 4) >>4;
     }
 
 
 
 
-   return  fan_filtered ;
+   return (uint16_t) fan_filtered ;
 }
 
 
