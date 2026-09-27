@@ -13,7 +13,7 @@
 #define WATER_TOUCH_THRESHOLD_1      500
 #define WATER_TOUCH_THRESHOLD_2      500
 #define WATER_TOUCH_THRESHOLD_3      500
-#define WATER_TOUCH_WARNING          500
+#define WATER_TOUCH_WARNING          400
 
 
 
@@ -56,14 +56,14 @@ void water_pwm_off(void)
  * @brief  获取当前综合水位等级
  * @return WaterLevel_t 当前的水位状态 (LEVEL_0 到 LEVEL_4)
  */
- uint8_t water_pos_step;
+ uint8_t water_pos_step,confirm_warning_f,warning_counter;
 
 void Water_System_Process(void)
 {
   
    static uint8_t beep_sound_counter,confirm_counter,first_times;
 
-   static uint8_t dc_power,confirm_warning_f;
+   static uint8_t dc_power;
 
    if(dc_power < 2){
        dc_power ++ ;
@@ -80,6 +80,7 @@ void Water_System_Process(void)
 	case 0:
 	    gpro_t.water_level_low_value  = adc_water_level_low();
 		first_times=0;
+	    warning_counter=0;
 
 	     if(gpro_t.water_level_low_value > WATER_TOUCH_THRESHOLD_1){
             confirm_counter=0;
@@ -166,6 +167,7 @@ void Water_System_Process(void)
 	case 2:
 	   first_times=0;
 	   confirm_warning_f=0;
+	   warning_counter=0;
        gpro_t.water_level_high_value  = adc_water_level_high();
 	  // gpro_t.water_level_middle_value  = adc_water_level_middle();
 	  // gpro_t.water_level_low_value  = adc_water_level_low();
@@ -206,15 +208,13 @@ void Water_System_Process(void)
 
 	case 3://warning water pos
          gpro_t.water_pos_warning_value  = adc_water_warning_value();
-		 if(gpro_t.water_pos_warning_value > WATER_TOUCH_WARNING){
+		 if(gpro_t.water_pos_warning_value >= WATER_TOUCH_WARNING || gpro_t.water_pos_warning_value <= 300){
 
-		    confirm_warning_f++ ;
-			confirm_counter =0;
-		  if(confirm_warning_f > 2){
-		  	confirm_warning_f=0;
-		 
-			
-			 if(first_times==0){
+		  
+		    confirm_warning_f =0;
+			warning_counter++;
+		    if(warning_counter >=3){
+		     if(first_times==0){
 			 	first_times++;
 			 	beep_water_warning_sound();
 			 }
@@ -232,15 +232,16 @@ void Water_System_Process(void)
 			           SendData_Set_Command(0x0C,0X01);//高水位报警
 					    tx_thread_sleep(1);//10ms *2 = 20ms.
 			        }
-			} 
+		    }
 			  
 	    }
 		else{
 
-	        confirm_counter++;
-            confirm_warning_f=0;
-            if(confirm_counter >= 3){
-				 confirm_counter =0;
+	       confirm_warning_f++;
+           warning_counter=0;
+            if(confirm_warning_f >= 3){
+				confirm_warning_f =0;
+				first_times=0;
 				water_pos_step =2;
 				gpro_t.water_pos_warning_flag= 0;
 				ntc_temperature_compare_handler();

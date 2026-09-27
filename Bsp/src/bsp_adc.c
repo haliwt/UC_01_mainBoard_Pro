@@ -436,7 +436,7 @@ uint16_t adc_water_warning_value(void)//adc_water_level_low
     //ADC_ConvertedValues[5]=0;
       //water_warining_mv=  (uint16_t)((ADC_ConvertedValues[4]* 3300) / 4095);
 
-    water_warining_mv = (uint16_t) water_warning_filtered;
+    water_warining_mv = ADC_ConvertedValues[5];//(uint16_t) water_warning_filtered;
     return water_warining_mv;
 
 

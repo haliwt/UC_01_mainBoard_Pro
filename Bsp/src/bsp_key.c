@@ -9,17 +9,19 @@
 *@param
 *
 **/
+uint8_t angle_f =1;
 void key_power_short_handler(void)
 {
  
 	  // 1. 无论是开还是关，都要响一下蜂鸣器并翻转状态，直接提到最前面
 	beep_key_click();
+	   angle_f= ANGLE_SENSOR_VALUE() ;
   
     // 2. 根据翻转后的最新状态，决定执行开机动作还是关机动作
 	if (gpro_t.g_power_flag ==false) 
 	{ 
 	    // 最新状态为 true，说明刚刚执行了“开机”翻转
-	    if(ANGLE_SENSOR_VALUE() == 0){
+	    if(angle_f == 0){
 		    gpro_t.g_power_flag  = true;
 		    power_on_led_handler();
 		    power_on_ctrl_init_handler();
