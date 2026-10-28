@@ -10,6 +10,9 @@
 
 #include "bsp.h"
 
+#define  DEBUG_HOURS_ENABLE  0
+
+
 power_state gon_t;
 
 
@@ -480,7 +483,7 @@ static void power_off_handler(void)
 **/
 
 uint8_t fan_run_one_minute_flag ;
-#define  DEBUG_HOURS_ENABLE  1
+
 static void works_two_hours_times_handler(void)
 {
   
