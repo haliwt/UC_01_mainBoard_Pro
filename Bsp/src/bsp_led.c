@@ -139,7 +139,8 @@ void wifi_led_state_handler(void)
 **/
 void humidity_indicate_led_handler(void)
 {
-    if(gpro_t.humidity >= 40 &&  gpro_t.humidity<= 70){
+    #if 0
+	if(gpro_t.humidity >= 40 &&  gpro_t.humidity<= 70){
 
         LED_HUMIDITY_OFF_HIGH();
 		LED_HUMIDITY_ON_MIDDLE();
@@ -158,6 +159,39 @@ void humidity_indicate_led_handler(void)
 	    LED_HUMIDIY_OFF_LOW();
 	}
 
+	#else
+
+	   if(gpro_t.humidity >= 40 &&  gpro_t.humidity<= 70){
+	
+			//LED_HUMIDITY_OFF_HIGH();
+			//LED_HUMIDITY_ON_MIDDLE();
+			//LED_HUMIDIY_OFF_LOW();
+
+		   LED_HUMIDITY_OFF_HIGH();
+		   LED_HUMIDITY_OFF_MIDDLE();
+		   LED_HUMIDIY_ON_LOW();	
+		}
+		else if(gpro_t.humidity <= 40){
+	
+		   //LED_HUMIDITY_OFF_HIGH();
+		   //LED_HUMIDITY_OFF_MIDDLE();
+		   //LED_HUMIDIY_ON_LOW();	
+
+		   LED_HUMIDITY_OFF_HIGH();
+			LED_HUMIDITY_ON_MIDDLE();
+			LED_HUMIDIY_OFF_LOW();
+		}
+		else{
+	
+			LED_HUMIDITY_ON_HIGH();
+			LED_HUMIDITY_OFF_MIDDLE();
+			LED_HUMIDIY_OFF_LOW();
+		}
+
+
+
+	#endif 
+
 
 }
 
@@ -166,14 +200,18 @@ void humidity_indicate_led_handler(void)
 *@param:
 *@notice
 **/
-
+uint8_t power_off_led;
 void power_off_led_blink_handler(void)
 {
-
+   
     if(gpro_t.gTimer_led_blink_counter > 1){
 
 	    gpro_t.gTimer_led_blink_counter  =0;
+		power_off_led++;
+	    
 		LED_POWER_TOGGLE();
+
+	
 
 	}
 

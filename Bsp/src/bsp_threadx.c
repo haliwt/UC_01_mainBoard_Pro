@@ -218,14 +218,20 @@ void tx_application_define(void *first_unused_memory)
   * @param	 None
   * @retval  None
 **/
+ uint16_t power_cnt;
+ 
+     uint16_t ai_cnt;
+    uint16_t fan_cnt ;
+     uint16_t plasma_cnt;
+
  static void key_thread_entry(ULONG thread_input)
  {
    (void)thread_input;  /* 消除未使用的参数警告 */
 
-    static uint16_t ai_cnt = 0;
-    static uint16_t fan_cnt = 0;
-    static uint16_t plasma_cnt = 0;
-    static uint16_t power_cnt = 0;
+   // static uint16_t ai_cnt = 0;
+   // static uint16_t fan_cnt = 0;
+   // static uint16_t plasma_cnt = 0;
+   // static uint16_t power_cnt = 0;
 	static uint16_t  water_cnt  =0 ;
  
     const uint16_t LONG_PRESS_TIME = 80; //40:2分43秒  

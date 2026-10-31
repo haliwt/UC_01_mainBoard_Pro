@@ -14,14 +14,18 @@
 #define LL_LED_WATER_B_Pin LL_GPIO_PIN_15
 
 
-#define LED_B_3_GPIO_Port GPIOA
-#define LL_LED_B_3_Pin LL_GPIO_PIN_8
+//#define LED_B_3_GPIO_Port 					GPIOA
+//#define LL_LED_B_3_Pin 						LL_GPIO_PIN_8
 
-#define LED_R_1_GPIO_Port GPIOA
-#define LL_LED_R_1_Pin LL_GPIO_PIN_11
+#define LED_B_3_GPIO_Port 					GPIOB
+#define LL_LED_B_3_Pin 						LL_GPIO_PIN_11
 
-#define LED_G_2_GPIO_Port GPIOA
-#define LL_LED_G_2_Pin LL_GPIO_PIN_12
+
+#define LED_R_1_GPIO_Port 					GPIOA
+#define LL_LED_R_1_Pin 						LL_GPIO_PIN_11
+
+#define LED_G_2_GPIO_Port 					GPIOA
+#define LL_LED_G_2_Pin 						LL_GPIO_PIN_12
 
 #define LED_WATER_RB_GPIO_Port GPIOB
 #define LL_LED_WATER_RB_Pin LL_GPIO_PIN_12
@@ -34,8 +38,8 @@
 
 
 //KEY OF KEY LED GPIO 
-#define LED_POWER_GPIO_Port GPIOC
-#define LL_LED_POWER_Pin LL_GPIO_PIN_13
+#define LED_POWER_GPIO_Port       GPIOC
+#define LL_LED_POWER_Pin          LL_GPIO_PIN_13
 
 #define LED_TIME_GPIO_Port GPIOF
 #define LL_LED_TIME_Pin LL_GPIO_PIN_9
@@ -83,8 +87,16 @@
 #define LL_PLASMA_Pin LL_GPIO_PIN_0
 
 
-#define COOLER_CTL_GPIO_Port GPIOB
-#define LL_COOLER_CTL_Pin LL_GPIO_PIN_11
+//#define COOLER_CTL_GPIO_Port GPIOB
+//#define LL_COOLER_CTL_Pin LL_GPIO_PIN_11
+
+#define COOLER_CTL_GPIO_Port 			GPIOA  //WT.EDIT 2026-10-30
+#define LL_COOLER_CTL_Pin 				LL_GPIO_PIN_8
+
+//#define COOLER_CTL_GPIO_Port GPIOB
+//#define LL_COOLER_CTL_Pin LL_GPIO_PIN_11
+
+
 
 //ANGLE SENSOR INPUT GPIO 
 #define ANGLE_SENSOR_GPIO_Port GPIOF

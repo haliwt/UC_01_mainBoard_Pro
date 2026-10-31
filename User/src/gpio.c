@@ -12,24 +12,26 @@ void GPIO_Configuration(void)
   LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOF);
 
   // GPIO_Output
-  LL_GPIO_SetOutputPin(LED_B_3_GPIO_Port, LL_LED_B_3_Pin);
-  LL_GPIO_SetOutputPin(LED_R_1_GPIO_Port, LL_LED_R_1_Pin);
-  LL_GPIO_SetOutputPin(LED_G_2_GPIO_Port, LL_LED_G_2_Pin);
+  
+  LL_GPIO_ResetOutputPin(LED_R_1_GPIO_Port, LL_LED_R_1_Pin);
+  LL_GPIO_ResetOutputPin(LED_G_2_GPIO_Port, LL_LED_G_2_Pin);
+  LL_GPIO_ResetOutputPin(COOLER_CTL_GPIO_Port, LL_COOLER_CTL_Pin); //WT.EIDT 2026-10-30
   
   LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Pin = LL_LED_B_3_Pin | LL_LED_R_1_Pin | LL_LED_G_2_Pin;
+  GPIO_InitStruct.Pin =  LL_LED_R_1_Pin | LL_LED_G_2_Pin |LL_COOLER_CTL_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
-  LL_GPIO_Init(LED_B_3_GPIO_Port, &GPIO_InitStruct);
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 
   LL_GPIO_SetOutputPin(LED_PLASMA_GPIO_Port, LL_LED_PLASMA_Pin);
   LL_GPIO_SetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin);
+  LL_GPIO_ResetOutputPin(LED_B_3_GPIO_Port, LL_LED_B_3_Pin);//WT.EIDT 2026-10-30
   
   LL_GPIO_StructInit(&GPIO_InitStruct);
-	GPIO_InitStruct.Pin = LL_LED_PLASMA_Pin | LL_LED_AI_Pin;
+	GPIO_InitStruct.Pin = LL_LED_PLASMA_Pin | LL_LED_AI_Pin | LL_LED_B_3_Pin;
 	GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
 	GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
 	GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
@@ -137,11 +139,22 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   LL_GPIO_Init(LED_WATER_G_GPIO_Port, &GPIO_InitStruct);
 
+  // GPIO_Output
+  LL_GPIO_SetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin);
+ 
+  LL_GPIO_StructInit(&GPIO_InitStruct);
+  GPIO_InitStruct.Pin = LL_LED_POWER_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW ;//LL_GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+  LL_GPIO_Init(LED_POWER_GPIO_Port, &GPIO_InitStruct);
+
 
 
   
   LL_GPIO_ResetOutputPin(PLASMA_GPIO_Port, LL_PLASMA_Pin);
-  LL_GPIO_ResetOutputPin(COOLER_CTL_GPIO_Port, LL_COOLER_CTL_Pin);
+  
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin =  LL_PLASMA_Pin | LL_COOLER_CTL_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
@@ -198,19 +211,8 @@ void GPIO_Configuration(void)
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
   LL_GPIO_Init(WATER_PWM_GPIO_Port, &GPIO_InitStruct);
 
-  // GPIO_Output
-  LL_GPIO_SetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin);
- 
-  LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Pin = LL_LED_POWER_Pin;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
-  LL_GPIO_Init(LED_POWER_GPIO_Port, &GPIO_InitStruct);
-
-
-   // GPIO_Input
+  
+  // GPIO_Input
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_KEY_WATER_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;

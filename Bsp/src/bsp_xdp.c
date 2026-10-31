@@ -209,7 +209,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		           /// tx_thread_sleep(2);
 					 gpro_t.g_power_flag  = true;
 			         power_on_led_handler();
-			         power_on_ctrl_init_handler();
+			        // power_on_ctrl_init_handler();
 				     gpro_t.g_out_display_flag= 1;
 				}
 				else{

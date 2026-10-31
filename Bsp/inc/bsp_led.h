@@ -3,8 +3,8 @@
 #include "main.h"
 
 // LED OF KEY
-#define LED_POWER_ON()      LL_GPIO_ResetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
-#define LED_POWER_OFF()     LL_GPIO_SetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
+#define LED_POWER_ON()      do{LED_POWER_GPIO_Port -> BSRR =(uint32_t)LL_LED_POWER_Pin<<16;}while(0)//LL_GPIO_ResetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
+#define LED_POWER_OFF()     do{LED_POWER_GPIO_Port -> BSRR =(uint32_t)LL_LED_POWER_Pin;}while(0)//LL_GPIO_SetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 #define LED_POWER_TOGGLE()   LL_GPIO_TogglePin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 
 #define  LED_TIME_ON()       do{LED_TIME_GPIO_Port -> BSRR =(uint32_t)LL_LED_TIME_Pin<<16;}while(0)
@@ -41,8 +41,8 @@
 #define LED_WATER_WARNING_OFF()       do{LED_WATER_B_GPIO_Port -> BSRR =LL_LED_WATER_B_Pin;}while(0) 
 
 //湿度指示灯
-#define  LED_HUMIDITY_ON_HIGH()     LL_GPIO_SetOutputPin(LED_B_3_GPIO_Port,LL_LED_B_3_Pin)
-#define  LED_HUMIDITY_OFF_HIGH()    LL_GPIO_ResetOutputPin(LED_B_3_GPIO_Port,LL_LED_B_3_Pin)
+#define  LED_HUMIDITY_ON_HIGH()     		LL_GPIO_SetOutputPin(LED_B_3_GPIO_Port,LL_LED_B_3_Pin)
+#define  LED_HUMIDITY_OFF_HIGH()    		LL_GPIO_ResetOutputPin(LED_B_3_GPIO_Port,LL_LED_B_3_Pin)
 
 #define  LED_HUMIDITY_ON_MIDDLE()     LL_GPIO_SetOutputPin(LED_R_1_GPIO_Port,LL_LED_R_1_Pin) //
 #define  LED_HUMIDITY_OFF_MIDDLE()    LL_GPIO_ResetOutputPin(LED_R_1_GPIO_Port,LL_LED_R_1_Pin)//

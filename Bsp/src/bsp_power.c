@@ -119,7 +119,7 @@ static void power_on_initial(void)
 	  gpro_t.g_is_net_flag=0;
   
       gon_t.on_step =0;
-	
+	  PLASMA_CTRL_ON();
 	
 	  fan_adjust_high_speed();   // 切换到高速档
 
@@ -395,6 +395,7 @@ static void power_off_handler(void)
 	
                MqttData_Publish_PowerOff_Ref(); 
 			}
+			
 
 			gon_t.off_step = 2;
 			 
@@ -416,7 +417,7 @@ static void power_off_handler(void)
 				AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
 							 
 			}
-            water_pwm_off();
+           
 		    power_off_led_blink_handler();
 		  if(gpro_t.wifi_connected_success_flag ==1 ){
 		     gon_t.off_step = 3;
