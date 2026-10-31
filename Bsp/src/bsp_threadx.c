@@ -304,7 +304,7 @@ void tx_application_define(void *first_unused_memory)
 
 	      if(water_cnt == LONG_PRESS_TIME ){
             
-               gpro_t.g_water_pump_flag = 1;//turn on water pump
+               gpro_t.g_water_pump_flag = true;//turn on water pump
                beep_key_click();
 		  }
 		  if(gpro_t.g_water_pump_flag == 1){

@@ -112,12 +112,9 @@ uint8_t fan_adn_error_counter;
 void fan_adc_detected_value(void)
 { 
 
-    if(gpro_t.g_water_pump_flag == 0) return ;
+    if(gpro_t.g_water_pump_flag == true) return ;
 	
-	
-	  
-	
-		   gpro_t.fan_adc_value =adc_fan_mv_value();
+	      gpro_t.fan_adc_value =adc_fan_mv_value();
 		   
 		   if(gpro_t.fan_adc_value > FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
 		   	
@@ -125,7 +122,7 @@ void fan_adc_detected_value(void)
 	       }
 		   else if(gpro_t.fan_adc_value < FAN_ADC_THRESHOLD && gpro_t.fan_warning_f==0){
 		      fan_adn_error_counter ++;
-	           if(fan_adn_error_counter > 15){
+	           if(fan_adn_error_counter > 9){
 				  //fan_adn_error_counter=0;
 				  if(gpro_t.fan_warning_f==0){
                       beep_fan_default_sound(); 
@@ -139,7 +136,7 @@ void fan_adc_detected_value(void)
 			       }
 			   }
 
-	}
+	      }
 }
 
 
@@ -147,7 +144,7 @@ void fan_warning_sound_handler(void)
 {
 	if(gpro_t.fan_warning_f ==1){
          TEC_CTRL_OFF();
-         beep_fan_default_sound(); 
+        // beep_fan_default_sound(); 
 	     if(gpro_t.g_out_display_flag==1){
 			SendData_Set_Command(0x09,0X01);//风扇报警
 			tx_thread_sleep(1);//10ms *2 = 20ms.

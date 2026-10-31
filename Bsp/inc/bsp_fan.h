@@ -2,9 +2,17 @@
 #define __BSP_FAN_H
 #include "main.h"
 
+#if 0   //12V FAN BE TESTING IS OK
 #define FAN_SPEED_HIGH       2560//2560-2560//40   100%
 #define FAN_SPEED_MIDDLE     2048//2048//2560-2048 80%
 #define FAN_SPEED_LOW        1280//2560-1280=   50%
+
+#else 
+#define FAN_SPEED_HIGH       2560//2560-2560//40   100%
+#define FAN_SPEED_MIDDLE     2535//2048//2560-2048 80%
+#define FAN_SPEED_LOW        2304//2560-1280=   50%
+
+#endif 
 
 
 extern uint8_t fan_adn_error_counter;

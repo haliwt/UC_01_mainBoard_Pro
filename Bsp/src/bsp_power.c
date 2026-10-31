@@ -239,7 +239,7 @@ static void handler_read_gxht40ad(void)
 {
     if(gpro_t.g_water_pump_flag == 0){
     // gxht4_rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
-  gxht4_rec  =  AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
+     gxht4_rec  =  AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
 	if(gxht4_rec==0){
       #if 1
       printf("temp = %d , humidity = %d \r\n",gpro_t.temperature,gpro_t.humidity);
@@ -257,7 +257,9 @@ static void handler_read_gxht40ad(void)
 	humidity_indicate_led_handler();
 
     }
-
+	
+    TEC_Temperature_Control() ; //WT.EDIT 2026-10-31
+    
 
 }
 
@@ -271,7 +273,7 @@ static void handler_AI_module_action(void)
 static void handler_read_6_channels_adc_value(void)
 {
   adc_counter++;
-  if(gpro_t.g_water_pump_flag == 0){
+  if(gpro_t.g_water_pump_flag == false){
 	  water_pwm_on();
 
 	
@@ -286,21 +288,36 @@ static void handler_read_6_channels_adc_value(void)
   
 
 }
-
-
+/**
+	*@ brief 5s run this fan be detected 
+	*@ param 
+	*@ retrval 
+**/
 static void handler_fan_adc_detected(void)
 {
+     static uint8_t fan_sound_counter;
 
+	 fan_sound_counter ++ ;
+
+	 if(gpro_t.fan_warning_f==true &&  fan_sound_counter > 25){
+	 	 fan_sound_counter =0;
+          beep_fan_default_sound(); 
+		  return ;
+	 }
+				 
     
 	if(gl_ref.adc_fan_channel_flag == 1){
         gl_ref.adc_fan_channel_flag = 0;
 
-	   if(works_interval_f == 1)  return ;
+	  if(works_interval_f == 1 || gpro_t.g_water_pump_flag == true)  return ;
+
+	  if(gpro_t.g_fan_speed==3){
 	
-	  fan_adc_detected_value();
+	    fan_adc_detected_value();
 
 	
-      fan_warning_sound_handler();
+        fan_warning_sound_handler();
+	  }
     }
 
 }

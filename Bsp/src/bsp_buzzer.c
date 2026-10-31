@@ -72,6 +72,9 @@ void beep_fan_default_sound(void)
 	beep_key_click();
 	tx_thread_sleep(50);
 	beep_key_click();
+	
+#if 0
+	
 	tx_thread_sleep(50);
 	beep_key_click();
 	tx_thread_sleep(50);
@@ -85,6 +88,7 @@ void beep_fan_default_sound(void)
 	tx_thread_sleep(50);
 	beep_key_click();
 	tx_thread_sleep(50);
+	#endif
 
 }
 

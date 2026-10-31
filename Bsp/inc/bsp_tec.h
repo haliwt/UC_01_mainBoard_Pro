@@ -18,6 +18,7 @@
 
 #endif 
 
+void TEC_Temperature_Control(void) ;
 
 
 #endif 

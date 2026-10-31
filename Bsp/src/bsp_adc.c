@@ -505,7 +505,7 @@ uint16_t adc_fan_mv_value(void)
 
 
 
-   return (uint16_t) fan_filtered ;
+   return (uint16_t) raw_value;
 }
 
 
