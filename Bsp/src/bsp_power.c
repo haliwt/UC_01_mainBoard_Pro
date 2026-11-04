@@ -52,19 +52,21 @@ static void handler_read_gxht40ad(void);
 static void handler_AI_module_action(void);
 static void handler_fan_adc_detected(void);
 static void handler_tec_adc_value(void);
+static void handler_detected_anagle(void);
 
 
 
 // 2. 任务注册表：将标志位地址与函数关联
 static Task_Config_t g_tasks[] = {
     // last_tick,  period(ms),  task_handler
-    {0,            50,         handler_AI_module_action},//10ms*30=300ms
+    {0,            50,         handler_AI_module_action},//10ms*50=500ms
     {0,            300,        handler_works_hours},
     {0,            450,        handler_read_gxht40ad},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
     {0,            100,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
     {0,            500,        handler_fan_adc_detected},                  //500 *10ms =5000ms = 5s 
     {0,            260,        handler_tec_adc_value},
+    {0,            30,         handler_detected_anagle}
     
     
 };
@@ -254,8 +256,6 @@ static void handler_read_gxht40ad(void)
 	   counter_test++;
 	}
 
-	humidity_indicate_led_handler();
-
     }
 	
     TEC_Temperature_Control() ; //WT.EDIT 2026-10-31
@@ -266,6 +266,7 @@ static void handler_read_gxht40ad(void)
 static void handler_AI_module_action(void)
 {
    ai_model_handler();
+   
 }
 
 
@@ -321,6 +322,23 @@ static void handler_fan_adc_detected(void)
     }
 
 }
+/**
+	*@ brief 
+	*@ param 
+	*@ retrval 
+**/
+static void handler_detected_anagle(void)
+{
+
+   detected_angle_handler();     
+ 
+
+}
+/**
+	*@ brief 
+	*@ param 
+	*@ retrval 
+**/
 static void handler_tec_adc_value(void)
 {
    if(gl_ref.adc_6_channels_done_flag ==1 && gpro_t.g_water_pump_flag == 0){
@@ -335,7 +353,11 @@ static void handler_tec_adc_value(void)
 
 
 }
-
+/**
+	*@ brief 
+	*@ param 
+	*@ retrval 
+**/
 void ntc_temperature_compare_handler(void)
 {
    if(gpro_t.ntc_temperature_value > 60 || gpro_t.water_pos_warning_flag ==1 ||  gpro_t.fan_warning_f ==1){

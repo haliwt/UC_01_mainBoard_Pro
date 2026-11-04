@@ -46,7 +46,7 @@ void power_on_led_handler(void)
    LED_PLASMA_ON();
    LED_AI_ON();
    
-   humidity_indicate_led_handler();
+   ambinet_led_on();
 
 }
 
@@ -137,8 +137,10 @@ void wifi_led_state_handler(void)
 *@param:
 *@notice
 **/
-void humidity_indicate_led_handler(void)
+void ambinet_led_on(void)
 {
+
+#if 0
     #if 0
 	if(gpro_t.humidity >= 40 &&  gpro_t.humidity<= 70){
 
@@ -187,13 +189,29 @@ void humidity_indicate_led_handler(void)
 			LED_HUMIDITY_OFF_MIDDLE();
 			LED_HUMIDIY_OFF_LOW();
 		}
+ #endif 
 
+#endif 		
+	   LED_HUMIDIY_ON_LOW();   
 
+	   LED_HUMIDITY_ON_MIDDLE();
 
-	#endif 
+	   LED_HUMIDITY_ON_HIGH();
+
+	
 
 
 }
+
+void ambinet_led_off(void)
+{
+	LED_HUMIDITY_OFF_HIGH();
+	LED_HUMIDITY_OFF_MIDDLE();
+	LED_HUMIDIY_OFF_LOW();
+
+}
+
+
 
 /**
 *@brief:  power off led is blink 

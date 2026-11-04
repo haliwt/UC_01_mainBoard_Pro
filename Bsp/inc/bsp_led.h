@@ -63,13 +63,19 @@ void power_on_led_handler(void);
 
 void power_off_led_handler(void);
 
-void humidity_indicate_led_handler(void);
+void ambinet_led_on(void);
+
+void ambinet_led_off(void);
+
 
 void power_off_led_blink_handler(void);
 
 void LED_warning_gpio_input(void);
 
 void LED_warning_gpio_output(void);
+
+
+
 
 
 #endif 

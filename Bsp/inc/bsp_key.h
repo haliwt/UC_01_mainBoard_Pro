@@ -49,5 +49,7 @@ void ai_model_handler(void);
 
 void key_water_long_handler(void);
 
+void detected_angle_handler(void);
+
 #endif 
 

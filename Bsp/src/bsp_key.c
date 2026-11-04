@@ -14,7 +14,7 @@ void key_power_short_handler(void)
 {
  
 	  // 1. 无论是开还是关，都要响一下蜂鸣器并翻转状态，直接提到最前面
-	beep_key_click();
+	   beep_key_click();
 	   angle_f= ANGLE_SENSOR_VALUE() ;
   
     // 2. 根据翻转后的最新状态，决定执行开机动作还是关机动作
@@ -45,6 +45,23 @@ void key_power_short_handler(void)
 	}
 
 }
+/**
+*
+*@brief 
+*@notice
+*@param
+*
+**/
+void detected_angle_handler(void)
+{
+	angle_f= ANGLE_SENSOR_VALUE() ;
+	if(angle_f==1){
+		beep_angle_thresdhold_sound();
+	}
+
+
+}
+
 /**
 *
 *@brief 
