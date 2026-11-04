@@ -46,7 +46,7 @@ void power_on_led_handler(void)
    LED_PLASMA_ON();
    LED_AI_ON();
    
-   ambinet_led_on();
+   ambient_led_on();
 
 }
 
@@ -137,7 +137,7 @@ void wifi_led_state_handler(void)
 *@param:
 *@notice
 **/
-void ambinet_led_on(void)
+void ambient_led_on(void)
 {
 
 #if 0
@@ -203,7 +203,7 @@ void ambinet_led_on(void)
 
 }
 
-void ambinet_led_off(void)
+void ambient_led_off(void)
 {
 	LED_HUMIDITY_OFF_HIGH();
 	LED_HUMIDITY_OFF_MIDDLE();

@@ -14,6 +14,9 @@
 
 #define  KEY_WATER_LONG    (1<<8)
 
+#define  KEY_AMBIENT_LED_LONG  (1<<9)
+
+
 
 
 #define STACK_SIZE_KEY          256//
@@ -218,21 +221,19 @@ void tx_application_define(void *first_unused_memory)
   * @param	 None
   * @retval  None
 **/
- uint16_t power_cnt;
- 
-     uint16_t ai_cnt;
-    uint16_t fan_cnt ;
-     uint16_t plasma_cnt;
+
 
  static void key_thread_entry(ULONG thread_input)
  {
    (void)thread_input;  /* 消除未使用的参数警告 */
 
-   // static uint16_t ai_cnt = 0;
-   // static uint16_t fan_cnt = 0;
-   // static uint16_t plasma_cnt = 0;
-   // static uint16_t power_cnt = 0;
-	static uint16_t  water_cnt  =0 ;
+   static uint16_t ai_cnt = 0;
+   static uint16_t fan_cnt = 0;
+   static uint16_t plasma_cnt = 0;
+   static uint16_t power_cnt = 0;
+   static uint16_t  water_cnt  =0 ;
+   static uint16_t   ambient_led_cnt = 0;
+  
  
     const uint16_t LONG_PRESS_TIME = 80; //40:2分43秒  
   
@@ -269,7 +270,7 @@ void tx_application_define(void *first_unused_memory)
         ai_cnt = 0;
 
 	}
-    else if (KEY_FAN_VALUE() == KEY_DOWN  && gpro_t.g_power_flag == true && gpro_t.g_ai_flag == false){ //up key
+    else if (KEY_FAN_VALUE() == KEY_DOWN && KEY_PLASMA_VALUE() == KEY_UP && gpro_t.g_power_flag == true && gpro_t.g_ai_flag == false){ //up key
 		  fan_cnt++;
         if(fan_cnt == LONG_PRESS_TIME)
                tx_event_flags_set(&key_event, KEY_FAN_LONG, TX_OR);
@@ -281,8 +282,9 @@ void tx_application_define(void *first_unused_memory)
                tx_event_flags_set(&key_event, KEY_FAN_SHORT, TX_OR);
 
           fan_cnt = 0;
+		
 	}
-    else if (KEY_PLASMA_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true && gpro_t.g_ai_flag ==false){ //dwon key
+    else if (KEY_PLASMA_VALUE() == KEY_DOWN && KEY_FAN_VALUE() == KEY_UP && gpro_t.g_power_flag == true && gpro_t.g_ai_flag ==false){ //dwon key
 		
 		  plasma_cnt++;
           if(plasma_cnt == LONG_PRESS_TIME ){
@@ -297,6 +299,7 @@ void tx_application_define(void *first_unused_memory)
 
 		  }
           plasma_cnt =0;
+		  
 
 	}
 	else if(KEY_WATER_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true ){
@@ -322,6 +325,23 @@ void tx_application_define(void *first_unused_memory)
 
 
 	}
+	else if(KEY_PLASMA_VALUE() == KEY_DOWN && KEY_FAN_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){
+
+        ambient_led_cnt ++;
+		if(ambient_led_cnt == LONG_PRESS_TIME ){
+
+               beep_key_click();
+			   tx_event_flags_set(&key_event, KEY_AMBIENT_LED_LONG, TX_OR);
+			   
+		 }
+
+	}
+	else if(ambient_led_cnt > 0 && KEY_PLASMA_VALUE() == KEY_UP || KEY_FAN_VALUE() == KEY_UP){
+
+	   ambient_led_cnt  =0 ;
+
+	}
+	
 	
 #if DEBUG_ENABLE
 	 debug_stack_key_check();
@@ -343,6 +363,8 @@ void tx_application_define(void *first_unused_memory)
    (void)thread_input;  /* 消除未使用的参数警告 */
     ULONG flags;
     UINT status;
+
+	static uint8_t switch_flag;
 	
 	while(1)
     {
@@ -375,6 +397,16 @@ void tx_application_define(void *first_unused_memory)
 		}
 	    else if(flags & KEY_PLASMA_SHORT  && gpro_t.fan_warning_f ==0){
              key_plasma_short_handler();
+		}
+		else if(flags & KEY_AMBIENT_LED_LONG){
+
+		   switch_flag = switch_flag ^ 0x01;
+		   if(switch_flag ==1){
+              ambient_led_off();
+		   }
+		   else 
+		   	  ambient_led_on();
+
 		}
 
 		

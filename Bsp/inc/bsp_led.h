@@ -63,9 +63,9 @@ void power_on_led_handler(void);
 
 void power_off_led_handler(void);
 
-void ambinet_led_on(void);
+void ambient_led_on(void);
 
-void ambinet_led_off(void);
+void ambient_led_off(void);
 
 
 void power_off_led_blink_handler(void);
