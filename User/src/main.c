@@ -11,7 +11,7 @@
   * 
   * Versio: 1.0 
   * DATA:2026-10-28,PCB 硬件修改GPIO COOLER_CTL and  LED_B_3 switch 
-  * 
+  * DATA:2026-11-12,PCB VER:V14.
   *
   *
   *

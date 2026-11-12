@@ -46,7 +46,7 @@ void power_on_led_handler(void)
    LED_PLASMA_ON();
    LED_AI_ON();
    
-   ambient_led_on();
+   LED_AMBIENT_ON();//ambient_led_on();
 
 }
 
@@ -69,9 +69,7 @@ void power_off_led_handler(void)
 	LED_WATER_LEVEL_HIGH_OFF();//LED_WATER_INDICATOR_3();
 	LED_warning_gpio_input();//LED_WATER_WARNING_OFF();//LED_WATER_INDICATOR_4();
 
-	 LED_HUMIDITY_OFF_HIGH();
-	 LED_HUMIDITY_OFF_MIDDLE();
-	 LED_HUMIDIY_OFF_LOW();
+	LED_AMBINET_OFF() ;
  
 }
 
@@ -137,79 +135,6 @@ void wifi_led_state_handler(void)
 *@param:
 *@notice
 **/
-void ambient_led_on(void)
-{
-
-#if 0
-    #if 0
-	if(gpro_t.humidity >= 40 &&  gpro_t.humidity<= 70){
-
-        LED_HUMIDITY_OFF_HIGH();
-		LED_HUMIDITY_ON_MIDDLE();
-	    LED_HUMIDIY_OFF_LOW();
-	}
-	else if(gpro_t.humidity <= 40){
-
-       LED_HUMIDITY_OFF_HIGH();
-	   LED_HUMIDITY_OFF_MIDDLE();
-	   LED_HUMIDIY_ON_LOW();    
-	}
-	else{
-
-        LED_HUMIDITY_ON_HIGH();
-		LED_HUMIDITY_OFF_MIDDLE();
-	    LED_HUMIDIY_OFF_LOW();
-	}
-
-	#else
-
-	   if(gpro_t.humidity >= 40 &&  gpro_t.humidity<= 70){
-	
-			//LED_HUMIDITY_OFF_HIGH();
-			//LED_HUMIDITY_ON_MIDDLE();
-			//LED_HUMIDIY_OFF_LOW();
-
-		   LED_HUMIDITY_OFF_HIGH();
-		   LED_HUMIDITY_OFF_MIDDLE();
-		   LED_HUMIDIY_ON_LOW();	
-		}
-		else if(gpro_t.humidity <= 40){
-	
-		   //LED_HUMIDITY_OFF_HIGH();
-		   //LED_HUMIDITY_OFF_MIDDLE();
-		   //LED_HUMIDIY_ON_LOW();	
-
-		   LED_HUMIDITY_OFF_HIGH();
-			LED_HUMIDITY_ON_MIDDLE();
-			LED_HUMIDIY_OFF_LOW();
-		}
-		else{
-	
-			LED_HUMIDITY_ON_HIGH();
-			LED_HUMIDITY_OFF_MIDDLE();
-			LED_HUMIDIY_OFF_LOW();
-		}
- #endif 
-
-#endif 		
-	   LED_HUMIDIY_ON_LOW();   
-
-	   LED_HUMIDITY_ON_MIDDLE();
-
-	   LED_HUMIDITY_ON_HIGH();
-
-	
-
-
-}
-
-void ambient_led_off(void)
-{
-	LED_HUMIDITY_OFF_HIGH();
-	LED_HUMIDITY_OFF_MIDDLE();
-	LED_HUMIDIY_OFF_LOW();
-
-}
 
 
 

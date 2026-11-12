@@ -402,10 +402,10 @@ void tx_application_define(void *first_unused_memory)
 
 		   switch_flag = switch_flag ^ 0x01;
 		   if(switch_flag ==1){
-              ambient_led_off();
+             LED_AMBINET_OFF() ;//ambient_led_off();
 		   }
 		   else 
-		   	  ambient_led_on();
+		   	  LED_AMBIENT_ON();//ambient_led_on();
 
 		}
 
