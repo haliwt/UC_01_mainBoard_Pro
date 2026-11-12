@@ -28,6 +28,7 @@
     
   
     IMPORT  __tx_PendSVHandler
+	IMPORT SystemInit
 	 
 ;
 ;
@@ -83,6 +84,7 @@ __tx_vectors
     EXPORT  Reset_Handler
 Reset_Handler
     CPSID   i
+	
     LDR     R0, =__main
     BX      R0
 
