@@ -8,9 +8,9 @@
 #define FAN_SPEED_LOW        1280//2560-1280=   50%
 
 #else 
-#define FAN_SPEED_HIGH       2560//2560-2560//40   100%
-#define FAN_SPEED_MIDDLE     2535//2048//2560-2048 80%
-#define FAN_SPEED_LOW        2304//2560-1280=   50%
+#define FAN_SPEED_HIGH       2559//2560-2560//40   100%
+#define FAN_SPEED_MIDDLE     1792// 70%
+#define FAN_SPEED_LOW        1280//50%
 
 #endif 
 

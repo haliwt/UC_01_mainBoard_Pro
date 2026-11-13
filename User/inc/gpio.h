@@ -14,19 +14,18 @@
 #define LL_LED_WATER_B_Pin LL_GPIO_PIN_15
 
 
-//#define LED_B_3_GPIO_Port 					GPIOA
-//#define LL_LED_B_3_Pin 						LL_GPIO_PIN_8
-
-#define LED_B_3_GPIO_Port 					GPIOB
-#define LL_LED_B_3_Pin 						LL_GPIO_PIN_11
 
 
+#define LED_AMBIENT_GPIO_Port 					GPIOB
+#define LL_LED_AMBIENT_Pin 						LL_GPIO_PIN_11
+
+#if 0
 #define LED_R_1_GPIO_Port 					GPIOA
 #define LL_LED_R_1_Pin 						LL_GPIO_PIN_11
 
 #define LED_G_2_GPIO_Port 					GPIOA
 #define LL_LED_G_2_Pin 						LL_GPIO_PIN_12
-
+#endif 
 #define LED_WATER_RB_GPIO_Port GPIOB
 #define LL_LED_WATER_RB_Pin LL_GPIO_PIN_12
 
@@ -77,10 +76,10 @@
 
 //I2C GPIO 
 #define I2C_SCL_GPIO_Port    			 GPIOF
-#define LL_I2C_SCL_Pin       			  LL_GPIO_PIN_7
+#define LL_I2C_SCL_Pin       			 LL_GPIO_PIN_6 //LL_GPIO_PIN_7 //WT.EDIT 20026-11-13
 
 #define I2C_SDA_GPIO_Port 				    GPIOF
-#define LL_I2C_SDA_Pin 						LL_GPIO_PIN_6
+#define LL_I2C_SDA_Pin 						LL_GPIO_PIN_7//LL_GPIO_PIN_6
 
 //MAINBOARD CTL
 #define PLASMA_GPIO_Port GPIOB

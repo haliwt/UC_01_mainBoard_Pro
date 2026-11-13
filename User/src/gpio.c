@@ -13,12 +13,12 @@ void GPIO_Configuration(void)
 
   // GPIO_Output
   
-  LL_GPIO_ResetOutputPin(LED_R_1_GPIO_Port, LL_LED_R_1_Pin);
-  LL_GPIO_ResetOutputPin(LED_G_2_GPIO_Port, LL_LED_G_2_Pin);
+  //LL_GPIO_ResetOutputPin(LED_R_1_GPIO_Port, LL_LED_R_1_Pin);
+ // LL_GPIO_ResetOutputPin(LED_G_2_GPIO_Port, LL_LED_G_2_Pin);
   LL_GPIO_ResetOutputPin(COOLER_CTL_GPIO_Port, LL_COOLER_CTL_Pin); //WT.EIDT 2026-10-30
   
   LL_GPIO_StructInit(&GPIO_InitStruct);
-  GPIO_InitStruct.Pin =  LL_LED_R_1_Pin | LL_LED_G_2_Pin |LL_COOLER_CTL_Pin;
+  GPIO_InitStruct.Pin =  LL_COOLER_CTL_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
@@ -28,10 +28,10 @@ void GPIO_Configuration(void)
 
   LL_GPIO_SetOutputPin(LED_PLASMA_GPIO_Port, LL_LED_PLASMA_Pin);
   LL_GPIO_SetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin);
-  LL_GPIO_ResetOutputPin(LED_B_3_GPIO_Port, LL_LED_B_3_Pin);//WT.EIDT 2026-10-30
+  LL_GPIO_ResetOutputPin(LED_AMBIENT_GPIO_Port, LL_LED_AMBIENT_Pin);//WT.EIDT 2026-10-30
   
   LL_GPIO_StructInit(&GPIO_InitStruct);
-	GPIO_InitStruct.Pin = LL_LED_PLASMA_Pin | LL_LED_AI_Pin | LL_LED_B_3_Pin;
+	GPIO_InitStruct.Pin = LL_LED_PLASMA_Pin | LL_LED_AI_Pin | LL_LED_AMBIENT_Pin;
 	GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
 	GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
 	GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
