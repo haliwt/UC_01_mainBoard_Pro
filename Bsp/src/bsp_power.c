@@ -300,8 +300,9 @@ static void handler_fan_adc_detected(void)
 
 	 fan_sound_counter ++ ;
 
-	 if(gpro_t.fan_warning_f==true &&  fan_sound_counter > 25){
+	 if(gpro_t.fan_warning_f==true &&  fan_sound_counter > 4){
 	 	 fan_sound_counter =0;
+		  TEC_CTRL_OFF();
           beep_fan_default_sound(); 
 		  return ;
 	 }
@@ -312,14 +313,8 @@ static void handler_fan_adc_detected(void)
 
 	  if(works_interval_f == 1 || gpro_t.g_water_pump_flag == true)  return ;
 
-	  if(gpro_t.g_fan_speed==3){
-	
 	    fan_adc_detected_value();
-
-	
-        fan_warning_sound_handler();
-	  }
-    }
+     }
 
 }
 /**
@@ -360,7 +355,10 @@ static void handler_tec_adc_value(void)
 **/
 void ntc_temperature_compare_handler(void)
 {
-   if(gpro_t.ntc_temperature_value > 60 || gpro_t.water_pos_warning_flag ==1 ||  gpro_t.fan_warning_f ==1){
+
+  if(works_interval_f == 1) return ;
+   
+   if(gpro_t.ntc_temperature_value > 90 || gpro_t.water_pos_warning_flag ==1 ||  gpro_t.fan_warning_f ==1){
  
          TEC_CTRL_OFF();
 
