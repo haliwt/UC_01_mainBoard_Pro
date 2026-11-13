@@ -191,7 +191,7 @@ void usart1_isr_callback_handler(uint8_t data)
 static void usart1_protocol_state_machine(uint8_t *pdata)
 {
 
-   static uint8_t ptc_set_wifi = 0xff;
+  // static uint8_t ptc_set_wifi = 0xff;
    switch(pdata[2]){
 
    case 0:

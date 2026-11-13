@@ -240,8 +240,7 @@ uint8_t counter_test,adc_counter;
 static void handler_read_ath30(void)
 {
     if(gpro_t.g_water_pump_flag == 0){
-    // gxht4_rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
-    // gxht4_rec  =  AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
+
 	 gxht4_rec  =     AHT30_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
 	if(gxht4_rec==0){
       #if 0
@@ -301,8 +300,9 @@ static void handler_fan_adc_detected(void)
 
 	 fan_sound_counter ++ ;
 
-	 if(gpro_t.fan_warning_f==true &&  fan_sound_counter > 25){
+	 if(gpro_t.fan_warning_f==true &&  fan_sound_counter > 2){//
 	 	 fan_sound_counter =0;
+		  TEC_CTRL_OFF();
           beep_fan_default_sound(); 
 		  return ;
 	 }
@@ -311,16 +311,17 @@ static void handler_fan_adc_detected(void)
 	if(gl_ref.adc_fan_channel_flag == 1){
         gl_ref.adc_fan_channel_flag = 0;
 
-	  if(works_interval_f == 1 || gpro_t.g_water_pump_flag == true)  return ;
+	  if(works_interval_f == true || gpro_t.g_water_pump_flag == true)  return ;
 
-	  if(gpro_t.g_fan_speed==3){
+	  if(gpro_t.fan_warning_f== false){
 	
 	    fan_adc_detected_value();
 
 	
         fan_warning_sound_handler();
-	  }
-    }
+	   }
+      }
+	
 
 }
 /**
@@ -385,7 +386,7 @@ void ntc_temperature_compare_handler(void)
  uint8_t fan_one_f;
 static void power_off_handler(void)
 {
-    static uint8_t  dc_power_f,counter;
+    static uint8_t  dc_power_f;//counter;
 	
 	switch(gon_t.off_step){
 	

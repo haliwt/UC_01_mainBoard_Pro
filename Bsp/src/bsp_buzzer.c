@@ -68,9 +68,11 @@ void beep_high_temperature_sound(void)
 void beep_fan_default_sound(void)
 {
 	beep_key_click();
-	tx_thread_sleep(50);//10ms*40 = 400ms
+	tx_thread_sleep(30);//10ms*40 = 400ms
 	beep_key_click();
-	tx_thread_sleep(50);
+	tx_thread_sleep(30);
+	beep_key_click();
+	tx_thread_sleep(30);
 	beep_key_click();
 	
 #if 0
