@@ -19,6 +19,7 @@ void getNtc_temperatureValue_init(uint16_t voltage);
 
 
 
+
 #endif 
 
 

@@ -184,6 +184,9 @@ void key_water_long_handler(void)
 **/
 void ai_model_handler(void)
 {
+
+   if(gpro_t.high_temp_warning_flag == true) return ;
+
    if(gpro_t.g_ai_flag == true){
       if(works_interval_f ==false && gpro_t.fan_warning_f ==false && gpro_t.water_pos_warning_flag == false){
 			gpro_t.g_fan_speed = 3;

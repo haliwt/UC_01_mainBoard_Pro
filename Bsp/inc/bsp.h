@@ -88,6 +88,7 @@ typedef struct _main_ref{
 	uint8_t ntc_temperature_value;
 
 	bool fan_warning_f;
+	bool high_temp_warning_flag ;
 	volatile bool dma_dong_flag ;
 	bool tec_control_flag;
 	bool g_water_pump_flag;

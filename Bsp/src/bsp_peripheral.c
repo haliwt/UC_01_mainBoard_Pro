@@ -44,7 +44,10 @@ void power_off_ctrl_handler(void)
 **/
 void ai_set_status(bool idata)    // 1--开启, 0- 关闭
 {
-    if(idata == true){
+
+  if(gpro_t.high_temp_warning_flag == true) return;
+
+	 if(idata == true){
       LED_AI_ON();
 	  gpro_t.g_fan_speed = 3;
 	  if(works_interval_f ==0 && gpro_t.fan_warning_f ==0 && gpro_t.water_pos_warning_flag ==0){

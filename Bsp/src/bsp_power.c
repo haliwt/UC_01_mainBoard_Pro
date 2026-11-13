@@ -116,7 +116,8 @@ static void power_on_initial(void)
 	  gpro_t.gTimer_one_minute=0;
 	  works_interval_f=0;
 	  //error 
-	  gpro_t.fan_warning_f=0;
+	  gpro_t.fan_warning_f=false;
+	  gpro_t.high_temp_warning_flag = false;
 	  //wifi 
 	  gpro_t.g_is_net_flag=0;
   
@@ -362,7 +363,15 @@ static void handler_tec_adc_value(void)
 **/
 void ntc_temperature_compare_handler(void)
 {
-   if(gpro_t.ntc_temperature_value > 60 || gpro_t.water_pos_warning_flag ==1 ||  gpro_t.fan_warning_f ==1){
+
+   if(gpro_t.high_temp_warning_flag == true){
+
+       TEC_CTRL_OFF();
+	   beep_high_temperature_sound();
+       return ;
+   }
+
+   if(gpro_t.water_pos_warning_flag ==1 ||  gpro_t.fan_warning_f ==1){
  
          TEC_CTRL_OFF();
 
@@ -396,7 +405,8 @@ static void power_off_handler(void)
 			gon_t.on_step =0;
 	       
 		    fan_one_f =1;
-		    gpro_t.fan_warning_f =0;
+		    gpro_t.fan_warning_f = false;
+			gpro_t.high_temp_warning_flag = false ;
 			gpro_t.water_pos_warning_flag =0;
 			
 			power_off_led_handler();

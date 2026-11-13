@@ -382,20 +382,20 @@ void tx_application_define(void *first_unused_memory)
 
              key_power_short_handler();
 		} 
-		else if(flags & KEY_POWER_LONG  && gpro_t.fan_warning_f ==0){
+		else if(flags & KEY_POWER_LONG  && gpro_t.fan_warning_f ==0 && gpro_t.high_temp_warning_flag == false){
 			    
              key_power_long_handler();
 		} 
-	    else if(flags & KEY_AI_SHORT  && gpro_t.fan_warning_f ==0){
+	    else if(flags & KEY_AI_SHORT  && gpro_t.fan_warning_f ==0 && gpro_t.high_temp_warning_flag == false){
              key_ai_short_handler();
 		} 
-		else if(flags & KEY_AI_LONG  && gpro_t.fan_warning_f ==0){
+		else if(flags & KEY_AI_LONG  && gpro_t.fan_warning_f ==0 && gpro_t.high_temp_warning_flag == false){
              //key_mode_long_handler();
 		} 
-		else if(flags & KEY_FAN_SHORT  && gpro_t.fan_warning_f ==0){
+		else if(flags & KEY_FAN_SHORT  && gpro_t.fan_warning_f ==0 && gpro_t.high_temp_warning_flag == false){
 			 key_fan_short_handler();
 		}
-	    else if(flags & KEY_PLASMA_SHORT  && gpro_t.fan_warning_f ==0){
+	    else if(flags & KEY_PLASMA_SHORT  && gpro_t.fan_warning_f ==0 && gpro_t.high_temp_warning_flag == false){
              key_plasma_short_handler();
 		}
 		else if(flags & KEY_AMBIENT_LED_LONG){

@@ -192,7 +192,7 @@ uint16_t adcx,temp_vlue;
 *****************************************************************/
 void Get_Ntc_Resistance_Temperature_Handler(uint16_t voltage)
 {
-   // static uint8_t read_adc_value;
+    static uint8_t read_times;
 
 
     ntc_t.ntc_res_read_adc_value = voltage ;
@@ -216,8 +216,23 @@ void Get_Ntc_Resistance_Temperature_Handler(uint16_t voltage)
 	
      gpro_t.ntc_temperature_value =ntc_t.read_ntc_tem_value;
    // g_pro.read_ntc_temperature_value = ntc_res_linear_value(ntc_t.read_ntc_tem_value);
+   
+    if(gpro_t.ntc_temperature_value > 99 &&  read_times < 5){
+        read_times++;
+		if(read_times > 2){
+          gpro_t.high_temp_warning_flag = true;
+		}
+    }
+	else{
+
+	   read_times =0;
+
+	}
 
    }
+
+
+
 /*****************************************************************
 	*
 	*Function Name: void getNtc_temperatureValue_init(uint16_t voltage)
