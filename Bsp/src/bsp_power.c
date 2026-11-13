@@ -48,7 +48,7 @@ Run_Ref_t gl_ref;
 static void handler_read_6_channels_adc_value(void);
 static void handler_wifi_update_data(void);
 static void handler_works_hours(void);
-static void handler_read_gxht40ad(void);
+static void handler_read_ath30(void);
 static void handler_AI_module_action(void);
 static void handler_fan_adc_detected(void);
 static void handler_tec_adc_value(void);
@@ -61,7 +61,7 @@ static Task_Config_t g_tasks[] = {
     // last_tick,  period(ms),  task_handler
     {0,            50,         handler_AI_module_action},//10ms*50=500ms
     {0,            300,        handler_works_hours},
-    {0,            450,        handler_read_gxht40ad},
+    {0,            450,        handler_read_ath30},
     {0,            6000,       handler_wifi_update_data},        // 1分钟 = 60000ms
     {0,            100,        handler_read_6_channels_adc_value},         // 10ms*100=1000ms =1s
     {0,            500,        handler_fan_adc_detected},                  //500 *10ms =5000ms = 5s 
@@ -237,20 +237,21 @@ static void handler_works_hours(void)
 }
 uint8_t counter_test,adc_counter;
 
-static void handler_read_gxht40ad(void)
+static void handler_read_ath30(void)
 {
     if(gpro_t.g_water_pump_flag == 0){
     // gxht4_rec = GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
-     gxht4_rec  =  AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
+    // gxht4_rec  =  AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
+	 gxht4_rec  =     AHT30_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
 	if(gxht4_rec==0){
-      #if 1
+      #if 0
       printf("temp = %d , humidity = %d \r\n",gpro_t.temperature,gpro_t.humidity);
 	  #endif 
-	  sendData_Real_TimeHum(gpro_t.humidity, gpro_t.temperature);
+	 // sendData_Real_TimeHum(gpro_t.humidity, gpro_t.temperature);
 
 	}
 	else{
-		#if 1
+		#if 0
 	      printf("read temp is error !!!!\r\n");
 		#endif 
 	   counter_test++;
@@ -453,7 +454,7 @@ static void power_off_handler(void)
 				gpro_t.gTime_link_net_counter=0;
 							 
 				//GXHT40_Read_TempHumi(&gpro_t.temperature, &gpro_t.humidity);
-				AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
+				//AHT30_Read_TempAndHumidity(&gpro_t.temperature, &gpro_t.humidity);
 							 
 			}
            

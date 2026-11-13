@@ -17,9 +17,22 @@
 #define GXHT40_CMD_MEAS_HIGH    0xFD  // 高重复率测量温湿度[cite: 1]
 #define GXHT40_CMD_SOFT_RESET   0x94  // 软复位[cite: 1]
 
+
+
+/* 引脚定义 */
+
+
+/* AHT30 I2C 协议常量 */
+#define AHT30_ADDR_WRITE        0x70
+#define AHT30_ADDR_READ         0x71
+
+
 /* 函数声明 */
 void GXHT40_Init(void);
-uint8_t GXHT40_Read_TempHumi(int16_t *temperature, int16_t *humidity);
+//uint8_t GXHT40_Read_TempHumi(int16_t *temperature, int16_t *humidity);
+
+uint8_t AHT30_Read_TempHumi(float *temperature, float *humidity);
+
 
 
 #endif /* __GXHT40_H */

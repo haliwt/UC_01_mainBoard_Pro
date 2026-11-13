@@ -6,19 +6,21 @@
 
 
 /* GPIO 引脚及端口宏定义（在此处修改为您实际连接的引脚） */
-#define GXHT40_SCL_PORT         GPIOF
-#define GXHT40_SCL_PIN          LL_GPIO_PIN_6
+#define AHT30_SCL_PORT         GPIOF
+#define AHT30_SCL_PIN          LL_GPIO_PIN_7//LL_GPIO_PIN_6
 
-#define GXHT40_SDA_PORT         GPIOF
-#define GXHT40_SDA_PIN          LL_GPIO_PIN_7
+#define AHT30_SDA_PORT         GPIOF
+#define AHT30_SDA_PIN          LL_GPIO_PIN_6//LL_GPIO_PIN_7
 
 /* 软件 I2C 信号控制宏 */
-#define SCL_H()                 LL_GPIO_SetOutputPin(GXHT40_SCL_PORT, GXHT40_SCL_PIN)
-#define SCL_L()                 LL_GPIO_ResetOutputPin(GXHT40_SCL_PORT, GXHT40_SCL_PIN)
-#define SDA_H()                 LL_GPIO_SetOutputPin(GXHT40_SDA_PORT, GXHT40_SDA_PIN)
-#define SDA_L()                 LL_GPIO_ResetOutputPin(GXHT40_SDA_PORT, GXHT40_SDA_PIN)
-#define SDA_READ()              LL_GPIO_IsInputPinSet(GXHT40_SDA_PORT, GXHT40_SDA_PIN)
+#define SCL_H()                 LL_GPIO_SetOutputPin(AHT30_SCL_PORT, AHT30_SCL_PIN)
+#define SCL_L()                 LL_GPIO_ResetOutputPin(AHT30_SCL_PORT, AHT30_SCL_PIN)
+#define SDA_H()                 LL_GPIO_SetOutputPin(AHT30_SDA_PORT, AHT30_SDA_PIN)
+#define SDA_L()                 LL_GPIO_ResetOutputPin(AHT30_SDA_PORT, AHT30_SDA_PIN)
+#define SDA_READ()              LL_GPIO_IsInputPinSet(AHT30_SDA_PORT, AHT30_SDA_PIN)
 
+
+#if 0
 static void I2C_Stop(void);
 
 static void SDA_Mode_Input(void)
@@ -67,13 +69,13 @@ void GXHT40_Init(void)
 
     // 2. 配置 SCL 和 SDA 为 开漏输出（OUTPUT_OPENDRAIN）
     // 开漏输出模式配合外部/内部上拉电阻，无需频繁切换输入输出方向即可直接读取引脚电平
-    GPIO_InitStruct.Pin = GXHT40_SCL_PIN | GXHT40_SDA_PIN;
+    GPIO_InitStruct.Pin = AHT30_SCL_PIN | AHT30_SDA_PIN;
     GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
     GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
     
-    LL_GPIO_Init(GXHT40_SCL_PORT, &GPIO_InitStruct);
+    LL_GPIO_Init(AHT30_SCL_PORT, &GPIO_InitStruct);
 
     // 3. 释放总线
    // 3. 【核心救命代码】：I2C 总线强制解锁（九脉冲释放 SDA）
@@ -297,6 +299,282 @@ uint8_t GXHT40_Read_TempHumi(int16_t *temperature, int16_t *humidity)
     return 0; // 读取成功
 }
 
+#endif 
 
+
+/**
+ * @brief  微秒级粗略延时 (适配 64MHz Cortex-M0，I2C 速率约 100kHz~200kHz)
+ *         满足手册要求的 10K~400KHz 范围
+ */
+static void AHT30_DelayUs(uint32_t us)
+{
+    uint32_t cycles = us * 16;
+    while (cycles--)
+    {
+        __NOP();
+    }
+}
+
+/**
+ * @brief  配置 SDA 为开漏输出或推挽输出 (建议硬件外接 2.0~4.7k 上拉电阻，配置为开漏模式)
+ */
+static void SDA_OUT(void)
+{
+    LL_GPIO_SetPinMode(AHT30_SDA_PORT, AHT30_SDA_PIN, LL_GPIO_MODE_OUTPUT);
+    LL_GPIO_SetPinOutputType(AHT30_SDA_PORT, AHT30_SDA_PIN, LL_GPIO_OUTPUT_OPENDRAIN);
+}
+
+/**
+ * @brief  配置 SDA 为输入模式 (读取 ACK 与数据)
+ */
+static void SDA_IN(void)
+{
+    LL_GPIO_SetPinMode(AHT30_SDA_PORT, AHT30_SDA_PIN, LL_GPIO_MODE_INPUT);
+    LL_GPIO_SetPinPull(AHT30_SDA_PORT, AHT30_SDA_PIN, LL_GPIO_PULL_UP);
+}
+
+/**
+ * @brief  产生 I2C 起始信号
+ */
+static void I2C_Start(void)
+{
+    SDA_OUT();
+    SDA_H();
+    SCL_H();
+    AHT30_DelayUs(5);
+    SDA_L();
+    AHT30_DelayUs(5);
+    SCL_L();
+}
+
+/**
+ * @brief  产生 I2C 停止信号
+ */
+static void I2C_Stop(void)
+{
+    SDA_OUT();
+    SCL_L();
+    SDA_L();
+    AHT30_DelayUs(5);
+    SCL_H();
+    AHT30_DelayUs(5);
+    SDA_H();
+    AHT30_DelayUs(5);
+}
+
+/**
+ * @brief  等待应答信号
+ * @retval 0: 接收应答成功 (ACK), 1: 应答超时失败 (NACK)
+ */
+static uint8_t I2C_WaitAck(void)
+{
+    uint8_t timeout = 0;
+    SDA_IN();
+    SDA_H();
+    AHT30_DelayUs(2);
+    SCL_H();
+    AHT30_DelayUs(2);
+    
+    while (SDA_READ())
+    {
+        timeout++;
+        if (timeout > 250)
+        {
+            I2C_Stop();
+            return 1;
+        }
+        AHT30_DelayUs(1);
+    }
+    SCL_L();
+    return 0;
+}
+
+/**
+ * @brief  主机发送 ACK / NACK
+ * @param  ack: 1 发送 ACK (继续读), 0 发送 NACK (停止读)
+ */
+static void I2C_SendAck(uint8_t ack)
+{
+    SCL_L();
+    SDA_OUT();
+    if (ack)
+        SDA_L();
+    else
+        SDA_H();
+    AHT30_DelayUs(2);
+    SCL_H();
+    AHT30_DelayUs(5);
+    SCL_L();
+}
+
+/**
+ * @brief  I2C 发送一个字节
+ */
+static void I2C_SendByte(uint8_t data)
+{
+    uint8_t i;
+    SDA_OUT();
+    SCL_L();
+    for (i = 0; i < 8; i++)
+    {
+        if (data & 0x80)
+            SDA_H();
+        else
+            SDA_L();
+        data <<= 1;
+        AHT30_DelayUs(2);
+        SCL_H();
+        AHT30_DelayUs(5);
+        SCL_L();
+        AHT30_DelayUs(2);
+    }
+}
+
+/**
+ * @brief  I2C 读取一个字节
+ * @param  ack: 1 发送 ACK, 0 发送 NACK
+ */
+static uint8_t I2C_ReadByte(uint8_t ack)
+{
+    uint8_t i, receive = 0;
+    SDA_IN();
+    for (i = 0; i < 8; i++)
+    {
+        SCL_L();
+        AHT30_DelayUs(5);
+        SCL_H();
+        receive <<= 1;
+        if (SDA_READ())
+            receive++;
+        AHT30_DelayUs(2);
+    }
+    I2C_SendAck(ack);
+    return receive;
+}
+
+/**
+ * @brief  AHT30 CRC8 校验计算 (多项式: X8 + X5 + X4 + 1 -> 0x31, 初始值 0xFF)
+ */
+static uint8_t AHT30_CalcCRC8(uint8_t *message, uint8_t num)
+{
+    uint8_t i, byte;
+    uint8_t crc = 0xFF;
+    
+    for (byte = 0; byte < num; byte++)
+    {
+        crc ^= message[byte];
+        for (i = 8; i > 0; --i)
+        {
+            if (crc & 0x80)
+                crc = (crc << 1) ^ 0x31;
+            else
+                crc = (crc << 1);
+        }
+    }
+    return crc;
+}
+
+/**
+ * @brief  初始化 AHT30 所需的 GPIO 引脚
+ */
+void AHT30_Init(void)
+{
+    LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    /* 开启 GPIOF 时钟 (请根据实际芯片型号确认宏名称，如 LL_IOP_GRP1_PERIPH_GPIOF) */
+    LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOF);
+
+    /* 默认拉高总线 */
+    LL_GPIO_SetOutputPin(AHT30_SCL_PORT, AHT30_SCL_PIN);
+    LL_GPIO_SetOutputPin(AHT30_SDA_PORT, AHT30_SDA_PIN);
+
+    /* 配置 SCL 引脚 (开漏输出 + 上拉) */
+    GPIO_InitStruct.Pin = AHT30_SCL_PIN;
+    GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+    GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_OPENDRAIN;
+    GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+    LL_GPIO_Init(AHT30_SCL_PORT, &GPIO_InitStruct);
+
+    /* 配置 SDA 引脚 (开漏输出 + 上拉) */
+    GPIO_InitStruct.Pin = AHT30_SDA_PIN;
+    LL_GPIO_Init(AHT30_SDA_PORT, &GPIO_InitStruct);
+    
+    /* 说明书要求: VDD 上电后需等待至少 5ms 才可操作总线 */
+    tx_thread_sleep(10);
+}
+
+/**
+ * @brief  触发测量并读取温湿度值 (在 ThreadX 任务中调用，采集周期建议 >= 1秒/次)
+ * @param  temperature: 输出温度指针 (单位: ℃)
+ * @param  humidity:    输出相对湿度指针 (单位: %RH)
+ * @retval 0: 读取成功
+ *         1: I2C 通信无应答 (NACK)
+ *         2: 传感器测量超时 (Bit7 仍为忙状态)
+ *         3: CRC8 校验失败
+ */
+uint8_t AHT30_Read_TempHumi(float *temperature, float *humidity)
+{
+    uint8_t rx_buf[7] = {0};
+    uint32_t raw_humi = 0;
+    uint32_t raw_temp = 0;
+
+    /* 1. 发送写测量命令: 0x70 0xAC 0x33 0x00 */
+    I2C_Start();
+    I2C_SendByte(AHT30_ADDR_WRITE);
+    if (I2C_WaitAck()) return 1;
+    
+    I2C_SendByte(0xAC);
+    if (I2C_WaitAck()) return 1;
+    
+    I2C_SendByte(0x33);
+    if (I2C_WaitAck()) return 1;
+    
+    I2C_SendByte(0x00);
+    if (I2C_WaitAck()) return 1;
+    I2C_Stop();
+
+    /* 2. 等待至少 80ms 测量完成 (使用 ThreadX 休眠释放 CPU) */
+    tx_thread_sleep(85);
+
+    /* 3. 发送读指令 0x71 并读取 7 个字节 (Status + 5字节温湿度 + CRC) */
+    I2C_Start();
+    I2C_SendByte(AHT30_ADDR_READ);
+    if (I2C_WaitAck()) return 1;
+
+    for (uint8_t i = 0; i < 6; i++)
+    {
+        rx_buf[i] = I2C_ReadByte(1);    // 前 6 字节发送 ACK
+    }
+    rx_buf[6] = I2C_ReadByte(0);        // 第 7 字节 (CRC) 发送 NACK
+    I2C_Stop();
+
+    /* 4. 检查状态字 Bit[7] 忙闲指示 (0: 闲/完成, 1: 忙) */
+    if ((rx_buf[0] & 0x80) != 0)
+    {
+        return 2;
+    }
+
+    /* 5. CRC8 校验 (校验 rx_buf[0..5] 共 6 个字节) */
+    if (AHT30_CalcCRC8(rx_buf, 6) != rx_buf[6])
+    {
+        return 3;
+    }
+
+    /* 6. 拼接 20-bit 原始数据并按手册公式转换 */
+    // SRH[19:0]: rx_buf[1] 为高8位, rx_buf[2] 为中8位, rx_buf[3] 高4位为低4位
+    raw_humi = ((uint32_t)rx_buf[1] << 12) | ((uint32_t)rx_buf[2] << 4) | ((uint32_t)rx_buf[3] >> 4);
+    
+    // ST[19:0]: rx_buf[3] 低4位为高4位, rx_buf[4] 为中8位, rx_buf[5] 为低8位
+    raw_temp = (((uint32_t)rx_buf[3] & 0x0F) << 16) | ((uint32_t)rx_buf[4] << 8) | (uint32_t)rx_buf[5];
+
+    // 转换公式: RH = (SRH / 2^20) * 100%
+    *humidity = ((float)raw_humi / 1048576.0f) * 100.0f;
+    
+    // 转换公式: T = (ST / 2^20) * 200 - 50
+    *temperature = ((float)raw_temp / 1048576.0f) * 200.0f - 50.0f;
+
+    return 0;
+}
 
 
